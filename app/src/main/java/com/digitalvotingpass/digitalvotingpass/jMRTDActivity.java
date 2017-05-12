@@ -31,7 +31,6 @@ import org.jmrtd.cert.CVCAuthorizationTemplate;
 import org.jmrtd.cert.CVCPrincipal;
 import org.jmrtd.cert.CardVerifiableCertificate;
 import org.jmrtd.lds.CVCAFile;
-import org.jmrtd.lds.DG14File;
 import org.jmrtd.lds.DG15File;
 import org.jmrtd.lds.DG1File;
 import org.jmrtd.lds.LDSFileUtil;
@@ -173,9 +172,7 @@ public class jMRTDActivity extends AppCompatActivity {
             ps.sendSelectApplet(false);
             BACKeySpec bacKey = new BACKeySpec() {
                 @Override
-                public String getDocumentNumber() {
-                    return "NP0811B03";
-                }
+                public String getDocumentNumber() { return "NP0811B03";}
 
                 @Override
                 public String getDateOfBirth() {
@@ -183,15 +180,12 @@ public class jMRTDActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public String getDateOfExpiry() {
-                    return "180624";
-                }
+                public String getDateOfExpiry() { return "180624"; }
             };
 
             ps.doBAC(bacKey);
 
             InputStream is = null;
-            InputStream is14 = null;
             InputStream is15 = null;
             InputStream isCvca = null;
             try {
@@ -201,26 +195,13 @@ public class jMRTDActivity extends AppCompatActivity {
 
                 Toast.makeText(this, dg1.getMRZInfo().getPersonalNumber(), Toast.LENGTH_LONG).show();
 
-                // Chip Authentication
-                is14 = ps.getInputStream(PassportService.EF_DG14);
-                DG14File dg14 = (DG14File) LDSFileUtil.getLDSFile(PassportService.EF_DG14, is14);
-                Map<BigInteger, PublicKey> keyInfo = dg14.getChipAuthenticationPublicKeyInfos();
-                Map.Entry<BigInteger, PublicKey> entry = keyInfo.entrySet().iterator().next();
-                Log.i("EMRTD", "Chip Authentication starting");
-                ChipAuthenticationResult caResult = doCA(ps, entry.getKey(), entry.getValue());
-                Log.i("EMRTD", "Chip authentication succeeded");
-
-
                 // display data from dg15
-                // Resulting public key should be 32 byte for passport Wilko
                 is15 = ps.getInputStream(PassportService.EF_DG15);
                 DG15File dg15 = new DG15File(is15);
                 String publicKey = new BigInteger(dg15.getPublicKey().getEncoded()).toString(2);
-//                textView.setText("(" + publicKey.length() + ") ");// + publicKey);
                 int length = dg15.getPublicKey().getEncoded().length;
                 textView.setText(Integer.toString(length));
 
-//                textView.setText(Integer.toHexString(dg15.getTag()) + " (" + dg15.getLength() + ")");
                 // CVCA
                 isCvca = ps.getInputStream(PassportService.EF_CVCA);
                 CVCAFile cvca = (CVCAFile) LDSFileUtil.getLDSFile(PassportService.EF_CVCA, isCvca);
@@ -231,7 +212,6 @@ public class jMRTDActivity extends AppCompatActivity {
             } finally {
                 try {
                     is.close();
-                    is14.close();
                     is15.close();
                     isCvca.close();
                 } catch (Exception e) {
