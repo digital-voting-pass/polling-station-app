@@ -1,10 +1,17 @@
 package com.digitalvotingpass.digitalvotingpass;
 
+import android.app.Activity;
+import android.app.PendingIntent;
+
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
+import android.nfc.tech.NfcA;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
@@ -25,6 +32,7 @@ import org.jmrtd.cert.CVCPrincipal;
 import org.jmrtd.cert.CardVerifiableCertificate;
 import org.jmrtd.lds.CVCAFile;
 import org.jmrtd.lds.DG14File;
+import org.jmrtd.lds.DG15File;
 import org.jmrtd.lds.DG1File;
 import org.jmrtd.lds.LDSFileUtil;
 import org.jmrtd.lds.MRZInfo;
@@ -60,6 +68,7 @@ public class jMRTDActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Intent intent = getIntent();
         setContentView(R.layout.activity_j_mrtd);
         TextView textView = (TextView) findViewById(R.id.textView);
 
@@ -75,16 +84,85 @@ public class jMRTDActivity extends AppCompatActivity {
             textView.setText("NFC is disabled.");
         }
 
-        if (getIntent() == null || getIntent().getExtras() == null) {
-            textView.setText("empty intent");
-            return;
-        }
-        Tag tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        handleIntent(intent);
+    }
+
+    private void testIntentHandler(Intent intent ){
+        TextView textView = (TextView) findViewById(R.id.textView);
+        textView.setText("intent is handled");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        /**
+         * It's important, that the activity is in the foreground (resumed). Otherwise
+         * an IllegalStateException is thrown.
+         */
+        setupForegroundDispatch(this, mNfcAdapter);
+    }
+
+    @Override
+    protected void onPause() {
+        /**
+         * Call this before onPause, otherwise an IllegalArgumentException is thrown as well.
+         */
+        stopForegroundDispatch(this, mNfcAdapter);
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        /**
+         * This method gets called, when a new Intent gets associated with the current activity instance.
+         * Instead of creating a new activity, onNewIntent will be called. For more information have a look
+         * at the documentation.
+         *
+         * In our case this method gets called, when the user attaches a Tag to the device.
+         */
+        handleIntent(intent);
+    }
+
+    /**
+     * @param activity The corresponding {@link Activity} requesting the foreground dispatch.
+     * @param adapter The {@link NfcAdapter} used for the foreground dispatch.
+     */
+    public static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
+        final Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        final PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
+
+        IntentFilter[] filters = new IntentFilter[1];
+        String[][] techList = new String[][]{};
+
+        // Filter for nfc tag discovery
+        filters[0] = new IntentFilter();
+        filters[0].addAction(NfcAdapter.ACTION_TAG_DISCOVERED);
+        filters[0].addCategory(Intent.CATEGORY_DEFAULT);
+
+        adapter.enableForegroundDispatch(activity, pendingIntent, filters, techList);
+    }
+
+    /**
+     * @param activity The corresponding {@link BaseActivity} requesting to stop the foreground dispatch.
+     * @param adapter The {@link NfcAdapter} used for the foreground dispatch.
+     */
+    public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
+        adapter.disableForegroundDispatch(activity);
+    }
+
+    private void handleIntent(Intent intent){
+        TextView textView = (TextView) findViewById(R.id.textView);
+
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (tag == null) {
             return;
         } else {
-
         }
+
         PassportService ps = null;
         try {
             IsoDep nfc = IsoDep.get(tag);
@@ -114,6 +192,7 @@ public class jMRTDActivity extends AppCompatActivity {
 
             InputStream is = null;
             InputStream is14 = null;
+            InputStream is15 = null;
             InputStream isCvca = null;
             try {
                 // Basic data
@@ -131,10 +210,17 @@ public class jMRTDActivity extends AppCompatActivity {
                 ChipAuthenticationResult caResult = doCA(ps, entry.getKey(), entry.getValue());
                 Log.i("EMRTD", "Chip authentication succeeded");
 
-                // display public key from dg14
-                textView.setText(entry.getValue().toString());
 
+                // display data from dg15
+                // Resulting public key should be 32 byte for passport Wilko
+                is15 = ps.getInputStream(PassportService.EF_DG15);
+                DG15File dg15 = new DG15File(is15);
+                String publicKey = new BigInteger(dg15.getPublicKey().getEncoded()).toString(2);
+//                textView.setText("(" + publicKey.length() + ") ");// + publicKey);
+                int length = dg15.getPublicKey().getEncoded().length;
+                textView.setText(Integer.toString(length));
 
+//                textView.setText(Integer.toHexString(dg15.getTag()) + " (" + dg15.getLength() + ")");
                 // CVCA
                 isCvca = ps.getInputStream(PassportService.EF_CVCA);
                 CVCAFile cvca = (CVCAFile) LDSFileUtil.getLDSFile(PassportService.EF_CVCA, isCvca);
@@ -146,6 +232,7 @@ public class jMRTDActivity extends AppCompatActivity {
                 try {
                     is.close();
                     is14.close();
+                    is15.close();
                     isCvca.close();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -230,7 +317,6 @@ public class jMRTDActivity extends AppCompatActivity {
             throw new CardServiceException(e.toString());
         }
     }
-
 
     public synchronized TerminalAuthenticationResult doTA(PassportService ps, CVCPrincipal caReference, List<CardVerifiableCertificate> terminalCertificates,
                                                           PrivateKey terminalKey, String taAlg, ChipAuthenticationResult chipAuthenticationResult, String documentNumber) throws CardServiceException {
