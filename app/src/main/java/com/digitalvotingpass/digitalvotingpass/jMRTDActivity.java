@@ -5,13 +5,10 @@ import android.app.PendingIntent;
 
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
-import android.nfc.tech.NfcA;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
@@ -20,6 +17,7 @@ import android.widget.Toast;
 import net.sf.scuba.smartcards.CardService;
 import net.sf.scuba.smartcards.CardServiceException;
 import net.sf.scuba.tlv.TLVOutputStream;
+
 
 import org.jmrtd.BACKeySpec;
 import org.jmrtd.ChipAuthenticationResult;
@@ -51,7 +49,6 @@ import java.security.Signature;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.List;
-import java.util.Map;
 
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
@@ -155,6 +152,7 @@ public class jMRTDActivity extends AppCompatActivity {
 
     private void handleIntent(Intent intent){
         TextView textView = (TextView) findViewById(R.id.textView);
+        TextView textSignedData = (TextView) findViewById(R.id.signedData);
 
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (tag == null) {
@@ -202,11 +200,15 @@ public class jMRTDActivity extends AppCompatActivity {
                 int length = dg15.getPublicKey().getEncoded().length;
                 textView.setText(Integer.toString(length));
 
+                // sign 8 bytes of data and display the signed data
+                byte[] data = hexStringToByteArray("aaaaaaaaaaaaaaaa");
+                byte[] signedData = ps.doAA(dg15.getPublicKey(), null, null, data);
+                textSignedData.setText(byteArrayToHexString(signedData));
+
                 // CVCA
                 isCvca = ps.getInputStream(PassportService.EF_CVCA);
                 CVCAFile cvca = (CVCAFile) LDSFileUtil.getLDSFile(PassportService.EF_CVCA, isCvca);
 
-                //TODO EAC
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -424,5 +426,35 @@ public class jMRTDActivity extends AppCompatActivity {
         } catch (Exception e) {
             throw new CardServiceException(e.toString());
         }
+    }
+
+    /**
+     * Method for converting a hexString to a byte array
+     * This method is used for signing transaction hashes (which are in hex)
+     */
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
+    }
+
+    /**
+     * Method for converting a byte array to a hexString
+     * This method is used for converting a signed 8-byte array back to a hashString in order to
+     * display it readable
+     */
+    public static String byteArrayToHexString(byte[] b) {
+        final char[] hexArray = "0123456789ABCDEF".toCharArray();
+        char[] hexChars = new char[b.length * 2];
+        for ( int j = 0; j < b.length; j++ ) {
+            int v = b[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
     }
 }
