@@ -3,12 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.digitalvotingpass.digitalvotingpass.ViewfinderView
-        android:id="@+id/viewfinder_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="@color/colorAccent" />
-
     <com.digitalvotingpass.digitalvotingpass.AutoFitTextureView
         android:id="@+id/texture"
         android:layout_width="wrap_content"
@@ -19,7 +13,7 @@
     <FrameLayout
         android:id="@+id/control"
         android:layout_width="match_parent"
-        android:layout_height="112dp"
+        android:layout_height="@dimen/cam_control_pane_height"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:background="@color/control_background">
@@ -45,7 +39,7 @@
 
     <ImageView
         android:id="@+id/scan_segment"
-        android:layout_width="160dp"
+        android:layout_width="280dp"
         android:layout_height="100dp"
         android:background="@drawable/background_black"
         android:layout_centerVertical="true"

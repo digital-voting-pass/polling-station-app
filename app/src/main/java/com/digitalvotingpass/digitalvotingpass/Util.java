@@ -1,10 +1,8 @@
 package com.digitalvotingpass.digitalvotingpass;
 
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,8 +32,7 @@ public class Util {
         os = new FileOutputStream(f, true);
 
         final int buffer_size = 1024 * 1024;
-        try
-        {
+        try {
             byte[] bytes = new byte[buffer_size];
             for (;;)
             {
@@ -46,11 +43,8 @@ public class Util {
             }
             is.close();
             os.close();
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 }

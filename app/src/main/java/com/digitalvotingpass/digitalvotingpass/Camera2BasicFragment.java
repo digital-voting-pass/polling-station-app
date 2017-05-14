@@ -213,7 +213,7 @@ public class Camera2BasicFragment extends Fragment
         public void run() {
             Log.e(TAG, "STARTING SCAN");
             ocr();
-           // mBackgroundHandler.postDelayed(ocrScanner, 500);
+            // mBackgroundHandler.postDelayed(ocrScanner, 500);
         }
     };
 
@@ -227,6 +227,7 @@ public class Camera2BasicFragment extends Fragment
 
 
     }
+
     /**
      * {@link CameraDevice.StateCallback} is called when {@link CameraDevice} changes its state.
      */
@@ -479,9 +480,9 @@ public class Camera2BasicFragment extends Fragment
         view.findViewById(R.id.picture).setOnClickListener(this);
         view.findViewById(R.id.info).setOnClickListener(this);
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
-        viewfinderView = (ViewfinderView) view.findViewById(R.id.viewfinder_view);
+//        viewfinderView = (ViewfinderView) view.findViewById(R.id.viewfinder_view);
         scanSegment = (ImageView) view.findViewById(R.id.scan_segment);
-        viewfinderView.setCameraManager(this);
+//        viewfinderView.setCameraManager(this);
     }
 
     @Override
@@ -920,103 +921,106 @@ public class Camera2BasicFragment extends Fragment
         return resizedBitmap;
     }
 
+    private Bitmap cropBitmap(Bitmap bitmap) {
+        int startX = (int) scanSegment.getX();
+        int startY = (int) scanSegment.getY();
+        int width = (int) (scanSegment.getWidth());
+        int length = (int) (scanSegment.getHeight());
+        return Bitmap.createBitmap(bitmap, startX, startY, width, length);
+    }
+
     protected void ocr() {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 2;
-//        Bitmap bitmap = BitmapFactory.decodeFile(mFile.toString(), options);
         Bitmap bitmap = mTextureView.getBitmap();
-        Log.e(TAG, "x: " + bitmap.getWidth() + ", y: " + bitmap.getHeight());
-
-        Bitmap croppedBitmap = Bitmap.createBitmap(bitmap, (int)scanSegment.getX(), (int)scanSegment.getY(), (int)(bitmap.getWidth()-scanSegment.getX()),(int) (bitmap.getHeight()-scanSegment.getY()));
-        Log.e(TAG, "x: " + croppedBitmap.getWidth() + ", y: " + croppedBitmap.getHeight());
-//        bitmap = getResizedBitmap(bitmap, 100, 100);
-//        Log.e(TAG, "x: " + bitmap.getWidth() + ", y: " + bitmap.getHeight());
+        Log.e(TAG, "before crop: x: " + bitmap.getWidth() + ", y: " + bitmap.getHeight());
+        Bitmap croppedBitmap = cropBitmap(bitmap);
+        Log.e(TAG, "after crop x: " + croppedBitmap.getWidth() + ", y: " + croppedBitmap.getHeight());
         final Activity activity = getActivity();
-
-        if (bitmap != null) {
-            try {
-                ExifInterface exif = new ExifInterface(mFile.toString());
-                int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-
-                Log.v(TAG, "Orient: " + exifOrientation);
-
-                int rotate = 0;
-                switch (exifOrientation) {
-                    case ExifInterface.ORIENTATION_ROTATE_90:
-                        rotate = 90;
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_180:
-                        rotate = 180;
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_270:
-                        rotate = 270;
-                        break;
-                }
-
-                Log.v(TAG, "Rotation: " + rotate);
-
-                if (rotate != 0) {
-
-                    // Getting width & height of the given image.
-                    int w = croppedBitmap.getWidth();
-                    int h = croppedBitmap.getHeight();
-
-                    // Setting pre rotate
-                    Matrix mtx = new Matrix();
-                    mtx.preRotate(rotate);
-
-                    // Rotating Bitmap
-                    croppedBitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, false);
-                    // tesseract req. ARGB_8888
-                    croppedBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-                }
-
-            } catch (IOException e) {
-                Log.e(TAG, "Rotate or coversion failed: " + e.toString());
+//        try {
+            Log.v(TAG, "Orientation: " + getActivity().getWindowManager().getDefaultDisplay().getRotation());
+            int rotate = 0;
+            switch (getActivity().getWindowManager().getDefaultDisplay().getRotation()) {
+                case 0:
+                    rotate = 0;
+                    break;
+                case 1:
+                    rotate = 270;
+                    break;
+                case 2:
+                    rotate = 180;
+                    break;
+                case 3:
+                    rotate = 90;
+                    break;
             }
-            final Bitmap b = croppedBitmap;
+
+            Log.v(TAG, "Rotation: " + rotate);
+            if (rotate != 0) {
+
+                // Getting width & height of the given image.
+                int w = croppedBitmap.getWidth();
+                int h = croppedBitmap.getHeight();
+
+                // Setting pre rotate
+                Matrix mtx = new Matrix();
+                mtx.postRotate(rotate);
+                // Rotating Bitmap
+                Bitmap rotatedBitmap = Bitmap.createBitmap(croppedBitmap , 0, 0, croppedBitmap.getWidth(), croppedBitmap.getHeight(), mtx, true);
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(rotatedBitmap,w,h,true);
+
+//                croppedBitmap = Bitmap.createBitmap(croppedBitmap, 0, 0, w, h, mtx, false);
+                // tesseract req. ARGB_8888
+                croppedBitmap = scaledBitmap.copy(Bitmap.Config.ARGB_8888, true);
+            }
+
+//        } catch (IOException e) {
+//            Log.e(TAG, "Rotate or coversion failed: " + e.toString());
+//        }
+        final Bitmap b = croppedBitmap;
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 scanSegment.setImageBitmap(b);
             }
         });
-//        iv.setImageBitmap(bitmap);
-//        iv.setVisibility(View.VISIBLE);
+//          iv.setImageBitmap(bitmap);
+//          iv.setVisibility(View.VISIBLE);
 
-            Log.v(TAG, "Before baseApi");
-            getActivity().getResources().openRawResource(R.raw.eng);
-
-            TessBaseAPI baseApi = new TessBaseAPI();
-            baseApi.setDebug(true);
-//        Uri uri = Uri.parse("android.resource://"+getActivity().getPackageName()+"/raw/mrz");
-            String path = Environment.getExternalStorageDirectory() + "/";
-            File f = new File(Environment.getExternalStorageDirectory(), "/tessdata/eng.traineddata");
-            AssetManager assetManager = getActivity().getAssets();
-            try {
-                Util.copyAssetsFile(assetManager.open("eng.traineddata"), f);
-            } catch (IOException e) {
-                e.printStackTrace();
+        Log.v(TAG, "Before baseApi");
+        TessBaseAPI baseApi = new TessBaseAPI();
+        baseApi.setDebug(true);
+        String path = Environment.getExternalStorageDirectory() + "/";
+        File trainedDataFile = new File(Environment.getExternalStorageDirectory(), "/tessdata/eng.traineddata");
+        AssetManager assetManager = getActivity().getAssets();
+        try {
+            if (!trainedDataFile.exists()) {
+                Log.i(TAG, "Existing trained data not found, copying..");
+                Util.copyAssetsFile(assetManager.open("eng.traineddata"), trainedDataFile);
+            } else {
+                Log.i(TAG, "Existing trained data found");
             }
-            baseApi.init(path, "eng");
-            baseApi.setImage(croppedBitmap);
-            String recognizedText = "fail";
-            try {
-                recognizedText = baseApi.getUTF8Text();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            baseApi.end();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        baseApi.init(path, "eng");
+        baseApi.setImage(croppedBitmap);
+        String recognizedText = "fail";
+        try {
+            recognizedText = baseApi.getUTF8Text();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        baseApi.end();
 
-            Log.v(TAG, "OCR Result: " + recognizedText);
+        Log.v(TAG, "OCR Result: " + recognizedText);
 
-            // clean up and show
+        // clean up and show
 //        if (LANG.equalsIgnoreCase("eng")) {
 //            recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
 //        }
-            if (recognizedText.length() != 0) {
+        if (recognizedText.length() != 0) {
 //            ((TextView) getActivity().findViewById(R.id.field)).setText(recognizedText.trim());
-            }
         }
     }
 
@@ -1126,6 +1130,7 @@ public class Camera2BasicFragment extends Fragment
 //
 //    }
 //
+
     /**
      * Compares two {@code Size}s based on their areas.
      */
@@ -1204,7 +1209,6 @@ public class Camera2BasicFragment extends Fragment
     }
 
 
-
     /**
      * Calculates the framing rect which the UI should draw to show the user where to place the
      * barcode. This target helps with alignment as well as forces the user to hold the device
@@ -1213,6 +1217,7 @@ public class Camera2BasicFragment extends Fragment
      * @return The rectangle to draw on screen in window coordinates.
      */
     Rect framingRect;
+
     public synchronized Rect getFramingRect() {
         if (framingRect == null) {
             if (mCameraDevice == null) {
@@ -1224,13 +1229,13 @@ public class Camera2BasicFragment extends Fragment
                 // Called early, before init even finished
                 return null;
             }
-            int width = screenResolution.x * 3/5;
+            int width = screenResolution.x * 3 / 5;
             if (width < MIN_FRAME_WIDTH) {
                 width = MIN_FRAME_WIDTH;
             } else if (width > MAX_FRAME_WIDTH) {
                 width = MAX_FRAME_WIDTH;
             }
-            int height = screenResolution.y * 1/5;
+            int height = screenResolution.y * 1 / 5;
             if (height < MIN_FRAME_HEIGHT) {
                 height = MIN_FRAME_HEIGHT;
             } else if (height > MAX_FRAME_HEIGHT) {
