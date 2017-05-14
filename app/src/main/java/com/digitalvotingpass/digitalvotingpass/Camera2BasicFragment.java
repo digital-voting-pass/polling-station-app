@@ -24,6 +24,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -46,6 +47,7 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.ExifInterface;
 import android.media.Image;
 import android.media.ImageReader;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -983,11 +985,19 @@ public class Camera2BasicFragment extends Fragment
 //        iv.setVisibility(View.VISIBLE);
 
             Log.v(TAG, "Before baseApi");
+            getActivity().getResources().openRawResource(R.raw.eng);
 
             TessBaseAPI baseApi = new TessBaseAPI();
             baseApi.setDebug(true);
 //        Uri uri = Uri.parse("android.resource://"+getActivity().getPackageName()+"/raw/mrz");
             String path = Environment.getExternalStorageDirectory() + "/";
+            File f = new File(Environment.getExternalStorageDirectory(), "/tessdata/eng.traineddata");
+            AssetManager assetManager = getActivity().getAssets();
+            try {
+                Util.copyAssetsFile(assetManager.open("eng.traineddata"), f);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             baseApi.init(path, "eng");
             baseApi.setImage(croppedBitmap);
             String recognizedText = "fail";
