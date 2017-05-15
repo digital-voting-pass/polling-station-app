@@ -1,5 +1,4 @@
 language: android
-jdk: oraclejdk8
 android:
   components:
     # Uncomment the lines below if you want to
@@ -12,6 +11,7 @@ android:
 
     # The SDK version used to compile your project
     - android-21
+    - android-25
 
     # Additional components (included from example)
     - extra-google-google_play_services
@@ -22,3 +22,4 @@ android:
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
     - sys-img-armeabi-v7a-android-21
+jdk: oraclejdk8
