@@ -39,16 +39,9 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.CaptureResult;
-import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.ExifInterface;
-import android.media.Image;
 import android.media.ImageReader;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -65,6 +58,7 @@ import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
@@ -93,6 +87,7 @@ public class Camera2BasicFragment extends Fragment
     private ViewfinderView viewfinderView;
     private ImageView scanSegment;
     private CircularProgressView progressView;
+    private TextView resultTextView;
 
     /**
      * Conversion from screen rotation to JPEG orientation.
@@ -179,10 +174,19 @@ public class Camera2BasicFragment extends Fragment
         @Override
         public void run() {
             Log.e(TAG, "STARTING SCAN");
-            ocr();
+            String mrz = ocr();
+            final boolean valid = checkMRZ(mrz);
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    if (valid) {
+                        resultTextView.setText("SUCCES");
+                    }
+                    else {
+                        scanSegment.setImageBitmap(null);
+                        resultTextView.setText("That doesn't seem right, please try again");
+                    }
+
                     progressView.setVisibility(View.GONE);
                 }
             });
@@ -345,6 +349,7 @@ public class Camera2BasicFragment extends Fragment
 //        viewfinderView = (ViewfinderView) view.findViewById(R.id.viewfinder_view);
         scanSegment = (ImageView) view.findViewById(R.id.scan_segment);
         progressView = (CircularProgressView) view.findViewById(R.id.progress_view);
+        resultTextView = (TextView) view.findViewById(R.id.result_text);
 //        viewfinderView.setCameraManager(this);
     }
 
@@ -709,13 +714,23 @@ public class Camera2BasicFragment extends Fragment
         return Bitmap.createBitmap(bitmap, startX, startY, width, length);
     }
 
-    protected void ocr() {
+    private Bitmap rotateBitmap(Bitmap bitmap, int degrees) {
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+        // Setting pre rotate
+        Matrix mtx = new Matrix();
+        mtx.preRotate(degrees);
+        // Rotating Bitmap
+        Bitmap rotated = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
+        return Bitmap.createScaledBitmap(rotated, bitmap.getWidth(), bitmap.getHeight(), true);
+    }
+
+    protected String ocr() {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 2;
         Bitmap bitmap = mTextureView.getBitmap();
         Log.e(TAG, "before crop: x: " + bitmap.getWidth() + ", y: " + bitmap.getHeight());
-        Bitmap croppedBitmap = cropBitmap(bitmap);
-        Log.e(TAG, "after crop x: " + croppedBitmap.getWidth() + ", y: " + croppedBitmap.getHeight());
+//        Log.e(TAG, "after crop x: " + croppedBitmap.getWidth() + ", y: " + croppedBitmap.getHeight());
         final Activity activity = getActivity();
         Log.v(TAG, "Orientation: " + getActivity().getWindowManager().getDefaultDisplay().getRotation());
         int rotate = 0;
@@ -733,25 +748,11 @@ public class Camera2BasicFragment extends Fragment
                 rotate = 90;
                 break;
         }
-        rotate = (ORIENTATIONS.get(getActivity().getWindowManager().getDefaultDisplay().getRotation()) + mSensorOrientation + 270) % 360;
         Log.v(TAG, "Rotation: " + rotate);
         if (rotate != 0) {
-
-            // Getting width & height of the given image.
-            int w = croppedBitmap.getWidth();
-            int h = croppedBitmap.getHeight();
-
-            // Setting pre rotate
-            Matrix mtx = new Matrix();
-            mtx.postRotate(rotate);
-            // Rotating Bitmap
-            Bitmap rotatedBitmap = Bitmap.createBitmap(croppedBitmap, 0, 0, croppedBitmap.getWidth(), croppedBitmap.getHeight(), mtx, true);
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(rotatedBitmap, w, h, true);
-
-//                croppedBitmap = Bitmap.createBitmap(croppedBitmap, 0, 0, w, h, mtx, false);
-            // tesseract req. ARGB_8888
-            croppedBitmap = scaledBitmap.copy(Bitmap.Config.ARGB_8888, true);
+            bitmap = rotateBitmap(bitmap, rotate);
         }
+        Bitmap croppedBitmap = cropBitmap(bitmap);
 
         final Bitmap b = croppedBitmap;
         activity.runOnUiThread(new Runnable() {
@@ -760,8 +761,6 @@ public class Camera2BasicFragment extends Fragment
                 scanSegment.setImageBitmap(b);
             }
         });
-//          iv.setImageBitmap(bitmap);
-//          iv.setVisibility(View.VISIBLE);
 
         Log.v(TAG, "Before baseApi");
         TessBaseAPI baseApi = new TessBaseAPI();
@@ -778,48 +777,58 @@ public class Camera2BasicFragment extends Fragment
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return;
+            return "";
         }
         baseApi.init(path, trainedData.replace(".traineddata", "")); //extract language code from trained data file
         baseApi.setImage(croppedBitmap);
         String recognizedText = baseApi.getUTF8Text();
         baseApi.end();
-        progressView.setVisibility(View.GONE);
         Log.v(TAG, "OCR Result: " + recognizedText);
-        checkMRZ(recognizedText);
-        // clean up and show
-//        if (LANG.equalsIgnoreCase("eng")) {
-//            recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
-//        }
-        if (recognizedText.length() != 0) {
-//            ((TextView) getActivity().findViewById(R.id.field)).setText(recognizedText.trim());
-        }
+        return recognizedText;
     }
 
+    /**
+     * Performs checksum calculation of the given string's chars from start til end.
+     * Uses value at index {@code checkIndex} in {@code string} as check value.
+     * @param string String to be checked
+     * @param start starting index of checked chars
+     * @param end ending index of checked chars
+     * @param checkIndex index of char to check against
+     * @return boolean whether check was successful
+     */
+    private static boolean checkSum (String string, int start, int end, int checkIndex) {
+        int[] code = { 7, 3, 1};
+        char[] line = string.substring(start, end).toCharArray();
+        int checkValue = Character.getNumericValue(string.charAt(checkIndex));
+        float checkSum = 0;
+        for (int i = 0; i < line.length; i++) {
+            int num = 0;
+            if (Character.toString(line[i]).matches("[A-Z]")) {
+                num = ((int) line[i] - 55);
+            } else if (Character.toString(line[i]).matches("\\d")) {
+                num = Character.getNumericValue(line[i]);
+            } else {
+              return false; //illegal character
+            }
+            checkSum += num * code[i%3];
+        }
+        int rem = (int) checkSum % 10;
+        return rem == checkValue;
+    }
+
+    /**
+     * Checks if the given string is a valid MRZ code using the check digits.
+     * @param mrz String
+     * @return boolean whether the given input is a correct MRZ.
+     */
     private boolean checkMRZ(String mrz) {
         try {
-            boolean firstCheck = false;
-            char[] firstline = mrz.split("\n")[0].toCharArray();
-            char[] secondline = mrz.split("\n")[1].toCharArray();
-            char[] thirdline = mrz.split("\n")[2].toCharArray();
-            char checkChar = firstline[14];
-            float checkSum = 0;
-            for (int i = 0; i < firstline.length; i++) {
-                if (i > 4 && i < 14) {
-                    if (Character.toString(firstline[i]).matches("[A-Z]")) {
-                        checkSum += ((int) firstline[i] - 55) * 731;
-                    } else if (Character.toString(firstline[i]).matches("\\d")) {
-                        checkSum += firstline[i] * 731;
-                    } else {
-                        return false; //illegal character
-                    }
-                }
-            }
-            firstCheck = checkSum % 10 == checkChar;
-//        ord('Z') - 55
-            return firstCheck;
+            boolean firstCheck = checkSum(mrz.split("\n")[0], 5, 14, 14);
+            boolean secondCheck = checkSum(mrz.split("\n")[1], 0, 6, 6);
+            boolean thirdCheck = checkSum(mrz.split("\n")[1], 8, 14, 14);
+            return firstCheck && secondCheck && thirdCheck;
         } catch (Exception e) {
-            // any error means sum is invalid
+            // Probably an outOfBounds indicating the format was incorrect
             return false;
         }
     }
