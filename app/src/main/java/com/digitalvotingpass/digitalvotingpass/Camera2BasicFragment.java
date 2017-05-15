@@ -54,7 +54,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
-import android.support.v13.app.ActivityCompat;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -68,12 +67,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -85,6 +83,8 @@ import java.util.concurrent.TimeUnit;
 public class Camera2BasicFragment extends Fragment
         implements View.OnClickListener, FragmentCompat.OnRequestPermissionsResultCallback {
 
+    private static final String trainedData = "mrz.traineddata";
+
     private static final int MIN_FRAME_WIDTH = 50; // originally 240
     private static final int MIN_FRAME_HEIGHT = 20; // originally 240
     private static final int MAX_FRAME_WIDTH = 800; // originally 480
@@ -92,6 +92,7 @@ public class Camera2BasicFragment extends Fragment
 
     private ViewfinderView viewfinderView;
     private ImageView scanSegment;
+    private CircularProgressView progressView;
 
     /**
      * Conversion from screen rotation to JPEG orientation.
@@ -113,31 +114,6 @@ public class Camera2BasicFragment extends Fragment
     private static final String TAG = "Camera2BasicFragment";
 
     /**
-     * Camera state: Showing camera preview.
-     */
-    private static final int STATE_PREVIEW = 0;
-
-    /**
-     * Camera state: Waiting for the focus to be locked.
-     */
-    private static final int STATE_WAITING_LOCK = 1;
-
-    /**
-     * Camera state: Waiting for the exposure to be precapture state.
-     */
-    private static final int STATE_WAITING_PRECAPTURE = 2;
-
-    /**
-     * Camera state: Waiting for the exposure state to be something other than precapture.
-     */
-    private static final int STATE_WAITING_NON_PRECAPTURE = 3;
-
-    /**
-     * Camera state: Picture was taken.
-     */
-    private static final int STATE_PICTURE_TAKEN = 4;
-
-    /**
      * Max preview width that is guaranteed by Camera2 API
      */
     private static final int MAX_PREVIEW_WIDTH = 1920;
@@ -146,13 +122,6 @@ public class Camera2BasicFragment extends Fragment
      * Max preview height that is guaranteed by Camera2 API
      */
     private static final int MAX_PREVIEW_HEIGHT = 1080;
-
-    private Runnable ocrThread = new Runnable() {
-        @Override
-        public void run() {
-            ocr();
-        }
-    };
 
     /**
      * {@link TextureView.SurfaceTextureListener} handles several lifecycle events on a
@@ -179,7 +148,6 @@ public class Camera2BasicFragment extends Fragment
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture texture) {
         }
-
     };
 
     /**
@@ -207,26 +175,19 @@ public class Camera2BasicFragment extends Fragment
      */
     private Size mPreviewSize;
 
-    private Handler h = new Handler();
     private Runnable ocrScanner = new Runnable() {
         @Override
         public void run() {
             Log.e(TAG, "STARTING SCAN");
             ocr();
-            // mBackgroundHandler.postDelayed(ocrScanner, 500);
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressView.setVisibility(View.GONE);
+                }
+            });
         }
     };
-
-    private class octTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            ocr();
-            return null;
-        }
-
-
-    }
 
     /**
      * {@link CameraDevice.StateCallback} is called when {@link CameraDevice} changes its state.
@@ -239,8 +200,6 @@ public class Camera2BasicFragment extends Fragment
             mCameraOpenCloseLock.release();
             mCameraDevice = cameraDevice;
             createCameraPreviewSession();
-
-//            h.post(ocrScanner);
         }
 
         @Override
@@ -248,7 +207,6 @@ public class Camera2BasicFragment extends Fragment
             mCameraOpenCloseLock.release();
             cameraDevice.close();
             mCameraDevice = null;
-//            h.removeCallbacks(ocrScanner);
         }
 
         @Override
@@ -256,13 +214,11 @@ public class Camera2BasicFragment extends Fragment
             mCameraOpenCloseLock.release();
             cameraDevice.close();
             mCameraDevice = null;
-//            h.removeCallbacks(ocrScanner);
             Activity activity = getActivity();
             if (null != activity) {
                 activity.finish();
             }
         }
-
     };
 
     /**
@@ -281,25 +237,6 @@ public class Camera2BasicFragment extends Fragment
     private ImageReader mImageReader;
 
     /**
-     * This is the output file for our picture.
-     */
-    private File mFile;
-
-    /**
-     * This a callback object for the {@link ImageReader}. "onImageAvailable" will be called when a
-     * still image is ready to be saved.
-     */
-//    private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
-//            = new ImageReader.OnImageAvailableListener() {
-//
-//        @Override
-//        public void onImageAvailable(ImageReader reader) {
-//            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
-//        }
-//
-//    };
-
-    /**
      * {@link CaptureRequest.Builder} for the camera preview
      */
     private CaptureRequest.Builder mPreviewRequestBuilder;
@@ -308,13 +245,6 @@ public class Camera2BasicFragment extends Fragment
      * {@link CaptureRequest} generated by {@link #mPreviewRequestBuilder}
      */
     private CaptureRequest mPreviewRequest;
-
-    /**
-     * The current state of camera state for taking pictures.
-     *
-     * @see #mCaptureCallback
-     */
-    private int mState = STATE_PREVIEW;
 
     /**
      * A {@link Semaphore} to prevent the app from exiting before closing the camera.
@@ -330,74 +260,6 @@ public class Camera2BasicFragment extends Fragment
      * Orientation of the camera sensor
      */
     private int mSensorOrientation;
-
-    /**
-     * A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture.
-     */
-    private CameraCaptureSession.CaptureCallback mCaptureCallback
-            = new CameraCaptureSession.CaptureCallback() {
-
-        private void process(CaptureResult result) {
-            switch (mState) {
-                case STATE_PREVIEW: {
-                    // We have nothing to do when the camera preview is working normally.
-                    break;
-                }
-                case STATE_WAITING_LOCK: {
-                    Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
-                    if (afState == null) {
-                        captureStillPicture();
-                    } else if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
-                            CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == afState) {
-                        // CONTROL_AE_STATE can be null on some devices
-                        Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
-                        if (aeState == null ||
-                                aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
-                            mState = STATE_PICTURE_TAKEN;
-                            captureStillPicture();
-                        } else {
-                            runPrecaptureSequence();
-                        }
-                    }
-                    break;
-                }
-                case STATE_WAITING_PRECAPTURE: {
-                    // CONTROL_AE_STATE can be null on some devices
-                    Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
-                    if (aeState == null ||
-                            aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE ||
-                            aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED) {
-                        mState = STATE_WAITING_NON_PRECAPTURE;
-                    }
-                    break;
-                }
-                case STATE_WAITING_NON_PRECAPTURE: {
-                    // CONTROL_AE_STATE can be null on some devices
-                    Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
-                    if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
-                        mState = STATE_PICTURE_TAKEN;
-                        captureStillPicture();
-                    }
-                    break;
-                }
-            }
-        }
-
-        @Override
-        public void onCaptureProgressed(@NonNull CameraCaptureSession session,
-                                        @NonNull CaptureRequest request,
-                                        @NonNull CaptureResult partialResult) {
-            process(partialResult);
-        }
-
-        @Override
-        public void onCaptureCompleted(@NonNull CameraCaptureSession session,
-                                       @NonNull CaptureRequest request,
-                                       @NonNull TotalCaptureResult result) {
-            process(result);
-        }
-
-    };
 
     /**
      * Shows a {@link Toast} on the UI thread.
@@ -482,13 +344,13 @@ public class Camera2BasicFragment extends Fragment
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
 //        viewfinderView = (ViewfinderView) view.findViewById(R.id.viewfinder_view);
         scanSegment = (ImageView) view.findViewById(R.id.scan_segment);
+        progressView = (CircularProgressView) view.findViewById(R.id.progress_view);
 //        viewfinderView.setCameraManager(this);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mFile = new File(getActivity().getExternalFilesDir(null), "pic.jpg");
     }
 
     @Override
@@ -763,7 +625,7 @@ public class Camera2BasicFragment extends Fragment
                                 // Finally, we start displaying the camera preview.
                                 mPreviewRequest = mPreviewRequestBuilder.build();
                                 mCaptureSession.setRepeatingRequest(mPreviewRequest,
-                                        mCaptureCallback, mBackgroundHandler);
+                                        null, mBackgroundHandler);
                             } catch (CameraAccessException e) {
                                 e.printStackTrace();
                             }
@@ -815,93 +677,11 @@ public class Camera2BasicFragment extends Fragment
     }
 
     /**
-     * Initiate a still image capture.
+     * Initiate OCR scan.
      */
     private void takePicture() {
-        lockFocus();
-    }
-
-    /**
-     * Lock the focus as the first step for a still image capture.
-     */
-    private void lockFocus() {
-        try {
-            // This is how to tell the camera to lock focus.
-            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
-                    CameraMetadata.CONTROL_AF_TRIGGER_START);
-            // Tell #mCaptureCallback to wait for the lock.
-            mState = STATE_WAITING_LOCK;
-            mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-                    mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Run the precapture sequence for capturing a still image. This method should be called when
-     * we get a response in {@link #mCaptureCallback} from {@link #lockFocus()}.
-     */
-    private void runPrecaptureSequence() {
-        try {
-            // This is how to tell the camera to trigger.
-            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
-                    CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
-            // Tell #mCaptureCallback to wait for the precapture sequence to be set.
-            mState = STATE_WAITING_PRECAPTURE;
-            mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-                    mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Capture a still picture. This method should be called when we get a response in
-     * {@link #mCaptureCallback} from both {@link #lockFocus()}.
-     */
-    private void captureStillPicture() {
-        try {
-            final Activity activity = getActivity();
-            if (null == activity || null == mCameraDevice) {
-                return;
-            }
-            // This is the CaptureRequest.Builder that we use to take a picture.
-            final CaptureRequest.Builder captureBuilder =
-                    mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-            captureBuilder.addTarget(mImageReader.getSurface());
-
-            // Use the same AE and AF modes as the preview.
-            captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-            setAutoFlash(captureBuilder);
-
-            // Orientation
-            int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation(rotation));
-
-            CameraCaptureSession.CaptureCallback CaptureCallback
-                    = new CameraCaptureSession.CaptureCallback() {
-
-                @Override
-                public void onCaptureCompleted(@NonNull CameraCaptureSession session,
-                                               @NonNull CaptureRequest request,
-                                               @NonNull TotalCaptureResult result) {
-                    showToast("Saved: " + mFile);
-
-                    Log.d(TAG, mFile.toString());
-                    unlockFocus();
-//                    new Thread(ocrThread).start();
-//                    new octTask().execute();
-                    mBackgroundHandler.post(ocrScanner);
-                }
-            };
-
-            mCaptureSession.stopRepeating();
-            mCaptureSession.capture(captureBuilder.build(), CaptureCallback, null);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
+        progressView.setVisibility(View.VISIBLE);
+        mBackgroundHandler.post(ocrScanner);
     }
 
     public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
@@ -937,46 +717,42 @@ public class Camera2BasicFragment extends Fragment
         Bitmap croppedBitmap = cropBitmap(bitmap);
         Log.e(TAG, "after crop x: " + croppedBitmap.getWidth() + ", y: " + croppedBitmap.getHeight());
         final Activity activity = getActivity();
-//        try {
-            Log.v(TAG, "Orientation: " + getActivity().getWindowManager().getDefaultDisplay().getRotation());
-            int rotate = 0;
-            switch (getActivity().getWindowManager().getDefaultDisplay().getRotation()) {
-                case 0:
-                    rotate = 0;
-                    break;
-                case 1:
-                    rotate = 270;
-                    break;
-                case 2:
-                    rotate = 180;
-                    break;
-                case 3:
-                    rotate = 90;
-                    break;
-            }
+        Log.v(TAG, "Orientation: " + getActivity().getWindowManager().getDefaultDisplay().getRotation());
+        int rotate = 0;
+        switch (getActivity().getWindowManager().getDefaultDisplay().getRotation()) {
+            case 0:
+                rotate = 0;
+                break;
+            case 1:
+                rotate = 270;
+                break;
+            case 2:
+                rotate = 180;
+                break;
+            case 3:
+                rotate = 90;
+                break;
+        }
+        rotate = (ORIENTATIONS.get(getActivity().getWindowManager().getDefaultDisplay().getRotation()) + mSensorOrientation + 270) % 360;
+        Log.v(TAG, "Rotation: " + rotate);
+        if (rotate != 0) {
 
-            Log.v(TAG, "Rotation: " + rotate);
-            if (rotate != 0) {
+            // Getting width & height of the given image.
+            int w = croppedBitmap.getWidth();
+            int h = croppedBitmap.getHeight();
 
-                // Getting width & height of the given image.
-                int w = croppedBitmap.getWidth();
-                int h = croppedBitmap.getHeight();
-
-                // Setting pre rotate
-                Matrix mtx = new Matrix();
-                mtx.postRotate(rotate);
-                // Rotating Bitmap
-                Bitmap rotatedBitmap = Bitmap.createBitmap(croppedBitmap , 0, 0, croppedBitmap.getWidth(), croppedBitmap.getHeight(), mtx, true);
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(rotatedBitmap,w,h,true);
+            // Setting pre rotate
+            Matrix mtx = new Matrix();
+            mtx.postRotate(rotate);
+            // Rotating Bitmap
+            Bitmap rotatedBitmap = Bitmap.createBitmap(croppedBitmap, 0, 0, croppedBitmap.getWidth(), croppedBitmap.getHeight(), mtx, true);
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(rotatedBitmap, w, h, true);
 
 //                croppedBitmap = Bitmap.createBitmap(croppedBitmap, 0, 0, w, h, mtx, false);
-                // tesseract req. ARGB_8888
-                croppedBitmap = scaledBitmap.copy(Bitmap.Config.ARGB_8888, true);
-            }
+            // tesseract req. ARGB_8888
+            croppedBitmap = scaledBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        }
 
-//        } catch (IOException e) {
-//            Log.e(TAG, "Rotate or coversion failed: " + e.toString());
-//        }
         final Bitmap b = croppedBitmap;
         activity.runOnUiThread(new Runnable() {
             @Override
@@ -991,30 +767,26 @@ public class Camera2BasicFragment extends Fragment
         TessBaseAPI baseApi = new TessBaseAPI();
         baseApi.setDebug(true);
         String path = Environment.getExternalStorageDirectory() + "/";
-        File trainedDataFile = new File(Environment.getExternalStorageDirectory(), "/tessdata/eng.traineddata");
+        File trainedDataFile = new File(Environment.getExternalStorageDirectory(), "/tessdata/" + trainedData);
         AssetManager assetManager = getActivity().getAssets();
         try {
             if (!trainedDataFile.exists()) {
-                Log.i(TAG, "Existing trained data not found, copying..");
-                Util.copyAssetsFile(assetManager.open("eng.traineddata"), trainedDataFile);
+                Log.i(TAG, "No existing trained data found, copying from assets..");
+                Util.copyAssetsFile(assetManager.open(trainedData), trainedDataFile);
             } else {
                 Log.i(TAG, "Existing trained data found");
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         }
-        baseApi.init(path, "eng");
+        baseApi.init(path, trainedData.replace(".traineddata", "")); //extract language code from trained data file
         baseApi.setImage(croppedBitmap);
-        String recognizedText = "fail";
-        try {
-            recognizedText = baseApi.getUTF8Text();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String recognizedText = baseApi.getUTF8Text();
         baseApi.end();
-
+        progressView.setVisibility(View.GONE);
         Log.v(TAG, "OCR Result: " + recognizedText);
-
+        checkMRZ(recognizedText);
         // clean up and show
 //        if (LANG.equalsIgnoreCase("eng")) {
 //            recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
@@ -1024,38 +796,31 @@ public class Camera2BasicFragment extends Fragment
         }
     }
 
-    /**
-     * Retrieves the JPEG orientation from the specified screen rotation.
-     *
-     * @param rotation The screen rotation.
-     * @return The JPEG orientation (one of 0, 90, 270, and 360)
-     */
-    private int getOrientation(int rotation) {
-        // Sensor orientation is 90 for most devices, or 270 for some devices (eg. Nexus 5X)
-        // We have to take that into account and rotate JPEG properly.
-        // For devices with orientation of 90, we simply return our mapping from ORIENTATIONS.
-        // For devices with orientation of 270, we need to rotate the JPEG 180 degrees.
-        return (ORIENTATIONS.get(rotation) + mSensorOrientation + 270) % 360;
-    }
-
-    /**
-     * Unlock the focus. This method should be called when still image capture sequence is
-     * finished.
-     */
-    private void unlockFocus() {
+    private boolean checkMRZ(String mrz) {
         try {
-            // Reset the auto-focus trigger
-            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
-                    CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-            setAutoFlash(mPreviewRequestBuilder);
-            mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-                    mBackgroundHandler);
-            // After this, the camera will go back to the normal state of preview.
-            mState = STATE_PREVIEW;
-            mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback,
-                    mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
+            boolean firstCheck = false;
+            char[] firstline = mrz.split("\n")[0].toCharArray();
+            char[] secondline = mrz.split("\n")[1].toCharArray();
+            char[] thirdline = mrz.split("\n")[2].toCharArray();
+            char checkChar = firstline[14];
+            float checkSum = 0;
+            for (int i = 0; i < firstline.length; i++) {
+                if (i > 4 && i < 14) {
+                    if (Character.toString(firstline[i]).matches("[A-Z]")) {
+                        checkSum += ((int) firstline[i] - 55) * 731;
+                    } else if (Character.toString(firstline[i]).matches("\\d")) {
+                        checkSum += firstline[i] * 731;
+                    } else {
+                        return false; //illegal character
+                    }
+                }
+            }
+            firstCheck = checkSum % 10 == checkChar;
+//        ord('Z') - 55
+            return firstCheck;
+        } catch (Exception e) {
+            // any error means sum is invalid
+            return false;
         }
     }
 
@@ -1085,51 +850,6 @@ public class Camera2BasicFragment extends Fragment
                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
         }
     }
-
-    /**
-     * Saves a JPEG {@link Image} into the specified {@link File}.
-     */
-//    private static class ImageSaver implements Runnable {
-//
-//        /**
-//         * The JPEG image
-//         */
-//        private final Image mImage;
-//        /**
-//         * The file we save the image into.
-//         */
-//        private final File mFile;
-//
-//        public ImageSaver(Image image, File file) {
-//            mImage = image;
-//            mFile = file;
-//        }
-//
-//        @Override
-//        public void run() {
-//            ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
-//            byte[] bytes = new byte[buffer.remaining()];
-//            buffer.get(bytes);
-//            FileOutputStream output = null;
-//            try {
-//                output = new FileOutputStream(mFile);
-//                output.write(bytes);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            } finally {
-//                mImage.close();
-//                if (null != output) {
-//                    try {
-//                        output.close();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        }
-//
-//    }
-//
 
     /**
      * Compares two {@code Size}s based on their areas.
@@ -1207,7 +927,6 @@ public class Camera2BasicFragment extends Fragment
                     .create();
         }
     }
-
 
     /**
      * Calculates the framing rect which the UI should draw to show the user where to place the
