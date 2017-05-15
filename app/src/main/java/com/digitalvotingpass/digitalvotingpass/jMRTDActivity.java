@@ -183,9 +183,6 @@ public class jMRTDActivity extends AppCompatActivity {
             is15 = ps.getInputStream(PassportService.EF_DG15);
 
             PublicKey pubk = getAAPublicKey(ps,is15);
-            String publicKey = new BigInteger(pubk.getEncoded()).toString(2);
-            int length = pubk.getEncoded().length;
-            textView.setText(Integer.toString(length));
 
             // sign 8 bytes of data and display the signed data
             textSignedData.setText(byteArrayToHexString(signData(ps,is15,pubk)));
@@ -270,7 +267,7 @@ public class jMRTDActivity extends AppCompatActivity {
     private byte[] signData(PassportService ps, InputStream is15, PublicKey pubk) {
         try {
             // test 8 byte string for testing purposes
-            byte[] data = hexStringToByteArray("aaaaaaaaaaaaaaaa");
+            byte[] data = hexStringToByteArray("0a1b3c4d5e6faabb");
             return ps.doAA(pubk, null, null, data);
         } catch (Exception ex) {
             ex.printStackTrace();
