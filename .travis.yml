@@ -1,4 +1,9 @@
 language: android
+jdk: oraclejdk8
+cache:
+  directories:
+    - node_modules
+sudo: false
 before_install:
   - mkdir "$ANDROID_HOME/licenses" || true
   - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
@@ -29,4 +34,7 @@ android:
   licenses:
     - android-sdk-license-.+
     - '.+'
-jdk: oraclejdk8
+env:
+  global:
+  # install timeout in minutes (2 minutes by default)
+    - ADB_INSTALL_TIMEOUT=8
