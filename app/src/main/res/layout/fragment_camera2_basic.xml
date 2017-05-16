@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.digitalvotingpass.digitalvotingpass.AutoFitTextureView
+    <TextureView
         android:id="@+id/texture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,15 +43,13 @@
             android:visibility="gone"
             app:cpv_animAutostart="true"
             app:cpv_indeterminate="true" />
-
-
     </FrameLayout>
 
     <ImageView
         android:id="@+id/scan_segment"
         android:layout_width="280dp"
         android:layout_height="80dp"
-        android:background="@drawable/background_black"
+        android:background="@drawable/white_border"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
