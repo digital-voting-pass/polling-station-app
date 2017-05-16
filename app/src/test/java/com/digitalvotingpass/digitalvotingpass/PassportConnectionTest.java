@@ -8,6 +8,28 @@ import static org.junit.Assert.*;
  * Created by wkmeijer on 16-5-17.
  */
 public class PassportConnectionTest {
+
+
+    @Test
+    public void openConnection() throws Exception {
+
+    }
+
+    @Test
+    public void getAAPublicKey() throws Exception {
+
+    }
+
+    @Test
+    public void signData() throws Exception {
+
+    }
+
+    @Test
+    public void getBSN() throws Exception {
+
+    }
+
     /**
      * Tests for byte to hexString (and visa versa) methods
      *
