@@ -5,6 +5,7 @@
     <color name="colorAccent">#ff4081</color>
 
     <color name="control_background">#cc4285f4</color>
+    <color name="green">#00ff00</color>
 
     <color name="viewfinder_corners">#ff0000</color> <!-- four corner elements for viewfinder -->
     <color name="viewfinder_frame">#00f9d7</color> <!-- viewfinder rectangle -->
