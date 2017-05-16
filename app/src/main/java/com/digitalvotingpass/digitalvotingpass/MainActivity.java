@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
     /** Called when the user taps the "Start Reading ID" button */
     public void startReading(View view) {
-        Intent intent = new Intent(this, jMRTDActivity.class);
+        Intent intent = new Intent(this, PassportConActivity.class);
         startActivity(intent);
     }
 }
