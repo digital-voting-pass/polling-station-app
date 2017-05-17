@@ -78,7 +78,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 public class Camera2BasicFragment extends Fragment
-        implements View.OnClickListener, FragmentCompat.OnRequestPermissionsResultCallback {
+        implements FragmentCompat.OnRequestPermissionsResultCallback {
 
     private static final int MIN_FRAME_WIDTH = 50; // originally 240
     private static final int MIN_FRAME_HEIGHT = 20; // originally 240
@@ -91,7 +91,8 @@ public class Camera2BasicFragment extends Fragment
     private TextView resultTextView;
     private TextView resultMRZView;
 
-    private TesseractOCR tesseract;
+    private List<TesseractOCR> tesseractThreads = new ArrayList<>();
+    private int availableCores = 1;
 
     /**
      * Conversion from screen rotation to JPEG orientation.
@@ -157,7 +158,7 @@ public class Camera2BasicFragment extends Fragment
     /**
      * An {@link AutoFitTextureView} for camera preview.
      */
-    private TextureView mTextureView;
+    private AutoFitTextureView mTextureView;
 
     /**
      * A {@link CameraCaptureSession } for camera preview.
@@ -174,43 +175,80 @@ public class Camera2BasicFragment extends Fragment
      */
     private Size mPreviewSize;
 
-    private Runnable ocrScanner = new Runnable() {
-        @Override
-        public void run() {
-            Log.e(TAG, "STARTING SCAN");
-            long time = System.currentTimeMillis();
-            Bitmap b = extractBitmap();
-            final Mrz mrz = tesseract.ocr(b, getActivity());
-            final boolean valid = mrz.valid();
-            long duration = System.currentTimeMillis() - time;
-            Log.v(TAG, "took " + duration/1000f + " sec");
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    resultMRZView.setText(mrz.getText());
-                    if (valid) {
-                        resultTextView.setTextColor(getResources().getColor(R.color.green));
-                        resultTextView.setText("SUCCES, exiting");
-                        Intent returnIntent = new Intent();
-                        returnIntent.putExtra("result",mrz.getPrettyData());
-                        getActivity().setResult(Activity.RESULT_OK,returnIntent);
-                        try {
-                            Thread.sleep(2000); //TODO dont wait on UI thread
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+//    private Thread ocrScanner = new Thread() {
+//        @Override
+//        public void run() {
+//            final TesseractOCR tesseract = new TesseractOCR();
+////            tesseract.initialize(getActivity()); //TODO do in background, show progress
+//            try {
+//                while (true) {
+//                    Log.e(TAG, "STARTING SCAN");
+//                    Bitmap b = extractBitmap();
+//                    //        getActivity().runOnUiThread(new Runnable() {
+//                    //            @Override
+//                    //            public void run() {
+//                    //                scanSegment.setImageBitmap(b);
+//                    //            }
+//                    //        });
+//                    final Mrz mrz = tesseract.ocr(b, getActivity());
+//                    final boolean valid = mrz.valid();
+//                    long duration = System.currentTimeMillis() - time;
+//                    Log.v(TAG, "took " + duration / 1000f + " sec");
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            resultMRZView.setText(mrz.getText());
+//                            if (valid) {
+//                                resultTextView.setTextColor(getResources().getColor(R.color.green));
+//                                resultTextView.setText("SUCCES, exiting");
+//                            } else {
+//                                scanSegment.setImageBitmap(null);
+//                                resultTextView.setText("That doesn't seem right, please try again");
+//                            }
+//                            progressView.setVisibility(View.GONE);
+//                        }
+//                    });
+//                    if (valid) {
+//                        Log.e(TAG, "SUCCES!!!!!!");
+//                        Intent returnIntent = new Intent();
+//                        returnIntent.putExtra("result", mrz.getPrettyData());
+//                        getActivity().setResult(Activity.RESULT_OK, returnIntent);
+////                            try {
+////                                Thread.sleep(2000); //TODO dont wait on UI thread
+////                            } catch (InterruptedException e) {
+////                                e.printStackTrace();
+////                            }
+//                        finishActivity();
+//                        break;
+//                    }
+//                }
+//            } catch (Exception e) {
+//
+//            } finally {
+//                tesseract.cleanup();
+//            }
+//        }
+//    };
+
+    public void scanResultFound(final Mrz mrz) {
+        getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+//                            resultMRZView.setText(mrz.getText());
+//                            resultTextView.setTextColor(getResources().getColor(R.color.green));
+//                            resultTextView.setText("SUCCES, exiting");
+//                            progressView.setVisibility(View.GONE);
                         }
-                        tesseract.cleanup();
-                        getActivity().finish();
-                    }
-                    else {
-                        scanSegment.setImageBitmap(null);
-                        resultTextView.setText("That doesn't seem right, please try again");
-                    }
-                    progressView.setVisibility(View.GONE);
-                }
-            });
-        }
-    };
+                    });
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("result", mrz.getPrettyData());
+        getActivity().setResult(Activity.RESULT_OK, returnIntent);
+        finishActivity();
+    }
+
+    private void finishActivity() {
+        getActivity().finish();
+    }
 
     /**
      * {@link CameraDevice.StateCallback} is called when {@link CameraDevice} changes its state.
@@ -357,8 +395,11 @@ public class Camera2BasicFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tesseract = new TesseractOCR();
-        tesseract.initialize(getActivity()); //TODO do in background, show progress
+        availableCores = Runtime.getRuntime().availableProcessors() / 2;
+        for (int i = 0; i < availableCores; i++) {
+            tesseractThreads.add(new TesseractOCR("Thread no " + i, this, getActivity().getAssets()));
+        }
+        Log.e(TAG, "Running threads: " + availableCores);
     }
 
     @Override
@@ -369,10 +410,7 @@ public class Camera2BasicFragment extends Fragment
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
-        view.findViewById(R.id.picture).setOnClickListener(this);
-        view.findViewById(R.id.info).setOnClickListener(this);
-        mTextureView = (TextureView) view.findViewById(R.id.texture);
-//        viewfinderView = (ViewfinderView) view.findViewById(R.id.viewfinder_view);
+        mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
         scanSegment = (ImageView) view.findViewById(R.id.scan_segment);
         progressView = (CircularProgressView) view.findViewById(R.id.progress_view);
         resultTextView = (TextView) view.findViewById(R.id.result_text);
@@ -456,14 +494,14 @@ public class Camera2BasicFragment extends Fragment
                     continue;
                 }
 
-                // For still image captures, we use the largest available size.
+//                // For still image captures, we use the largest available size.
                 Size largest = Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
                         new CompareSizesByArea());
-                mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
-                        ImageFormat.JPEG, /*maxImages*/2);
-//                mImageReader.setOnImageAvailableListener(
-//                        mOnImageAvailableListener, mBackgroundHandler);
+//                mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
+//                        ImageFormat.JPEG, /*maxImages*/2);
+////                mImageReader.setOnImageAvailableListener(
+////                        mOnImageAvailableListener, mBackgroundHandler);
 
                 // Find out if we need to swap dimension to get the preview size relative to sensor
                 // coordinate.
@@ -516,7 +554,16 @@ public class Camera2BasicFragment extends Fragment
                 mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
                         rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
                         maxPreviewHeight, largest);
-                
+
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    mTextureView.setAspectRatio(
+                            mPreviewSize.getWidth(), mPreviewSize.getHeight());
+                } else {
+                    mTextureView.setAspectRatio(
+                            mPreviewSize.getHeight(), mPreviewSize.getWidth());
+                }
+
                 // Check if the flash is supported.
                 Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
                 mFlashSupported = available == null ? false : available;
@@ -573,10 +620,10 @@ public class Camera2BasicFragment extends Fragment
                 mCameraDevice.close();
                 mCameraDevice = null;
             }
-            if (null != mImageReader) {
-                mImageReader.close();
-                mImageReader = null;
-            }
+//            if (null != mImageReader) {
+//                mImageReader.close();
+//                mImageReader = null;
+//            }
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
         } finally {
@@ -591,19 +638,31 @@ public class Camera2BasicFragment extends Fragment
         mBackgroundThread = new HandlerThread("CameraBackground");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+        int i = 0;
+        for(TesseractOCR ocr : tesseractThreads) {
+            ocr.startScanner(i);
+            i += 2;
+        }
     }
 
     /**
      * Stops the background thread and its {@link Handler}.
      */
     private void stopBackgroundThread() {
-        mBackgroundThread.quitSafely();
         try {
-            mBackgroundThread.join();
-            mBackgroundThread = null;
-            mBackgroundHandler = null;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            mBackgroundThread.quitSafely();
+            try {
+                mBackgroundThread.join();
+                for (TesseractOCR ocr : tesseractThreads) {
+                    ocr.cleanup();
+                }
+                mBackgroundThread = null;
+                mBackgroundHandler = null;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+
         }
     }
 
@@ -626,7 +685,7 @@ public class Camera2BasicFragment extends Fragment
                     = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewRequestBuilder.addTarget(surface);
             // Here, we create a CameraCaptureSession for camera preview.
-            mCameraDevice.createCaptureSession(Arrays.asList(surface, mImageReader.getSurface()),
+            mCameraDevice.createCaptureSession(Arrays.asList(surface/*, mImageReader.getSurface()*/),
                     new CameraCaptureSession.StateCallback() {
 
                         @Override
@@ -697,34 +756,22 @@ public class Camera2BasicFragment extends Fragment
         }
         mTextureView.setTransform(matrix);
     }
-
-    /**
-     * Initiate OCR scan.
-     */
-    private void takePicture() {
-        progressView.setVisibility(View.VISIBLE);
-        mBackgroundHandler.post(ocrScanner);
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.picture: {
-                takePicture();
-                break;
-            }
-            case R.id.info: {
-                Activity activity = getActivity();
-                if (null != activity) {
-                    new AlertDialog.Builder(activity)
-                            .setMessage(R.string.intro_message)
-                            .setPositiveButton(android.R.string.ok, null)
-                            .show();
-                }
-                break;
-            }
-        }
-    }
+//
+//    @Override
+//    public void onClick(View view) {
+//        switch (view.getId()) {
+//            case R.id.info: {
+//                Activity activity = getActivity();
+//                if (null != activity) {
+//                    new AlertDialog.Builder(activity)
+//                            .setMessage(R.string.intro_message)
+//                            .setPositiveButton(android.R.string.ok, null)
+//                            .show();
+//                }
+//                break;
+//            }
+//        }
+//    }
 
     private void setAutoFlash(CaptureRequest.Builder requestBuilder) {
         if (mFlashSupported) {
@@ -778,36 +825,36 @@ public class Camera2BasicFragment extends Fragment
 
     }
 
-    private Bitmap extractBitmap() {
-        Bitmap bitmap = mTextureView.getBitmap();
-        int rotate = 0;
-        switch (getActivity().getWindowManager().getDefaultDisplay().getRotation()) {
-            case 0:
-                rotate = 0;
-                break;
-            case 1:
-                rotate = 270;
-                break;
-            case 2:
-                rotate = 180;
-                break;
-            case 3:
-                rotate = 90;
-                break;
-        }
-        if (rotate != 0) {
-            bitmap = rotateBitmap(bitmap, rotate);
-        }
-        Bitmap croppedBitmap = cropBitmap(bitmap);
-
-        final Bitmap b = getResizedBitmap(croppedBitmap, (int)(croppedBitmap.getWidth()), (int)(croppedBitmap.getHeight()));
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                scanSegment.setImageBitmap(b);
+    public Bitmap extractBitmap() {
+        try {
+            Bitmap bitmap = mTextureView.getBitmap();
+            int rotate = 0;
+            switch (getActivity().getWindowManager().getDefaultDisplay().getRotation()) {
+                case 0:
+                    rotate = 0;
+                    break;
+                case 1:
+                    rotate = 270;
+                    break;
+                case 2:
+                    rotate = 180;
+                    break;
+                case 3:
+                    rotate = 90;
+                    break;
             }
-        });
-        return b;
+            if (rotate != 0) {
+                bitmap = rotateBitmap(bitmap, rotate);
+            }
+            Bitmap croppedBitmap = cropBitmap(bitmap);
+
+            final Bitmap b = getResizedBitmap(croppedBitmap, (int) (croppedBitmap.getWidth()), (int) (croppedBitmap.getHeight()));
+
+            return b;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private Bitmap rotateBitmap(Bitmap bitmap, int degrees) {
@@ -843,7 +890,8 @@ public class Camera2BasicFragment extends Fragment
         int startY = (int) scanSegment.getY();
         int width = (int) (scanSegment.getWidth());
         int length = (int) (scanSegment.getHeight());
-        return Bitmap.createBitmap(bitmap, startX, startY, width, length);
+        return Bitmap.createBitmap(bitmap, startX, startY, width > bitmap.getWidth() ? bitmap.getWidth() : width, length);
+        //TODO fis this shit, its needed because of the black bar thats because of the black right bar.
     }
     /**
      * Shows OK/Cancel confirmation dialog about camera permission.

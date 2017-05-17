@@ -16,7 +16,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int GET_DOC_INFO = 1;
     Button startOCR;
     private TextView resultData;
-    HashMap<String, String> documentData = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

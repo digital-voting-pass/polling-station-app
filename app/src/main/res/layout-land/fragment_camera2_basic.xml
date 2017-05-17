@@ -67,7 +67,7 @@
 
     <ImageView
         android:id="@+id/scan_segment"
-        android:layout_width="280dp"
+        android:layout_width="match_parent"
         android:layout_height="80dp"
         android:background="@drawable/white_border"
         android:layout_centerVertical="true"

@@ -28,18 +28,19 @@ public class Mrz {
     private static final int[] ID_EXP_INDICES = new int[]{8, 14};
 
     private String mrz;
-    HashMap<String, String> data;
 
     public Mrz(String mrz) {
         this.mrz = mrz;
-        data = new HashMap<>();
         cleanMRZString();
     }
 
+    /**
+     * Does some basic cleaning on the MRZ string of this object
+     */
     private void cleanMRZString() {
         try {
-            String[] spl = mrz.replace(" ", "").split("\n");
-            mrz = spl[0] + "\n" + spl[1];
+            String[] spl = mrz.replace(" ", "").split("\n"); // Delete any space characters
+            mrz = spl[0] + "\n" + spl[1]; // Extract only first 2 lines, sometimes random errorous data is detected beyond.
         }catch (Exception e) {
         }
     }
@@ -78,8 +79,12 @@ public class Mrz {
         return rem == checkValue;
     }
 
+    /**
+     * Returns relevant data from the MRZ in a hashmap.
+     * @return hashmap
+     */
     public HashMap<String, String> getPrettyData() {
-        data.clear();
+        HashMap<String, String> data = new HashMap<>();
         if (mrz.startsWith("P")) {
             data.put("Document Number", mrz.split("\n")[1].substring(PASSPORT_DOCNO_INDICES[0], PASSPORT_DOCNO_INDICES[1]));
             data.put("Date of Birth", mrz.split("\n")[1].substring(PASSPORT_DOB_INDICES[0], PASSPORT_DOB_INDICES[1]));
