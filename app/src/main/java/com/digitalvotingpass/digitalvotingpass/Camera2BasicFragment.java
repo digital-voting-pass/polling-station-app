@@ -48,6 +48,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -79,8 +80,6 @@ import java.util.concurrent.TimeUnit;
 public class Camera2BasicFragment extends Fragment
         implements View.OnClickListener, FragmentCompat.OnRequestPermissionsResultCallback {
 
-    private static final String trainedData = "mrz.traineddata";
-
     private static final int MIN_FRAME_WIDTH = 50; // originally 240
     private static final int MIN_FRAME_HEIGHT = 20; // originally 240
     private static final int MAX_FRAME_WIDTH = 800; // originally 480
@@ -91,6 +90,8 @@ public class Camera2BasicFragment extends Fragment
     private CircularProgressView progressView;
     private TextView resultTextView;
     private TextView resultMRZView;
+
+    private TesseractOCR tesseract;
 
     /**
      * Conversion from screen rotation to JPEG orientation.
@@ -178,7 +179,8 @@ public class Camera2BasicFragment extends Fragment
         public void run() {
             Log.e(TAG, "STARTING SCAN");
             long time = System.currentTimeMillis();
-            final Mrz mrz = ocr();
+            Bitmap b = extractBitmap();
+            final Mrz mrz = tesseract.ocr(b, getActivity());
             final boolean valid = mrz.valid();
             long duration = System.currentTimeMillis() - time;
             Log.v(TAG, "took " + duration/1000f + " sec");
@@ -193,10 +195,11 @@ public class Camera2BasicFragment extends Fragment
                         returnIntent.putExtra("result",mrz.getPrettyData());
                         getActivity().setResult(Activity.RESULT_OK,returnIntent);
                         try {
-                            Thread.sleep(2000);
+                            Thread.sleep(2000); //TODO dont wait on UI thread
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                        tesseract.cleanup();
                         getActivity().finish();
                     }
                     else {
@@ -349,6 +352,13 @@ public class Camera2BasicFragment extends Fragment
 
     public static Camera2BasicFragment newInstance() {
         return new Camera2BasicFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        tesseract = new TesseractOCR();
+        tesseract.initialize(getActivity()); //TODO do in background, show progress
     }
 
     @Override
@@ -696,105 +706,6 @@ public class Camera2BasicFragment extends Fragment
         mBackgroundHandler.post(ocrScanner);
     }
 
-    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
-        int width = bm.getWidth();
-        int height = bm.getHeight();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        // CREATE A MATRIX FOR THE MANIPULATION
-        Matrix matrix = new Matrix();
-        // RESIZE THE BIT MAP
-        matrix.postScale(scaleWidth, scaleHeight);
-
-        // "RECREATE" THE NEW BITMAP
-        Bitmap resizedBitmap = Bitmap.createBitmap(
-                bm, 0, 0, width, height, matrix, false);
-        bm.recycle();
-        return resizedBitmap;
-    }
-
-    private Bitmap cropBitmap(Bitmap bitmap) {
-        int startX = (int) scanSegment.getX();
-        int startY = (int) scanSegment.getY();
-        int width = (int) (scanSegment.getWidth());
-        int length = (int) (scanSegment.getHeight());
-        return Bitmap.createBitmap(bitmap, startX, startY, width, length);
-    }
-
-    private Bitmap rotateBitmap(Bitmap bitmap, int degrees) {
-        int w = bitmap.getWidth();
-        int h = bitmap.getHeight();
-        // Setting pre rotate
-        Matrix mtx = new Matrix();
-        mtx.preRotate(degrees);
-        // Rotating Bitmap
-        Bitmap rotated = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
-        return Bitmap.createScaledBitmap(rotated, bitmap.getWidth(), bitmap.getHeight(), true);
-    }
-    protected Mrz ocr() {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 2;
-        Bitmap bitmap = mTextureView.getBitmap();
-        Log.e(TAG, "before crop: x: " + bitmap.getWidth() + ", y: " + bitmap.getHeight());
-//        Log.e(TAG, "after crop x: " + croppedBitmap.getWidth() + ", y: " + croppedBitmap.getHeight());
-        final Activity activity = getActivity();
-        Log.v(TAG, "Orientation: " + getActivity().getWindowManager().getDefaultDisplay().getRotation());
-        int rotate = 0;
-        switch (getActivity().getWindowManager().getDefaultDisplay().getRotation()) {
-            case 0:
-                rotate = 0;
-                break;
-            case 1:
-                rotate = 270;
-                break;
-            case 2:
-                rotate = 180;
-                break;
-            case 3:
-                rotate = 90;
-                break;
-        }
-        Log.v(TAG, "Rotation: " + rotate);
-        if (rotate != 0) {
-            bitmap = rotateBitmap(bitmap, rotate);
-        }
-        Bitmap croppedBitmap = cropBitmap(bitmap);
-
-        final Bitmap b = getResizedBitmap(croppedBitmap, (int)(croppedBitmap.getWidth()), (int)(croppedBitmap.getHeight()));
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                scanSegment.setImageBitmap(b);
-            }
-        });
-
-        Log.v(TAG, "Before baseApi");
-        TessBaseAPI baseApi = new TessBaseAPI();
-        baseApi.setDebug(true);
-        String path = Environment.getExternalStorageDirectory() + "/";
-        File trainedDataFile = new File(Environment.getExternalStorageDirectory(), "/tessdata/" + trainedData);
-        AssetManager assetManager = getActivity().getAssets();
-        try {
-            if (!trainedDataFile.exists()) {
-                Log.i(TAG, "No existing trained data found, copying from assets..");
-                Util.copyAssetsFile(assetManager.open(trainedData), trainedDataFile);
-            } else {
-                Log.i(TAG, "Existing trained data found");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-        baseApi.init(path, trainedData.replace(".traineddata", "")); //extract language code from trained data file
-        baseApi.setImage(b);
-        baseApi.setVariable("tessedit_char_whitelist",
-                "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<");
-        String recognizedText = baseApi.getUTF8Text();
-        baseApi.end();
-        Log.v(TAG, "OCR Result: " + recognizedText);
-        return new Mrz(recognizedText);
-    }
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -867,6 +778,73 @@ public class Camera2BasicFragment extends Fragment
 
     }
 
+    private Bitmap extractBitmap() {
+        Bitmap bitmap = mTextureView.getBitmap();
+        int rotate = 0;
+        switch (getActivity().getWindowManager().getDefaultDisplay().getRotation()) {
+            case 0:
+                rotate = 0;
+                break;
+            case 1:
+                rotate = 270;
+                break;
+            case 2:
+                rotate = 180;
+                break;
+            case 3:
+                rotate = 90;
+                break;
+        }
+        if (rotate != 0) {
+            bitmap = rotateBitmap(bitmap, rotate);
+        }
+        Bitmap croppedBitmap = cropBitmap(bitmap);
+
+        final Bitmap b = getResizedBitmap(croppedBitmap, (int)(croppedBitmap.getWidth()), (int)(croppedBitmap.getHeight()));
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                scanSegment.setImageBitmap(b);
+            }
+        });
+        return b;
+    }
+
+    private Bitmap rotateBitmap(Bitmap bitmap, int degrees) {
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+        // Setting pre rotate
+        Matrix mtx = new Matrix();
+        mtx.preRotate(degrees);
+        // Rotating Bitmap
+        Bitmap rotated = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
+        return Bitmap.createScaledBitmap(rotated, bitmap.getWidth(), bitmap.getHeight(), true);
+    }
+
+    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
+    }
+
+    private Bitmap cropBitmap(Bitmap bitmap) {
+        int startX = (int) scanSegment.getX();
+        int startY = (int) scanSegment.getY();
+        int width = (int) (scanSegment.getWidth());
+        int length = (int) (scanSegment.getHeight());
+        return Bitmap.createBitmap(bitmap, startX, startY, width, length);
+    }
     /**
      * Shows OK/Cancel confirmation dialog about camera permission.
      */

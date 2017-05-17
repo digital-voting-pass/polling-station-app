@@ -14,20 +14,23 @@ import static org.junit.Assert.assertTrue;
 public class MrzTest {
 
     private String valid_id_mrz =   "I<NLDCI00383F12999999990<<<<<8\n" +
-            "7208148F1108268NLD<<<<<<<<<<<2\n" +
-            "VAN<DER<STEEN<<MARIANNE<LOUISE";
+                                    "7208148F1108268NLD<<<<<<<<<<<2\n" +
+                                    "VAN<DER<STEEN<<MARIANNE<LOUISE";
+
     private String invalid_id_mrz =   "I<NLDCI00383F12999999990<<<<<8\n" +
-                                        "7208148F1108268NLD<<<<<<<<<<<2\n" +
+                                        "7208148F11T8268NLD<<<<<<<<<<<2\n" +
                                         "VAN<DER<STEEN<<MARIANNE<LOUISE";
 
     private String valid_passport_mrz = "P<NLDBLEH<<JAN<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n" +
                                         "GHD777O861NLD9005226M18062657542648264<<<<04";
 
-    private String valid_passport_mrz2 = "P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<\n"+
-                                         "L898902C<3UTO6918061F9406236ZE184226B<<<<<14";
+//    private String valid_passport_mrz2 = "P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<\n"+
+//                                         "L898902C<3UTO6918061F9406236ZE184226B<<<<<14";
 
     private String invalid_passport_mrz = "P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<\n"+
                                             "L898902C<3UTO6918061F9406236ZE184226B<<<<<14";
+
+
 
     @Test
     public void valid_passport_mrz() throws Exception {
@@ -35,11 +38,11 @@ public class MrzTest {
         assertTrue(valid.valid());
     }
 
-    @Test
-    public void valid_passport_mrz2() throws Exception {
-        Mrz valid = new Mrz(valid_passport_mrz);
-        assertTrue(valid.valid());
-    }
+//    @Test
+//    public void valid_passport_mrz2() throws Exception {
+//        Mrz valid = new Mrz(valid_passport_mrz2);
+//        assertTrue(valid.valid());
+//    }
 
     @Test
     public void valid_id_mrz() throws Exception {
@@ -50,6 +53,24 @@ public class MrzTest {
     @Test
     public void invalid_passport_mrz() throws Exception {
         Mrz invalid = new Mrz(invalid_passport_mrz);
+        assertFalse(invalid.valid());
+    }
+
+    @Test
+    public void invalid_id_mrz() throws Exception {
+        Mrz invalid = new Mrz(invalid_id_mrz);
+        assertFalse(invalid.valid());
+    }
+
+    @Test
+    public void null_check() throws Exception {
+        Mrz invalid = new Mrz(null);
+        assertFalse(invalid.valid());
+    }
+
+    @Test
+    public void empty_string_is_invalid() throws Exception {
+        Mrz invalid = new Mrz("");
         assertFalse(invalid.valid());
     }
 
