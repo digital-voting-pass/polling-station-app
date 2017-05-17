@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">DigitalVotingPass</string>
+    <string name="title_activity_manual_input">ManualInput</string>
+    <string name="manual_input_button">Manual input document details</string>
+    <string name="submit">Submit</string>
+    <string name="docNum">Document number</string>
+    <string name="expiryDate">Expiry date</string>
+    <string name="dateBirth">Date of birth</string>
+    <string name="hintDocNum">document number</string>
+    <string name="hintExpiryDate">yymmdd</string>
+    <string name="hintDateBirth">yymmdd</string>
 </resources>
