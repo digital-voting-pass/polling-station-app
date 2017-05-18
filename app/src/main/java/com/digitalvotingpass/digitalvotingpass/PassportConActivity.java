@@ -17,6 +17,7 @@ import org.spongycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.PublicKey;
 import java.security.Security;
+import java.util.HashMap;
 
 public class PassportConActivity extends AppCompatActivity {
     static {
@@ -24,7 +25,7 @@ public class PassportConActivity extends AppCompatActivity {
     }
     // Adapter for NFC connection
     private NfcAdapter mNfcAdapter;
-
+    private HashMap<String, String> documentData;
 
     /**
      * This activity usually be loaded from the starting screen of the app.
@@ -34,6 +35,9 @@ public class PassportConActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle extras = getIntent().getExtras();
+        documentData = (HashMap<String, String>) extras.get("docData");
 
         setContentView(R.layout.activity_passport_con);
         TextView notice = (TextView) findViewById(R.id.notice);
@@ -128,7 +132,7 @@ public class PassportConActivity extends AppCompatActivity {
 
         // Open a connection with the ID, return a PassportService object which holds the open connection
         PassportConnection pcon= new PassportConnection();
-        PassportService ps = pcon.openConnection(tag);
+        PassportService ps = pcon.openConnection(tag, documentData);
         try {
             // Get the BSN from datagroup1 to confirm the ID was scanned correctly.
             // This is for testing purposes

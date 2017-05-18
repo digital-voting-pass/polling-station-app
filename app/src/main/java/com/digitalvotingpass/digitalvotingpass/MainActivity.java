@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,8 +49,15 @@ public class MainActivity extends AppCompatActivity {
 
     /** Called when the user taps the "Start Reading ID" button */
     public void startReading(View view) {
-        Intent intent = new Intent(this, PassportConActivity.class);
-        startActivity(intent);
+        if(documentData.isEmpty()) {
+            Toast.makeText(this,R.string.scan_doc_details, Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, CameraActivity.class);
+            startActivityForResult(intent, GET_DOC_INFO);
+        } else {
+            Intent intent = new Intent(this, PassportConActivity.class);
+            intent.putExtra("docData", documentData);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -58,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         switch(requestCode) {
             case (GET_MANUAL_DOC_INFO): {
                 if (resultCode == RESULT_OK) {
+                    documentData = (HashMap<String, String>) data.getSerializableExtra("result");
                     HashMap<String, String> map = (HashMap<String, String>) data.getSerializableExtra("result");
                     resultData.setText("");
                     for (String key : map.keySet()) {
@@ -68,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
             }
             case (GET_DOC_INFO): {
                 if (resultCode == RESULT_OK) {
+                    documentData = (HashMap<String, String>) data.getSerializableExtra("result");
                     HashMap<String, String> map = (HashMap<String, String>) data.getSerializableExtra("result");
                     resultData.setText("");
                     for (String key : map.keySet()) {
