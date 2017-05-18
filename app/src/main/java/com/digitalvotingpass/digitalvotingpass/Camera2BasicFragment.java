@@ -349,9 +349,6 @@ public class Camera2BasicFragment extends Fragment
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
         scanSegment = (ImageView) view.findViewById(R.id.scan_segment);
-        progressView = (CircularProgressView) view.findViewById(R.id.progress_view);
-        resultTextView = (TextView) view.findViewById(R.id.result_text);
-        resultMRZView = (TextView) view.findViewById(R.id.result_mrz);
     }
 
     @Override
@@ -442,7 +439,7 @@ public class Camera2BasicFragment extends Fragment
                     continue;
                 }
 
-//                // For still image captures, we use the largest available size.
+                // For still image captures, we use the largest available size.
                 Size largest = Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
                         new CompareSizesByArea());
@@ -850,44 +847,5 @@ public class Camera2BasicFragment extends Fragment
                             })
                     .create();
         }
-    }
-
-    /**
-     * Calculates the framing rect which the UI should draw to show the user where to place the
-     * barcode. This target helps with alignment as well as forces the user to hold the device
-     * far enough away to ensure the image will be in focus.
-     *
-     * @return The rectangle to draw on screen in window coordinates.
-     */
-    Rect framingRect;
-
-    public synchronized Rect getFramingRect() {
-        if (framingRect == null) {
-            if (mCameraDevice == null) {
-                return null;
-            }
-//            Point screenResolution = configManager.getScreenResolution();
-            Point screenResolution = new Point(mTextureView.getWidth(), mTextureView.getHeight());
-            if (screenResolution == null) {
-                // Called early, before init even finished
-                return null;
-            }
-            int width = screenResolution.x * 3 / 5;
-            if (width < MIN_FRAME_WIDTH) {
-                width = MIN_FRAME_WIDTH;
-            } else if (width > MAX_FRAME_WIDTH) {
-                width = MAX_FRAME_WIDTH;
-            }
-            int height = screenResolution.y * 1 / 5;
-            if (height < MIN_FRAME_HEIGHT) {
-                height = MIN_FRAME_HEIGHT;
-            } else if (height > MAX_FRAME_HEIGHT) {
-                height = MAX_FRAME_HEIGHT;
-            }
-            int leftOffset = (screenResolution.x - width) / 2;
-            int topOffset = (screenResolution.y - height) / 2;
-            framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
-        }
-        return framingRect;
     }
 }
