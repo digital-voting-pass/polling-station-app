@@ -21,7 +21,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CameraActivity"></activity>
+        <activity
+            android:name=".ManualInputActivity"
+            android:label="@string/title_activity_manual_input">
+
+        </activity>
+        <activity android:name=".CameraActivity">
+
+        </activity>
     </application>
 
 </manifest>
