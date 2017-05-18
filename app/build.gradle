@@ -27,7 +27,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:design:22.2.1'
+    compile 'com.android.support:design:25.3.1'
     compile 'org.jmrtd:jmrtd:0.5.5'
     compile 'com.madgag.spongycastle:prov:1.54.0.0'
     compile 'net.sf.scuba:scuba-sc-android:0.0.9';

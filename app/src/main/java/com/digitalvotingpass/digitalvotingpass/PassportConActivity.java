@@ -34,21 +34,19 @@ public class PassportConActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
 
         setContentView(R.layout.activity_passport_con);
-        TextView textView = (TextView) findViewById(R.id.textView);
+        TextView notice = (TextView) findViewById(R.id.notice);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null) {
             // Stop here, we definitely need NFC
-            textView.setText(R.string.nfc_not_supported_error);
             Toast.makeText(this, R.string.nfc_not_supported_error, Toast.LENGTH_LONG).show();
             finish();
             return;
         }
         if (!mNfcAdapter.isEnabled()) {
-            textView.setText(R.string.nfc_disabled_error);
+            notice.setText(R.string.nfc_disabled_error);
         }
     }
 
@@ -60,37 +58,33 @@ public class PassportConActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        /**
-         * It's important, that the activity is in the foreground (resumed). Otherwise
-         * an IllegalStateException is thrown.
-         */
+        // It's important, that the activity is in the foreground (resumed). Otherwise an IllegalStateException is thrown.
         setupForegroundDispatch(this, mNfcAdapter);
     }
 
     @Override
     protected void onPause() {
-        /**
-         * Call this before onPause, otherwise an IllegalArgumentException is thrown as well.
-         */
+        // Call this before super.onPause, otherwise an IllegalArgumentException is thrown as well.
         stopForegroundDispatch(this, mNfcAdapter);
 
         super.onPause();
     }
 
+    /**
+     * This method gets called, when a new Intent gets associated with the current activity instance.
+     * Instead of creating a new activity, onNewIntent will be called. For more information have a look
+     * at the documentation.
+     *
+     * In our case this method gets called, when the user attaches a Tag to the device.
+     */
     @Override
     protected void onNewIntent(Intent intent) {
-        /**
-         * This method gets called, when a new Intent gets associated with the current activity instance.
-         * Instead of creating a new activity, onNewIntent will be called. For more information have a look
-         * at the documentation.
-         *
-         * In our case this method gets called, when the user attaches a Tag to the device.
-         */
         handleIntent(intent);
     }
 
     /**
+     * Setup the recognition of nfc tags when the activity is opened (foreground)
+     *
      * @param activity The corresponding {@link Activity} requesting the foreground dispatch.
      * @param adapter The {@link NfcAdapter} used for the foreground dispatch.
      */
@@ -144,7 +138,7 @@ public class PassportConActivity extends AppCompatActivity {
             PublicKey pubk = pcon.getAAPublicKey(ps);
 
             // sign 8 bytes of data and display the signed data
-            textSignedData.setText(PassportConnection.byteArrayToHexString(pcon.signData(ps, pubk)));
+            textSignedData.setText(Util.byteArrayToHexString(pcon.signData(ps)));
 
         } catch (Exception ex) {
             ex.printStackTrace();
