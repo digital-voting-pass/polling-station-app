@@ -1,16 +1,5 @@
 package com.digitalvotingpass.digitalvotingpass;
 
-import android.app.Activity;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Environment;
-import android.util.Log;
-
-import com.googlecode.tesseract.android.TessBaseAPI;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 
 /**

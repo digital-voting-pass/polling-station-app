@@ -27,7 +27,6 @@
 
     </FrameLayout>
 
-
     <ImageView
         android:id="@+id/scan_segment"
         android:layout_width="match_parent"
