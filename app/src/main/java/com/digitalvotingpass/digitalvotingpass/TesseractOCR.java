@@ -12,7 +12,9 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by jonathan on 5/16/17.
@@ -22,7 +24,10 @@ public class TesseractOCR {
     public static final String TAG = "TesseractOCR";
 
     private static final long INTER_SCAN_DELAY_MILLIS = 500;
+    private static final long OCR_SCAN_TIMEOUT_MILLIS = 5000;
+
     private static final String trainedData = "eng.traineddata";
+    private final String name;
 
     private TessBaseAPI baseApi;
     private boolean initialized = false;
@@ -32,10 +37,15 @@ public class TesseractOCR {
 
     private AssetManager assetManager;
     private Camera2BasicFragment fragment;
-    private boolean done = false;
+    private boolean stopping = false;
 
     // Filled with OCR run times for analysis
     private ArrayList<Long> times = new ArrayList<>();
+
+    /**
+     * Lock to ensure only one thread can start copying to device storage.
+     */
+    private static Semaphore mDeviceStorageAccessLock = new Semaphore(1);
 
     /**
      * CURRENTLY NOT FUNCTIONAL
@@ -53,14 +63,14 @@ public class TesseractOCR {
     private Runnable scan = new Runnable() {
         @Override
         public void run() {
-            if (!done) {
-                timeoutHandler.postDelayed(timeout, 1000);
-                Log.e(TAG, "Start Scan");
+            if (!stopping) {
+                Log.v(TAG, "Start Scan");
+                timeoutHandler.postDelayed(timeout, OCR_SCAN_TIMEOUT_MILLIS);
                 long time = System.currentTimeMillis();
                 Bitmap b = fragment.extractBitmap();
                 Mrz mrz = ocr(b);
                 long timetook = System.currentTimeMillis() - time;
-                Log.e(TAG, "took " + timetook / 1000f + " sec");
+                Log.i(TAG, "took " + timetook / 1000f + " sec");
                 times.add(timetook);
                 if (mrz != null && mrz.valid()) {
 //                    Log.e(TAG, "SUCCESS");
@@ -75,6 +85,33 @@ public class TesseractOCR {
     public TesseractOCR(String name, Camera2BasicFragment fragment, final AssetManager assetManager) {
         this.assetManager = assetManager;
         this.fragment = fragment;
+        this.name = name;
+    }
+
+    /**
+     * Starts OCR scan routine with delay in msec
+     * @param delay int how msec before start
+     */
+    public void startScanner(int delay) {
+        myHandler.postDelayed(scan, delay);
+    }
+
+    /**
+     * Starts (enqueues) a stop routine in a new thread, then returns immediately.
+     */
+    public void stopScanner() {
+        myHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                cleanup();
+            }
+        });
+    }
+
+    /**
+     * Starts a new thread to do OCR and enqueues an initialization task;
+     */
+    public void initialize() {
         myThread = new HandlerThread(name);
         myThread.start();
         timeoutHandler = new Handler();
@@ -82,50 +119,45 @@ public class TesseractOCR {
         myHandler.post(new Runnable() {
             @Override
             public void run() {
-                initialize();
+                init();
+                Log.e(TAG, "INIT DONE");
             }
         });
     }
 
     /**
-     * Starts OCR scan routine with delay * 500msec delay
-     * @param delay int how many times 0.5 sec delay before start
-     */
-    public void startScanner(int delay) {
-        myHandler.postDelayed(scan, delay * 500);
-    }
-
-    /**
      * Initializes Tesseract library using traineddata file.
      */
-    public void initialize() {
+    private void init() {
         baseApi = new TessBaseAPI();
         baseApi.setDebug(true);
         String path = Environment.getExternalStorageDirectory() + "/";
         File trainedDataFile = new File(Environment.getExternalStorageDirectory(), "/tessdata/" + trainedData);
         try {
+            mDeviceStorageAccessLock.acquire();
             if (!trainedDataFile.exists()) {
                 Log.i(TAG, "No existing trained data found, copying from assets..");
                 Util.copyAssetsFile(assetManager.open(trainedData), trainedDataFile);
             } else {
                 Log.i(TAG, "Existing trained data found");
             }
+            mDeviceStorageAccessLock.release();
             baseApi.init(path, trainedData.replace(".traineddata", "")); //extract language code from trained data file
             initialized = true;
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             //TODO show error to user, coping failed
         }
     }
 
     /**
-     * Performs OCR scan to bitmap provided.
+     * Performs OCR scan to bitmap provided, if tesseract is initialized and not currently stopping.
      * @param bitmap Bitmap image to be scanned
      * @return Mrz Object containing result data
      */
     private Mrz ocr(Bitmap bitmap) {
         if (bitmap == null) return null;
-        if (initialized && !done) {
+        if (initialized && !stopping) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 2;
             Log.v(TAG, "Image dims x: " + bitmap.getWidth() + ", y: " + bitmap.getHeight());
@@ -138,34 +170,40 @@ public class TesseractOCR {
 //            baseApi.setVariable("load_punc_dawg", "0");
             baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO);
 //            baseApi.setVariable(TessBaseAPI.OEM_TESSERACT_ONLY, "1");
-            String s = baseApi.getHOCRText(0);
+//            String s = baseApi.getHOCRText(0);
             String recognizedText = baseApi.getUTF8Text();
+//            recognizedText = recognizedText.replaceAll("<.*?>","");
+//            recognizedText = recognizedText.replaceAll("&lt;", "<");
+//            recognizedText = recognizedText.replaceAll("^$", "");
             Log.v(TAG, "OCR Result: " + recognizedText);
 //            Log.v(TAG, "OCR Result2: " + s);
             return new Mrz(recognizedText);
         } else {
-            Log.e(TAG, "Trying ocr() while not initalized!");
+            Log.e(TAG, "Trying ocr() while not initalized or stopping!");
             return null;
         }
     }
 
     /**
      * Cleans memory used by Tesseract library and closes OCR thread.
+     * After this has been called initialize() needs to be called to restart the thread and init Tesseract
      */
     public void cleanup () {
         giveStats();
-        done = true;
+        stopping = true;
         myThread.quitSafely();
         myHandler.removeCallbacks(scan);
         timeoutHandler.removeCallbacks(timeout);
-        try {
-            myThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            myThread.join(); // Seems to lock indefinitely
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         myThread = null;
         myHandler = null;
         baseApi.end();
+        initialized = false;
+        stopping = false;
     }
 
     /**

@@ -25,10 +25,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -44,7 +42,6 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.ImageReader;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
@@ -64,15 +61,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
-import com.googlecode.tesseract.android.TessBaseAPI;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -84,15 +77,18 @@ public class Camera2BasicFragment extends Fragment
     private static final int MIN_FRAME_HEIGHT = 20; // originally 240
     private static final int MAX_FRAME_WIDTH = 800; // originally 480
     private static final int MAX_FRAME_HEIGHT = 600; // originally 360
+    private static final int DELAY_BETWEEN_OCR_THREADS_MILLIS = 500;
 
-    private ViewfinderView viewfinderView;
     private ImageView scanSegment;
     private CircularProgressView progressView;
     private TextView resultTextView;
     private TextView resultMRZView;
 
     private List<TesseractOCR> tesseractThreads = new ArrayList<>();
-    private int availableCores = 1;
+    /**
+     * If this is defined and > 0, use this amount of threads instead of dynamically determined amount.
+     */
+    private int ocrThreadNumberOverride;
 
     /**
      * Conversion from screen rotation to JPEG orientation.
@@ -174,76 +170,22 @@ public class Camera2BasicFragment extends Fragment
      * The {@link android.util.Size} of camera preview.
      */
     private Size mPreviewSize;
+    private boolean resultFound = false;
 
-//    private Thread ocrScanner = new Thread() {
-//        @Override
-//        public void run() {
-//            final TesseractOCR tesseract = new TesseractOCR();
-////            tesseract.initialize(getActivity()); //TODO do in background, show progress
-//            try {
-//                while (true) {
-//                    Log.e(TAG, "STARTING SCAN");
-//                    Bitmap b = extractBitmap();
-//                    //        getActivity().runOnUiThread(new Runnable() {
-//                    //            @Override
-//                    //            public void run() {
-//                    //                scanSegment.setImageBitmap(b);
-//                    //            }
-//                    //        });
-//                    final Mrz mrz = tesseract.ocr(b, getActivity());
-//                    final boolean valid = mrz.valid();
-//                    long duration = System.currentTimeMillis() - time;
-//                    Log.v(TAG, "took " + duration / 1000f + " sec");
-//                    getActivity().runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            resultMRZView.setText(mrz.getText());
-//                            if (valid) {
-//                                resultTextView.setTextColor(getResources().getColor(R.color.green));
-//                                resultTextView.setText("SUCCES, exiting");
-//                            } else {
-//                                scanSegment.setImageBitmap(null);
-//                                resultTextView.setText("That doesn't seem right, please try again");
-//                            }
-//                            progressView.setVisibility(View.GONE);
-//                        }
-//                    });
-//                    if (valid) {
-//                        Log.e(TAG, "SUCCES!!!!!!");
-//                        Intent returnIntent = new Intent();
-//                        returnIntent.putExtra("result", mrz.getPrettyData());
-//                        getActivity().setResult(Activity.RESULT_OK, returnIntent);
-////                            try {
-////                                Thread.sleep(2000); //TODO dont wait on UI thread
-////                            } catch (InterruptedException e) {
-////                                e.printStackTrace();
-////                            }
-//                        finishActivity();
-//                        break;
-//                    }
-//                }
-//            } catch (Exception e) {
-//
-//            } finally {
-//                tesseract.cleanup();
-//            }
-//        }
-//    };
-
-    public void scanResultFound(final Mrz mrz) {
-        getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-//                            resultMRZView.setText(mrz.getText());
-//                            resultTextView.setTextColor(getResources().getColor(R.color.green));
-//                            resultTextView.setText("SUCCES, exiting");
-//                            progressView.setVisibility(View.GONE);
-                        }
-                    });
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("result", mrz.getPrettyData());
-        getActivity().setResult(Activity.RESULT_OK, returnIntent);
-        finishActivity();
+    /**
+     * Method for delivering correct MRZ when found. This method returns the MRZ as result data and
+     * then exits the activity. This method is synchronized and checks for a boolean to make sure
+     * it is only executed once in this fragments lifetime.
+     * @param mrz Mrz
+     */
+    public synchronized void scanResultFound(final Mrz mrz) {
+        if (!resultFound) {
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("result", mrz.getPrettyData());
+            getActivity().setResult(Activity.RESULT_OK, returnIntent);
+            resultFound = true;
+            finishActivity();
+        }
     }
 
     private void finishActivity() {
@@ -289,13 +231,9 @@ public class Camera2BasicFragment extends Fragment
 
     /**
      * A {@link Handler} for running tasks in the background.
+     * Runs camera preview updater.
      */
     private Handler mBackgroundHandler;
-
-    /**
-     * An {@link ImageReader} that handles still image capture.
-     */
-    private ImageReader mImageReader;
 
     /**
      * {@link CaptureRequest.Builder} for the camera preview
@@ -395,11 +333,14 @@ public class Camera2BasicFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        availableCores = Runtime.getRuntime().availableProcessors() / 2;
-        for (int i = 0; i < availableCores; i++) {
+        int threadsToStart = Runtime.getRuntime().availableProcessors() / 2;
+        if (ocrThreadNumberOverride > 0) {
+            threadsToStart = ocrThreadNumberOverride;
+        }
+        for (int i = 0; i < threadsToStart; i++) {
             tesseractThreads.add(new TesseractOCR("Thread no " + i, this, getActivity().getAssets()));
         }
-        Log.e(TAG, "Running threads: " + availableCores);
+        Log.e(TAG, "Running threads: " + ocrThreadNumberOverride);
     }
 
     @Override
@@ -415,7 +356,6 @@ public class Camera2BasicFragment extends Fragment
         progressView = (CircularProgressView) view.findViewById(R.id.progress_view);
         resultTextView = (TextView) view.findViewById(R.id.result_text);
         resultMRZView = (TextView) view.findViewById(R.id.result_mrz);
-//        viewfinderView.setCameraManager(this);
     }
 
     @Override
@@ -444,6 +384,18 @@ public class Camera2BasicFragment extends Fragment
         closeCamera();
         stopBackgroundThread();
         super.onPause();
+    }
+
+    @Override
+    public void onStart() {
+        startTesseractThreads();
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        stopTesseractThreads();
+        super.onStop();
     }
 
     private void requestCameraPermission() {
@@ -498,10 +450,6 @@ public class Camera2BasicFragment extends Fragment
                 Size largest = Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
                         new CompareSizesByArea());
-//                mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
-//                        ImageFormat.JPEG, /*maxImages*/2);
-////                mImageReader.setOnImageAvailableListener(
-////                        mOnImageAvailableListener, mBackgroundHandler);
 
                 // Find out if we need to swap dimension to get the preview size relative to sensor
                 // coordinate.
@@ -547,7 +495,6 @@ public class Camera2BasicFragment extends Fragment
                 if (maxPreviewHeight > MAX_PREVIEW_HEIGHT) {
                     maxPreviewHeight = MAX_PREVIEW_HEIGHT;
                 }
-
                 // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
                 // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
                 // garbage capture data.
@@ -560,8 +507,9 @@ public class Camera2BasicFragment extends Fragment
                     mTextureView.setAspectRatio(
                             mPreviewSize.getWidth(), mPreviewSize.getHeight());
                 } else {
+                    //TODO find out why and how this +150 removes the black vertical bar
                     mTextureView.setAspectRatio(
-                            mPreviewSize.getHeight(), mPreviewSize.getWidth());
+                            mPreviewSize.getHeight() + 150, mPreviewSize.getWidth());
                 }
 
                 // Check if the flash is supported.
@@ -620,10 +568,6 @@ public class Camera2BasicFragment extends Fragment
                 mCameraDevice.close();
                 mCameraDevice = null;
             }
-//            if (null != mImageReader) {
-//                mImageReader.close();
-//                mImageReader = null;
-//            }
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
         } finally {
@@ -638,10 +582,14 @@ public class Camera2BasicFragment extends Fragment
         mBackgroundThread = new HandlerThread("CameraBackground");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+    }
+
+    private void startTesseractThreads() {
         int i = 0;
         for(TesseractOCR ocr : tesseractThreads) {
+            ocr.initialize();
             ocr.startScanner(i);
-            i += 2;
+            i += DELAY_BETWEEN_OCR_THREADS_MILLIS;
         }
     }
 
@@ -653,9 +601,6 @@ public class Camera2BasicFragment extends Fragment
             mBackgroundThread.quitSafely();
             try {
                 mBackgroundThread.join();
-                for (TesseractOCR ocr : tesseractThreads) {
-                    ocr.cleanup();
-                }
                 mBackgroundThread = null;
                 mBackgroundHandler = null;
             } catch (InterruptedException e) {
@@ -663,6 +608,12 @@ public class Camera2BasicFragment extends Fragment
             }
         } catch (Exception e) {
 
+        }
+    }
+
+    private void stopTesseractThreads() {
+        for (TesseractOCR ocr : tesseractThreads) {
+            ocr.stopScanner();
         }
     }
 
@@ -685,7 +636,7 @@ public class Camera2BasicFragment extends Fragment
                     = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewRequestBuilder.addTarget(surface);
             // Here, we create a CameraCaptureSession for camera preview.
-            mCameraDevice.createCaptureSession(Arrays.asList(surface/*, mImageReader.getSurface()*/),
+            mCameraDevice.createCaptureSession(Arrays.asList(surface),
                     new CameraCaptureSession.StateCallback() {
 
                         @Override
