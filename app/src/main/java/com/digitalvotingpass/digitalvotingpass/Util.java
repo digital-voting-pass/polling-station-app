@@ -26,7 +26,6 @@ public class Util {
         if (!f.exists()) {
             if (!f.getParentFile().mkdirs()) { //getParent because otherwise it creates a folder with that filename, we just need the dirs
                 Log.e("Util", "Cannot create path!");
-//                return;
             }
         }
         os = new FileOutputStream(f, true);

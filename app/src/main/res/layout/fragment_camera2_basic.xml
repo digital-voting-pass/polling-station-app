@@ -23,27 +23,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/picture" />
+            android:text="@string/switch_to_manual" />
 
-        <ImageButton
-            android:id="@+id/info"
-            android:contentDescription="@string/description_info"
-            style="@android:style/Widget.Material.Light.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|end"
-            android:padding="20dp"
-            android:src="@drawable/ic_action_info" />
-
-        <com.github.rahatarmanahmed.cpv.CircularProgressView
-            android:id="@+id/progress_view"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical|start"
-            android:visibility="gone"
-            app:cpv_animAutostart="true"
-            app:cpv_indeterminate="true" />
     </FrameLayout>
+
 
     <ImageView
         android:id="@+id/scan_segment"
@@ -53,22 +36,4 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:id="@+id/result_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:textColor="@android:color/holo_red_dark"
-        />
-
-    <TextView
-        android:id="@+id/result_mrz"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/result_text"
-        android:layout_centerHorizontal="true"
-        android:textColor="@android:color/white"
-        />
-
-</RelativeLayout>
+ </RelativeLayout>

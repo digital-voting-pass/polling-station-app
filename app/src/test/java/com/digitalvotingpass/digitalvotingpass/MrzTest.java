@@ -24,9 +24,6 @@ public class MrzTest {
     private String valid_passport_mrz = "P<NLDBLEH<<JAN<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n" +
                                         "GHD777O861NLD9005226M18062657542648264<<<<04";
 
-//    private String valid_passport_mrz2 = "P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<\n"+
-//                                         "L898902C<3UTO6918061F9406236ZE184226B<<<<<14";
-
     private String invalid_passport_mrz = "P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<\n"+
                                             "L898902C<3UTO6918061F9406236ZE184226B<<<<<14";
 
@@ -37,12 +34,6 @@ public class MrzTest {
         Mrz valid = new Mrz(valid_passport_mrz);
         assertTrue(valid.valid());
     }
-
-//    @Test
-//    public void valid_passport_mrz2() throws Exception {
-//        Mrz valid = new Mrz(valid_passport_mrz2);
-//        assertTrue(valid.valid());
-//    }
 
     @Test
     public void valid_id_mrz() throws Exception {

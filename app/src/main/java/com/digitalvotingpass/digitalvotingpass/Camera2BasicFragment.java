@@ -40,7 +40,6 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.ImageReader;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -80,9 +79,6 @@ public class Camera2BasicFragment extends Fragment
     private static final int DELAY_BETWEEN_OCR_THREADS_MILLIS = 500;
 
     private ImageView scanSegment;
-    private CircularProgressView progressView;
-    private TextView resultTextView;
-    private TextView resultMRZView;
 
     private List<TesseractOCR> tesseractThreads = new ArrayList<>();
     /**
@@ -597,17 +593,13 @@ public class Camera2BasicFragment extends Fragment
      * Stops the background thread and its {@link Handler}.
      */
     private void stopBackgroundThread() {
+        mBackgroundThread.quitSafely();
         try {
-            mBackgroundThread.quitSafely();
-            try {
-                mBackgroundThread.join();
-                mBackgroundThread = null;
-                mBackgroundHandler = null;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {
-
+            mBackgroundThread.join();
+            mBackgroundThread = null;
+            mBackgroundHandler = null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -707,22 +699,6 @@ public class Camera2BasicFragment extends Fragment
         }
         mTextureView.setTransform(matrix);
     }
-//
-//    @Override
-//    public void onClick(View view) {
-//        switch (view.getId()) {
-//            case R.id.info: {
-//                Activity activity = getActivity();
-//                if (null != activity) {
-//                    new AlertDialog.Builder(activity)
-//                            .setMessage(R.string.intro_message)
-//                            .setPositiveButton(android.R.string.ok, null)
-//                            .show();
-//                }
-//                break;
-//            }
-//        }
-//    }
 
     private void setAutoFlash(CaptureRequest.Builder requestBuilder) {
         if (mFlashSupported) {
@@ -842,7 +818,7 @@ public class Camera2BasicFragment extends Fragment
         int width = (int) (scanSegment.getWidth());
         int length = (int) (scanSegment.getHeight());
         return Bitmap.createBitmap(bitmap, startX, startY, width > bitmap.getWidth() ? bitmap.getWidth() : width, length);
-        //TODO fis this shit, its needed because of the black bar thats because of the black right bar.
+        //TODO fix the need for inline if, if the aspect ratio causes a vertical bar it will crash otherwise.
     }
     /**
      * Shows OK/Cancel confirmation dialog about camera permission.

@@ -12,7 +12,6 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
@@ -73,7 +72,6 @@ public class TesseractOCR {
                 Log.i(TAG, "took " + timetook / 1000f + " sec");
                 times.add(timetook);
                 if (mrz != null && mrz.valid()) {
-//                    Log.e(TAG, "SUCCESS");
                     fragment.scanResultFound(mrz);
                 }
                 timeoutHandler.removeCallbacks(timeout);
@@ -187,6 +185,7 @@ public class TesseractOCR {
     /**
      * Cleans memory used by Tesseract library and closes OCR thread.
      * After this has been called initialize() needs to be called to restart the thread and init Tesseract
+     * TODO thread may not completely exit, see feature/revised_ocr_threading
      */
     public void cleanup () {
         giveStats();
@@ -194,11 +193,6 @@ public class TesseractOCR {
         myThread.quitSafely();
         myHandler.removeCallbacks(scan);
         timeoutHandler.removeCallbacks(timeout);
-//        try {
-//            myThread.join(); // Seems to lock indefinitely
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
         myThread = null;
         myHandler = null;
         baseApi.end();
