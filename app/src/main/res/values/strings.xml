@@ -9,4 +9,10 @@
     <string name="hintDocNum">document number</string>
     <string name="hintExpiryDate">yymmdd</string>
     <string name="hintDateBirth">yymmdd</string>
+    <string name="errFormatDocNum">Input of document number is not correct, please recheck your input.</string>
+    <string name="errFormatExpiryDate">Please fill in the expiry date of your document in the yymmdd format.</string>
+    <string name="errFormatDateBirth">Please fill in your date of birth in the yymmdd format.</string>
+    <string name="errInputDocNum">Please fill in the document number.</string>
+    <string name="errInputExpiryDate">Please fill in the expiry date of the document.</string>
+    <string name="errInputDateBirth">Please fill in your date of birth.</string>
 </resources>

@@ -36,13 +36,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == GET_MANUAL_DOC_INFO) {
-            if (resultCode == RESULT_OK) {
-                HashMap<String, String> map = (HashMap<String, String>) data.getSerializableExtra("result");
-                resultData.setText("");
-                for (String key : map.keySet()) {
-                    resultData.append(key + ": " + map.get(key) + "\n");
+        switch(requestCode) {
+            case (GET_MANUAL_DOC_INFO): {
+                if (resultCode == RESULT_OK) {
+                    HashMap<String, String> map = (HashMap<String, String>) data.getSerializableExtra("result");
+                    resultData.setText("");
+                    for (String key : map.keySet()) {
+                        resultData.append(key + ": " + map.get(key) + "\n");
+                    }
                 }
+                break;
             }
         }
     }
