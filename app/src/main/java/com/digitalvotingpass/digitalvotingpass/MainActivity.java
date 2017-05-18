@@ -3,10 +3,10 @@ package com.digitalvotingpass.digitalvotingpass;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +43,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, GET_DOC_INFO);
             }
         });
+    }
+
+    /** Called when the user taps the "Start Reading ID" button */
+    public void startReading(View view) {
+        Intent intent = new Intent(this, PassportConActivity.class);
+        startActivity(intent);
     }
 
     @Override

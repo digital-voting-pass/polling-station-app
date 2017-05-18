@@ -30,7 +30,6 @@ import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -56,10 +55,7 @@ import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,10 +68,6 @@ import java.util.concurrent.TimeUnit;
 public class Camera2BasicFragment extends Fragment
         implements FragmentCompat.OnRequestPermissionsResultCallback {
 
-    private static final int MIN_FRAME_WIDTH = 50; // originally 240
-    private static final int MIN_FRAME_HEIGHT = 20; // originally 240
-    private static final int MAX_FRAME_WIDTH = 800; // originally 480
-    private static final int MAX_FRAME_HEIGHT = 600; // originally 360
     private static final int DELAY_BETWEEN_OCR_THREADS_MILLIS = 500;
 
     private ImageView scanSegment;
