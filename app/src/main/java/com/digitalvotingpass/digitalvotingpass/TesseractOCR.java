@@ -163,10 +163,11 @@ public class TesseractOCR {
             baseApi.setVariable("tessedit_char_whitelist",
                     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<");
             baseApi.setVariable("max_permuter_attempts", "20");//Sets the max no. of tries TODO try some more values
-//            baseApi.setVariable("load_freq_dawg", "0");
-//            baseApi.setVariable("load_system_dawg", "0");
-//            baseApi.setVariable("load_punc_dawg", "0");
-            baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO);
+            baseApi.setVariable("load_freq_dawg", "0");
+            baseApi.setVariable("load_system_dawg", "0");
+            baseApi.setVariable("load_punc_dawg", "0");
+            baseApi.setVariable("language_model_penalty_non_dict_word", "0");
+            baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_BLOCK);
 //            baseApi.setVariable(TessBaseAPI.OEM_TESSERACT_ONLY, "1");
 //            String s = baseApi.getHOCRText(0);
             String recognizedText = baseApi.getUTF8Text();
