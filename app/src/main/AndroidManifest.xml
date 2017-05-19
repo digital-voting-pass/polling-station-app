@@ -28,10 +28,6 @@
         <activity
             android:name=".PassportConActivity"
             android:label="PassportConActivity" >
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ManualInputActivity"
