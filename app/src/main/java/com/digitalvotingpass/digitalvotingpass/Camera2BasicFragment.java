@@ -54,6 +54,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -71,6 +72,7 @@ public class Camera2BasicFragment extends Fragment
     private static final int DELAY_BETWEEN_OCR_THREADS_MILLIS = 500;
 
     private ImageView scanSegment;
+    private Button manualInput;
 
     private List<TesseractOCR> tesseractThreads = new ArrayList<>();
     /**
@@ -338,15 +340,29 @@ public class Camera2BasicFragment extends Fragment
     }
 
     @Override
-    public void onViewCreated(final View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
         scanSegment = (ImageView) view.findViewById(R.id.scan_segment);
+        manualInput = (Button) view.findViewById(R.id.manual_input_button);
+
+        manualInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ManualInputActivity.class);
+                getActivity().startActivityForResult(intent, MainActivity.GET_MANUAL_DOC_INFO);
+            }
+        });
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
+
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
 
     @Override
     public void onResume() {

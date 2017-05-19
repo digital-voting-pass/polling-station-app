@@ -141,8 +141,9 @@ public class PassportConActivity extends AppCompatActivity {
             // display data from dg15
             PublicKey pubk = pcon.getAAPublicKey(ps);
 
-            // sign 8 bytes of data and display the signed data
-            textSignedData.setText(Util.byteArrayToHexString(pcon.signData(ps)));
+            // sign 8 bytes of data and display the signed data + length
+            byte[] signedData = pcon.signData(ps);
+            textSignedData.setText(Util.byteArrayToHexString(signedData) + " (size: " + signedData.length + ")");
 
         } catch (Exception ex) {
             ex.printStackTrace();

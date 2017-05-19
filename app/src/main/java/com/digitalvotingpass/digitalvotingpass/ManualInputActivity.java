@@ -32,7 +32,16 @@ public class ManualInputActivity extends AppCompatActivity {
         dateBirth = (EditText) findViewById(R.id.date_birth);
         expiryDate = (EditText) findViewById(R.id.expiry_date);
 
-        docNumber.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+        // set new filter without overriding the existing xml filters
+        InputFilter[] filters = docNumber.getFilters();
+        InputFilter[] newFilters = new InputFilter[filters.length+1];
+        int i = 0;
+        for(InputFilter f: filters) {
+            newFilters[i] = f;
+            i++;
+        }
+        newFilters[newFilters.length-1] = new InputFilter.AllCaps();
+        docNumber.setFilters(newFilters);
 
         Button submitBut = (Button) findViewById(R.id.submit_button);
         submitBut.setOnClickListener(new View.OnClickListener() {
