@@ -50,6 +50,7 @@ import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
+import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -92,6 +93,9 @@ public class Camera2BasicFragment extends Fragment
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
+    // listener for detecting orientation changes
+    private OrientationEventListener orientationListener = null;
+
     /**
      * Tag for the {@link Log}.
      */
@@ -116,6 +120,7 @@ public class Camera2BasicFragment extends Fragment
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
+            orientationListener.enable();
             openCamera(width, height);
         }
 
@@ -126,6 +131,7 @@ public class Camera2BasicFragment extends Fragment
 
         @Override
         public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
+            orientationListener.disable();
             return true;
         }
 
@@ -321,6 +327,11 @@ public class Camera2BasicFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        orientationListener = new OrientationEventListener(this.getActivity()) {
+            public void onOrientationChanged(int orientation) {
+                configureTransform(mTextureView.getWidth(), mTextureView.getHeight());
+            }
+        };
         int threadsToStart = Runtime.getRuntime().availableProcessors() / 2;
         if (ocrThreadNumberOverride > 0) {
             threadsToStart = ocrThreadNumberOverride;
@@ -675,6 +686,7 @@ public class Camera2BasicFragment extends Fragment
         RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
         float centerX = viewRect.centerX();
         float centerY = viewRect.centerY();
+        Log.e(TAG, "Rotation: " + rotation);
         if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
             bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
             matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
