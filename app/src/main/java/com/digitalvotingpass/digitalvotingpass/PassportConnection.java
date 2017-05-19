@@ -41,14 +41,14 @@ public class PassportConnection {
             BACKeySpec bacKey = new BACKeySpec() {
                 @Override
                 public String getDocumentNumber() {
-                    return docData.get("Document Number");
+                    return docData.get(MainActivity.DOCUMENT_NUMBER);
                 }
 
                 @Override
-                public String getDateOfBirth() { return docData.get("Date of Birth"); }
+                public String getDateOfBirth() { return docData.get(MainActivity.DATE_OF_BIRTH); }
 
                 @Override
-                public String getDateOfExpiry() { return docData.get("Expiration Date"); }
+                public String getDateOfExpiry() { return docData.get(MainActivity.EXPIRATION_DATE); }
             };
 
             ps.doBAC(bacKey);

@@ -16,11 +16,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main activity";
     private TextView resultData;
     HashMap<String, String> documentData = new HashMap<>();
-    Button manualInput;
-    Button startOCR;
+    private Button manualInput;
+    private Button startOCR;
 
     public static final int GET_DOC_INFO = 1;
     public static final int GET_MANUAL_DOC_INFO = 2;
+
+    public static final String DOCUMENT_NUMBER = "Document Number";
+    public static final String DATE_OF_BIRTH = "Date of Birth";
+    public static final String EXPIRATION_DATE = "Expiration Date";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
