@@ -37,6 +37,7 @@ public class TesseractOCR {
     private AssetManager assetManager;
     private Camera2BasicFragment fragment;
     private boolean stopping = false;
+    private boolean isInitialized = false;
 
     // Filled with OCR run times for analysis
     private ArrayList<Long> times = new ArrayList<>();
@@ -98,12 +99,14 @@ public class TesseractOCR {
      * Starts (enqueues) a stop routine in a new thread, then returns immediately.
      */
     public void stopScanner() {
-        myHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                cleanup();
-            }
-        });
+        if (isInitialized) {
+            myHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    cleanup();
+                }
+            });
+        }
     }
 
     /**
@@ -121,6 +124,7 @@ public class TesseractOCR {
                 Log.e(TAG, "INIT DONE");
             }
         });
+        isInitialized = true;
     }
 
     /**
@@ -141,7 +145,6 @@ public class TesseractOCR {
             }
             mDeviceStorageAccessLock.release();
             baseApi.init(path, trainedData.replace(".traineddata", "")); //extract language code from trained data file
-            initialized = true;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             //TODO show error to user, coping failed
@@ -155,7 +158,7 @@ public class TesseractOCR {
      */
     private Mrz ocr(Bitmap bitmap) {
         if (bitmap == null) return null;
-        if (initialized && !stopping) {
+        if (isInitialized && !stopping) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 2;
             Log.v(TAG, "Image dims x: " + bitmap.getWidth() + ", y: " + bitmap.getHeight());
@@ -196,7 +199,7 @@ public class TesseractOCR {
         myThread = null;
         myHandler = null;
         baseApi.end();
-        initialized = false;
+        isInitialized = false;
         stopping = false;
     }
 

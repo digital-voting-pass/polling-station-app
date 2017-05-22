@@ -19,6 +19,7 @@
     <string name="description_info">Info</string>
     <string name="request_permission">This sample needs camera permission.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="permission_explanation">This App needs storage permissions in order to use OCR.</string>
 
     <string name="nfc_not_supported_error">This device doesn\'t support NFC.</string>
     <string name="nfc_disabled_error">NFC is disabled, please enable NFC and hold your ID to the back of the phone to start scanning.</string>
