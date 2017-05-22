@@ -75,13 +75,13 @@ public class Mrz {
     public HashMap<String, String> getPrettyData() {
         HashMap<String, String> data = new HashMap<>();
         if (mrz.startsWith("P")) {
-            data.put("Document Number", mrz.split("\n")[1].substring(PASSPORT_DOCNO_INDICES[0], PASSPORT_DOCNO_INDICES[1]));
-            data.put("Date of Birth", mrz.split("\n")[1].substring(PASSPORT_DOB_INDICES[0], PASSPORT_DOB_INDICES[1]));
-            data.put("Expiration Date", mrz.split("\n")[1].substring(PASSPORT_EXP_INDICES[0],PASSPORT_EXP_INDICES[1]));
+            data.put(MainActivity.DOCUMENT_NUMBER, mrz.split("\n")[1].substring(PASSPORT_DOCNO_INDICES[0], PASSPORT_DOCNO_INDICES[1]));
+            data.put(MainActivity.DATE_OF_BIRTH, mrz.split("\n")[1].substring(PASSPORT_DOB_INDICES[0], PASSPORT_DOB_INDICES[1]));
+            data.put(MainActivity.EXPIRATION_DATE, mrz.split("\n")[1].substring(PASSPORT_EXP_INDICES[0],PASSPORT_EXP_INDICES[1]));
         } else if (mrz.startsWith("I")) {
-            data.put("Document Number", mrz.split("\n")[0].substring(ID_DOCNO_INDICES[0],ID_DOCNO_INDICES[1]));
-            data.put("Date of Birth", mrz.split("\n")[1].substring(ID_DOB_INDICES[0],ID_DOB_INDICES[1]));
-            data.put("Expiration Date", mrz.split("\n")[1].substring(ID_EXP_INDICES[0],ID_EXP_INDICES[1]));
+            data.put(MainActivity.DOCUMENT_NUMBER, mrz.split("\n")[0].substring(ID_DOCNO_INDICES[0],ID_DOCNO_INDICES[1]));
+            data.put(MainActivity.DATE_OF_BIRTH, mrz.split("\n")[1].substring(ID_DOB_INDICES[0],ID_DOB_INDICES[1]));
+            data.put(MainActivity.EXPIRATION_DATE, mrz.split("\n")[1].substring(ID_EXP_INDICES[0],ID_EXP_INDICES[1]));
         }
         return data;
     }
