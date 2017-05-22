@@ -24,5 +24,6 @@
     <string name="nfc_disabled_error">NFC is disabled, please enable NFC and hold your ID to the back of the phone to start scanning.</string>
     <string name="general_error">Oops, something went wrong, please check the terminal output.</string>
     <string name="start_con_button">Start ID connection</string>
+    <string name="scan_doc_details">Please scan the ID first</string>
 
 </resources>

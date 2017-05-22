@@ -13,6 +13,7 @@ import org.jmrtd.lds.LDSFileUtil;
 
 import java.io.InputStream;
 import java.security.PublicKey;
+import java.util.HashMap;
 
 /**
  * Created by wkmeijer on 16-5-17.
@@ -27,7 +28,7 @@ public class PassportConnection {
      * @param tag - NFC tag that started this activity (ID NFC tag)
      * @return PassportService - passportservice that has an open connection with the ID
      */
-    public PassportService openConnection(Tag tag) {
+    public PassportService openConnection(Tag tag, final HashMap<String,String> docData) {
         PassportService ps = null;
         try {
             IsoDep nfc = IsoDep.get(tag);
@@ -35,24 +36,19 @@ public class PassportConnection {
             ps = new PassportService(cs);
             ps.open();
 
-            // Get the information needed for BAC, hardcoded for now
-            // TODO: link this with OCR functionality
+            // Get the information needed for BAC from the data provided by OCR
             ps.sendSelectApplet(false);
             BACKeySpec bacKey = new BACKeySpec() {
                 @Override
                 public String getDocumentNumber() {
-                    return "NP0811B03";
+                    return docData.get(MainActivity.DOCUMENT_NUMBER);
                 }
 
                 @Override
-                public String getDateOfBirth() {
-                    return "940610";
-                }
+                public String getDateOfBirth() { return docData.get(MainActivity.DATE_OF_BIRTH); }
 
                 @Override
-                public String getDateOfExpiry() {
-                    return "180624";
-                }
+                public String getDateOfExpiry() { return docData.get(MainActivity.EXPIRATION_DATE); }
             };
 
             ps.doBAC(bacKey);
