@@ -17,10 +17,14 @@ package com.digitalvotingpass.digitalvotingpass;/*
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v13.app.ActivityCompat;
+import android.widget.Toast;
+
+import java.util.HashMap;
 
 public class CameraActivity extends Activity {
 
@@ -40,4 +44,15 @@ public class CameraActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == MainActivity.GET_DOC_INFO) {
+            Intent returnIntent = new Intent();
+            HashMap<String, String> documentData = (HashMap<String, String>) data.getSerializableExtra("result");
+            returnIntent.putExtra("result", documentData);
+            setResult(Activity.RESULT_OK, returnIntent);
+            finish();
+        }
+    }
 }

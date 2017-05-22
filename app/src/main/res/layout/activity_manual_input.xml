@@ -19,9 +19,9 @@
         <EditText
             android:id="@+id/doc_num"
             android:layout_width="0dp"
+            android:inputType = "textCapCharacters"
             android:layout_height="wrap_content"
             android:layout_weight="3"
-            android:inputType="textCapCharacters"
             android:maxLines="1"
             android:maxLength="9"
             android:hint="@string/hintDocNum"/>

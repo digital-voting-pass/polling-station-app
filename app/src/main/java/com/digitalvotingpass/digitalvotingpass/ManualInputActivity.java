@@ -3,11 +3,7 @@ package com.digitalvotingpass.digitalvotingpass;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.text.InputFilter;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,8 +28,6 @@ public class ManualInputActivity extends AppCompatActivity {
         dateBirth = (EditText) findViewById(R.id.date_birth);
         expiryDate = (EditText) findViewById(R.id.expiry_date);
 
-        docNumber.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
-
         Button submitBut = (Button) findViewById(R.id.submit_button);
         submitBut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,9 +49,9 @@ public class ManualInputActivity extends AppCompatActivity {
     public HashMap<String, String> getData() {
         HashMap<String, String> data = new HashMap<>();
 
-        data.put("Document Number", docNumber.getText().toString().toUpperCase());
-        data.put("Date of Birth", dateBirth.getText().toString());
-        data.put("Expiration Date", expiryDate.getText().toString());
+        data.put(MainActivity.DOCUMENT_NUMBER, docNumber.getText().toString().toUpperCase());
+        data.put(MainActivity.DATE_OF_BIRTH, dateBirth.getText().toString());
+        data.put(MainActivity.EXPIRATION_DATE, expiryDate.getText().toString());
 
         return data;
     }
