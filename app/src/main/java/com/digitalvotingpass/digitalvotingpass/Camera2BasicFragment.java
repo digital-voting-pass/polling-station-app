@@ -349,7 +349,7 @@ public class Camera2BasicFragment extends Fragment
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), ManualInputActivity.class);
-                getActivity().startActivityForResult(intent, MainActivity.GET_MANUAL_DOC_INFO);
+                getActivity().startActivityForResult(intent, MainActivity.GET_DOC_INFO);
             }
         });
     }

@@ -47,7 +47,7 @@ public class CameraActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == MainActivity.GET_MANUAL_DOC_INFO) {
+        if (requestCode == MainActivity.GET_DOC_INFO) {
             Intent returnIntent = new Intent();
             HashMap<String, String> documentData = (HashMap<String, String>) data.getSerializableExtra("result");
             returnIntent.putExtra("result", documentData);

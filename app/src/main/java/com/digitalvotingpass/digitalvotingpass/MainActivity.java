@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
     private Button startOCR;
 
     public static final int GET_DOC_INFO = 1;
-    public static final int GET_MANUAL_DOC_INFO = 2;
 
     public static final String DOCUMENT_NUMBER = "Document Number";
     public static final String DATE_OF_BIRTH = "Date of Birth";
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(thisActivity, ManualInputActivity.class);
-                startActivityForResult(intent, GET_MANUAL_DOC_INFO);
+                startActivityForResult(intent, GET_DOC_INFO);
             }
         });
 
@@ -70,28 +69,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // Both switches do the same thing, this might change in the future
-        switch(requestCode) {
-            case (GET_MANUAL_DOC_INFO): {
-                if (resultCode == RESULT_OK) {
-                    documentData = (HashMap<String, String>) data.getSerializableExtra("result");
-                    HashMap<String, String> map = (HashMap<String, String>) data.getSerializableExtra("result");
-                    resultData.setText("");
-                    for (String key : map.keySet()) {
-                        resultData.append(key + ": " + map.get(key) + "\n");
-                    }
+        if(requestCode == GET_DOC_INFO){
+            if (resultCode == RESULT_OK) {
+                documentData = (HashMap<String, String>) data.getSerializableExtra("result");
+                HashMap<String, String> map = (HashMap<String, String>) data.getSerializableExtra("result");
+                resultData.setText("");
+                for (String key : map.keySet()) {
+                    resultData.append(key + ": " + map.get(key) + "\n");
                 }
-                break;
-            }
-            case (GET_DOC_INFO): {
-                if (resultCode == RESULT_OK) {
-                    documentData = (HashMap<String, String>) data.getSerializableExtra("result");
-                    HashMap<String, String> map = (HashMap<String, String>) data.getSerializableExtra("result");
-                    resultData.setText("");
-                    for (String key : map.keySet()) {
-                        resultData.append(key + ": " + map.get(key) + "\n");
-                    }
-                }
-                break;
             }
         }
     }
