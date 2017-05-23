@@ -9,6 +9,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,8 @@ public class PassportConActivity extends AppCompatActivity {
         documentData = (HashMap<String, String>) extras.get("docData");
 
         setContentView(R.layout.activity_passport_con);
+        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(appBar);
         TextView notice = (TextView) findViewById(R.id.notice);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);

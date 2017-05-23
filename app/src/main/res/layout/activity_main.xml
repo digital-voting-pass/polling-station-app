@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.digitalvotingpass.digitalvotingpass.MainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.digitalvotingpass.digitalvotingpass.MainActivity">
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/govDarkBlue"
+        android:elevation="4dp"
+        android:theme="@style/AppBarOverlay"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="8dp" />
 
     <TextView
         android:id="@+id/result_data"
@@ -50,4 +62,4 @@
         app:layout_constraintVertical_bias="0.604"
         android:onClick="startReading"
         app:layout_constraintHorizontal_bias="0.502" />
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
