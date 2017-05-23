@@ -11,7 +11,11 @@ import org.jmrtd.lds.DG15File;
 import org.jmrtd.lds.DG1File;
 import org.jmrtd.lds.LDSFileUtil;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.InputStream;
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 import java.util.HashMap;
 
@@ -124,6 +128,40 @@ public class PassportConnection {
         } finally {
             try {
                 is.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * method used for testing to see what exactly is in DG15
+     * @param ps
+     * @return
+     */
+    public String getDG15Contents(PassportService ps){
+        InputStream is15 = null;
+        byte[] content;
+        try {
+            is15 = ps.getInputStream(PassportService.EF_DG15);
+            DataInputStream dataInputStream = is15 instanceof DataInputStream ? (DataInputStream)is15 : new DataInputStream(is15);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            DataOutputStream dos = new DataOutputStream(baos);
+            int b;
+            int i = 0;
+            while((b = dataInputStream.read()) >= 1){
+                dos.writeInt(b);
+                i++;
+            }
+            content = baos.toByteArray();
+            return Util.byteArrayToHexString(content);
+//            return Util.byteArrayToHexString(content).replace("00", "");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                is15.close();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
