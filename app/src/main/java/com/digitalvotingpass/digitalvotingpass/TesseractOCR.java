@@ -29,9 +29,9 @@ public class TesseractOCR {
     private final String name;
 
     private TessBaseAPI baseApi;
-    private boolean initialized = false;
     private HandlerThread myThread;
     private Handler myHandler;
+    private Handler cleanHandler;
     private Handler timeoutHandler;
 
     private AssetManager assetManager;
@@ -63,7 +63,7 @@ public class TesseractOCR {
     private Runnable scan = new Runnable() {
         @Override
         public void run() {
-            if (!stopping) {
+            while (!stopping) {
                 Log.v(TAG, "Start Scan");
                 timeoutHandler.postDelayed(timeout, OCR_SCAN_TIMEOUT_MILLIS);
                 long time = System.currentTimeMillis();
@@ -76,8 +76,13 @@ public class TesseractOCR {
                     fragment.scanResultFound(mrz);
                 }
                 timeoutHandler.removeCallbacks(timeout);
-                myHandler.postDelayed(this, INTER_SCAN_DELAY_MILLIS);
+                try {
+                    Thread.sleep(INTER_SCAN_DELAY_MILLIS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+            Log.e(TAG, "Stopping scan");
         }
     };
 
@@ -99,14 +104,13 @@ public class TesseractOCR {
      * Starts (enqueues) a stop routine in a new thread, then returns immediately.
      */
     public void stopScanner() {
-        if (isInitialized) {
-            myHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    cleanup();
-                }
-            });
-        }
+        cleanHandler = new Handler();
+        cleanHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                cleanup();
+            }
+        });
     }
 
     /**
@@ -196,6 +200,11 @@ public class TesseractOCR {
         myThread.quitSafely();
         myHandler.removeCallbacks(scan);
         timeoutHandler.removeCallbacks(timeout);
+        try {
+            myThread.join(); // Seems to lock indefinitely
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         myThread = null;
         myHandler = null;
         baseApi.end();
