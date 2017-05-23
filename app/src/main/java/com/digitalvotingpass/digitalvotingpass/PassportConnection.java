@@ -11,11 +11,7 @@ import org.jmrtd.lds.DG15File;
 import org.jmrtd.lds.DG1File;
 import org.jmrtd.lds.LDSFileUtil;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.InputStream;
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 import java.util.HashMap;
 
@@ -32,7 +28,7 @@ public class PassportConnection {
      * @param tag - NFC tag that started this activity (ID NFC tag)
      * @return PassportService - passportservice that has an open connection with the ID
      */
-    public PassportService openConnection(Tag tag, final HashMap<String,String> docData) {
+    public static PassportService openConnection(Tag tag, final HashMap<String,String> docData) {
         PassportService ps = null;
         try {
             IsoDep nfc = IsoDep.get(tag);
@@ -42,26 +38,45 @@ public class PassportConnection {
 
             // Get the information needed for BAC from the data provided by OCR
             ps.sendSelectApplet(false);
-            BACKeySpec bacKey = new BACKeySpec() {
+            BACKeySpec bacKey = createBACKeySpec(docData);
+
+            ps.doBAC(bacKey);
+            return ps;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            try {
+                ps.close();
+            } catch (Exception ex1) {
+                ex1.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Creates a new BACKeySpec used for making the connection with the passport
+     */
+    public static BACKeySpec createBACKeySpec(final HashMap<String,String> docData) {
+        if(docData != null) {
+            return new BACKeySpec() {
                 @Override
                 public String getDocumentNumber() {
                     return docData.get(MainActivity.DOCUMENT_NUMBER);
                 }
 
                 @Override
-                public String getDateOfBirth() { return docData.get(MainActivity.DATE_OF_BIRTH); }
+                public String getDateOfBirth() {
+                    return docData.get(MainActivity.DATE_OF_BIRTH);
+                }
 
                 @Override
-                public String getDateOfExpiry() { return docData.get(MainActivity.EXPIRATION_DATE); }
+                public String getDateOfExpiry() {
+                    return docData.get(MainActivity.EXPIRATION_DATE);
+                }
             };
-
-            ps.doBAC(bacKey);
-            return ps;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            ps.close();
+        } else{
+            return null;
         }
-        return null;
     }
 
     /**
@@ -69,7 +84,7 @@ public class PassportConnection {
      *
      * @return Publickey - returns the publickey used for AA
      */
-    public PublicKey getAAPublicKey(PassportService ps) {
+    public static PublicKey getAAPublicKey(PassportService ps) {
         InputStream is15 = null;
         try {
             is15 = ps.getInputStream(PassportService.EF_DG15);
@@ -92,7 +107,7 @@ public class PassportConnection {
      *
      * @return byte[] - signed byte array
      */
-    public byte[] signData(PassportService ps) {
+    public static byte[] signData(PassportService ps) {
         InputStream is15 = null;
         try {
             is15 = ps.getInputStream(PassportService.EF_DG15);
@@ -117,7 +132,7 @@ public class PassportConnection {
      * Get the BSN from datagroup1 to confirm the ID was scanned correctly
      * This is for testing purposes
      */
-    public String getBSN(PassportService ps) {
+    public static String getBSN(PassportService ps) {
         InputStream is = null;
         try {
             is = ps.getInputStream(PassportService.EF_DG1);
@@ -128,40 +143,6 @@ public class PassportConnection {
         } finally {
             try {
                 is.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * method used for testing to see what exactly is in DG15
-     * @param ps
-     * @return
-     */
-    public String getDG15Contents(PassportService ps){
-        InputStream is15 = null;
-        byte[] content;
-        try {
-            is15 = ps.getInputStream(PassportService.EF_DG15);
-            DataInputStream dataInputStream = is15 instanceof DataInputStream ? (DataInputStream)is15 : new DataInputStream(is15);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            DataOutputStream dos = new DataOutputStream(baos);
-            int b;
-            int i = 0;
-            while((b = dataInputStream.read()) >= 1){
-                dos.writeInt(b);
-                i++;
-            }
-            content = baos.toByteArray();
-            return Util.byteArrayToHexString(content);
-//            return Util.byteArrayToHexString(content).replace("00", "");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                is15.close();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

@@ -131,24 +131,15 @@ public class PassportConActivity extends AppCompatActivity {
         }
 
         // Open a connection with the ID, return a PassportService object which holds the open connection
-        PassportConnection pcon= new PassportConnection();
-        PassportService ps = pcon.openConnection(tag, documentData);
+        PassportService ps = PassportConnection.openConnection(tag, documentData);
         try {
             // Get the BSN from datagroup1 to confirm the ID was scanned correctly.
             // This is for testing purposes
-            Toast.makeText(this, pcon.getBSN(ps), Toast.LENGTH_LONG).show();
-
-            // display data from dg15
-            PublicKey pubk = pcon.getAAPublicKey(ps);
+            Toast.makeText(this, PassportConnection.getBSN(ps), Toast.LENGTH_LONG).show();
 
             // sign 8 bytes of data and display the signed data + length
-            byte[] signedData = pcon.signData(ps);
+            byte[] signedData = PassportConnection.signData(ps);
             textSignedData.setText(Util.byteArrayToHexString(signedData) + " (size: " + signedData.length + ")");
-            System.out.println(pcon.getDG15Contents(ps));
-            System.out.println("Pubkey: ");
-            System.out.println(Util.byteArrayToHexString(pubk.getEncoded()));
-
-
         } catch (Exception ex) {
             ex.printStackTrace();
             Toast.makeText(this, R.string.general_error, Toast.LENGTH_LONG).show();
