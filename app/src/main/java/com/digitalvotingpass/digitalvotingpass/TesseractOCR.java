@@ -222,6 +222,9 @@ public class TesseractOCR {
             if (times.get(i) > max) max = times.get(i);
             curravg += times.get(i);
         }
-        Log.e(TAG, "Max runtime was " + max/1000f + " sec and avg was " + curravg/times.size()/1000f + " tot tries: " + times.size());
+        // prevent divide by zero
+        if(times.size()>0) {
+            Log.e(TAG, "Max runtime was " + max / 1000f + " sec and avg was " + curravg / times.size() / 1000f + " tot tries: " + times.size());
+        }
     }
 }
