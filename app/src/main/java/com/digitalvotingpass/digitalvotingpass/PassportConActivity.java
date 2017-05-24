@@ -5,11 +5,13 @@ import android.app.PendingIntent;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.Image;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +29,7 @@ public class PassportConActivity extends AppCompatActivity {
     // Adapter for NFC connection
     private NfcAdapter mNfcAdapter;
     private HashMap<String, String> documentData;
+    private ImageView progressView;
 
     /**
      * This activity usually be loaded from the starting screen of the app.
@@ -44,7 +47,7 @@ public class PassportConActivity extends AppCompatActivity {
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
         TextView notice = (TextView) findViewById(R.id.notice);
-        TextView textProgress = (TextView) findViewById(R.id.progress);
+        progressView = (ImageView) findViewById(R.id.progress_view);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null) {
@@ -58,7 +61,6 @@ public class PassportConActivity extends AppCompatActivity {
         } else {
             notice.setText(R.string.nfc_enabled);
         }
-        textProgress.setText("[=___]");
     }
 
     /**
@@ -129,8 +131,7 @@ public class PassportConActivity extends AppCompatActivity {
      *
      */
     private void handleIntent(Intent intent) {
-        TextView textProgress = (TextView) findViewById(R.id.progress);
-        textProgress.setText("[=___]");
+        progressView.setImageResource(R.drawable.nfc_icon_1);
 
         // if nfc tag holds no data, return
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -142,23 +143,22 @@ public class PassportConActivity extends AppCompatActivity {
         PassportConnection pcon= new PassportConnection();
         PassportService ps = pcon.openConnection(tag, documentData);
         try {
-            textProgress.setText("[==__]");
+            progressView.setImageResource(R.drawable.nfc_icon_2);
 
 
             // display data from dg15
             PublicKey pubKey = pcon.getAAPublicKey(ps);
-            textProgress.setText("[===_]");
 
             // sign 8 bytes of data and display the signed data + length
             byte[] signedData = pcon.signData(ps);
-            textProgress.setText("[====]");
+            progressView.setImageResource(R.drawable.nfc_icon_3);
 
             // when all data is loaded start ResultActivity
             startResultActivity(pubKey, signedData);
         } catch (Exception ex) {
             ex.printStackTrace();
             Toast.makeText(this, R.string.NFC_error, Toast.LENGTH_LONG).show();
-            textProgress.setText("[=___]");
+            progressView.setImageResource(R.drawable.nfc_icon_empty);
         } finally {
             try {
                 ps.close();
@@ -175,7 +175,6 @@ public class PassportConActivity extends AppCompatActivity {
      * @param signedData
      */
     public void startResultActivity(PublicKey pubKey, byte[] signedData) {
-        TextView textProgress = (TextView) findViewById(R.id.progress);
         if(pubKey != null && signedData != null) {
 
             Intent intent = new Intent(this, ResultActivity.class);
@@ -185,7 +184,7 @@ public class PassportConActivity extends AppCompatActivity {
             finish();
         } else {
             Toast.makeText(this, R.string.NFC_error, Toast.LENGTH_LONG).show();
-            textProgress.setText("[=    ]");
+            progressView.setImageResource(R.drawable.nfc_icon_empty);
         }
     }
 }

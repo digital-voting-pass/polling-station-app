@@ -18,15 +18,28 @@
         tools:layout_editor_absoluteY="0dp"
         tools:layout_editor_absoluteX="8dp" />
 
-    <TextView
-        android:id="@+id/notice"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="169dp"
-        android:scrollHorizontally="true" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/progress"
-        android:layout_width="match_parent"
-        android:layout_height="221dp" />
+        <TextView
+            android:id="@+id/notice"
+            android:layout_above="@+id/progress_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:padding="40dp"
+            android:textColor="@color/govTextBlue"
+            android:textSize="17sp"
+            android:text="@string/nfc_enabled"/>
 
+        <ImageView
+            android:id="@+id/progress_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_centerInParent="true"
+            android:src="@drawable/nfc_icon_empty" />
+    </RelativeLayout>
 </LinearLayout>
