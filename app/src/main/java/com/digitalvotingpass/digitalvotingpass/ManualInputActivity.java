@@ -31,6 +31,9 @@ public class ManualInputActivity extends AppCompatActivity {
         dateBirth = (EditText) findViewById(R.id.date_birth);
         expiryDate = (EditText) findViewById(R.id.expiry_date);
 
+        // When docData was previously filled in, update text fields
+        putData(getIntent().getExtras());
+
         Button submitBut = (Button) findViewById(R.id.submit_button);
         submitBut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,6 +46,18 @@ public class ManualInputActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    /**
+     * Update textFields with docData if it was previously filled in, else leave as is.
+     */
+    public void putData(Bundle extras) {
+        HashMap<String, String> docData = (HashMap<String, String>) extras.get("docData");
+        if(docData != null) {
+            docNumber.setText(docData.get(MainActivity.DOCUMENT_NUMBER));
+            dateBirth.setText(docData.get(MainActivity.DATE_OF_BIRTH));
+            expiryDate.setText(docData.get(MainActivity.EXPIRATION_DATE));
+        }
     }
 
     /**

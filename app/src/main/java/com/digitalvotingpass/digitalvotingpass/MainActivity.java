@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(thisActivity, ManualInputActivity.class);
+                // send the docData to the manualinput in case a user wants to edit the existing docdata
+                intent.putExtra("docData", documentData);
                 startActivityForResult(intent, GET_DOC_INFO);
             }
         });
