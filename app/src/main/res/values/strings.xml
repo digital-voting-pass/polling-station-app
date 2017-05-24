@@ -22,8 +22,13 @@
 
     <string name="nfc_not_supported_error">This device doesn\'t support NFC.</string>
     <string name="nfc_disabled_error">NFC is disabled, please enable NFC and hold your ID to the back of the phone to start scanning.</string>
+    <string name="nfc_enabled">Please hold your ID to the back of your phone.</string>
     <string name="general_error">Oops, something went wrong, please check the terminal output.</string>
+    <string name="NFC_error">Could not complete NFC scan, please try again.</string>
     <string name="start_con_button">Start ID connection</string>
     <string name="scan_doc_details">Please scan the ID first</string>
+
+    <string name="start_OCR">Scan passport</string>
+    <string name="title_activity_result">resultActivity</string>
 
 </resources>

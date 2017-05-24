@@ -19,13 +19,13 @@
         tools:layout_editor_absoluteX="8dp" />
 
     <TextView
-        android:id="@+id/notice"
+        android:id="@+id/pubKey"
         android:layout_width="match_parent"
         android:layout_height="169dp"
         android:scrollHorizontally="true" />
 
     <TextView
-        android:id="@+id/progress"
+        android:id="@+id/signedData"
         android:layout_width="match_parent"
         android:layout_height="221dp" />
 

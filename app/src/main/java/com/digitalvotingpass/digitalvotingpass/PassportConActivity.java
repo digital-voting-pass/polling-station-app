@@ -44,6 +44,7 @@ public class PassportConActivity extends AppCompatActivity {
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
         TextView notice = (TextView) findViewById(R.id.notice);
+        TextView textProgress = (TextView) findViewById(R.id.progress);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null) {
@@ -54,7 +55,10 @@ public class PassportConActivity extends AppCompatActivity {
         }
         if (!mNfcAdapter.isEnabled()) {
             notice.setText(R.string.nfc_disabled_error);
+        } else {
+            notice.setText(R.string.nfc_enabled);
         }
+        textProgress.setText("[=___]");
     }
 
     /**
@@ -125,7 +129,8 @@ public class PassportConActivity extends AppCompatActivity {
      *
      */
     private void handleIntent(Intent intent) {
-        TextView textSignedData = (TextView) findViewById(R.id.signedData);
+        TextView textProgress = (TextView) findViewById(R.id.progress);
+        textProgress.setText("[=___]");
 
         // if nfc tag holds no data, return
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -137,27 +142,50 @@ public class PassportConActivity extends AppCompatActivity {
         PassportConnection pcon= new PassportConnection();
         PassportService ps = pcon.openConnection(tag, documentData);
         try {
-            // Get the BSN from datagroup1 to confirm the ID was scanned correctly.
-            // This is for testing purposes
-            Toast.makeText(this, pcon.getBSN(ps), Toast.LENGTH_LONG).show();
+            textProgress.setText("[==__]");
+
 
             // display data from dg15
-            PublicKey pubk = pcon.getAAPublicKey(ps);
+            PublicKey pubKey = pcon.getAAPublicKey(ps);
+            textProgress.setText("[===_]");
 
             // sign 8 bytes of data and display the signed data + length
             byte[] signedData = pcon.signData(ps);
-            textSignedData.setText(Util.byteArrayToHexString(signedData) + " (size: " + signedData.length + ")");
+            textProgress.setText("[====]");
 
+            // when all data is loaded start ResultActivity
+            startResultActivity(pubKey, signedData);
         } catch (Exception ex) {
             ex.printStackTrace();
-            Toast.makeText(this, R.string.general_error, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.NFC_error, Toast.LENGTH_LONG).show();
+            textProgress.setText("[=___]");
         } finally {
             try {
                 ps.close();
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(this, R.string.general_error, Toast.LENGTH_LONG).show();
             }
+        }
+    }
+
+    /**
+     * Method to start the ResultActivity once all the data is loaded.
+     * Creates new intent with the read data
+     * @param pubKey
+     * @param signedData
+     */
+    public void startResultActivity(PublicKey pubKey, byte[] signedData) {
+        TextView textProgress = (TextView) findViewById(R.id.progress);
+        if(pubKey != null && signedData != null) {
+
+            Intent intent = new Intent(this, ResultActivity.class);
+            intent.putExtra("pubKey", pubKey);
+            intent.putExtra("signedData", signedData);
+            startActivity(intent);
+            finish();
+        } else {
+            Toast.makeText(this, R.string.NFC_error, Toast.LENGTH_LONG).show();
+            textProgress.setText("[=    ]");
         }
     }
 }
