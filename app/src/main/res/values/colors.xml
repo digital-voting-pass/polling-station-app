@@ -14,4 +14,5 @@
     <color name="govDarkBlue">#01689b</color>
     <color name="govLightBlue">#cce0f1</color>
     <color name="govTextBlue">#01689b</color>
+    <color name="govLightGray">#f3f3f3</color>
 </resources>
