@@ -5,27 +5,47 @@
 
     <com.digitalvotingpass.digitalvotingpass.AutoFitTextureView
         android:id="@+id/texture"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true" />
 
-    <FrameLayout
+    <com.digitalvotingpass.digitalvotingpass.Overlay
+        android:name="com.digitalvotingpass.digitalvotingpass.Overlay"
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
         android:id="@+id/control"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="@dimen/cam_control_pane_height"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:background="@color/control_background">
+        android:background="@color/ocr_control_background">
+
+        <TextView
+            android:id="@+id/info_text"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/ocr_control_text_color"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:text="@string/ocr_help_text"/>
 
         <Button
             android:id="@+id/manual_input_button"
+            android:layout_weight="0.2"
+            android:background="@color/manual_input_button_background"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/switch_to_manual" />
+            android:layout_gravity="center_vertical"
+            android:text="@string/ocr_switch_to_manual" />
 
-    </FrameLayout>
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/scan_segment"

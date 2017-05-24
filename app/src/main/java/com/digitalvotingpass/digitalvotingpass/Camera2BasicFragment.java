@@ -30,6 +30,7 @@ import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -73,13 +74,14 @@ public class Camera2BasicFragment extends Fragment
     private static final int DELAY_BETWEEN_OCR_THREADS_MILLIS = 500;
 
     private ImageView scanSegment;
+    private Overlay overlay;
     private Button manualInput;
 
     private List<TesseractOCR> tesseractThreads = new ArrayList<>();
     /**
      * If this is defined and > 0, use this amount of threads instead of dynamically determined amount.
      */
-    private int ocrThreadNumberOverride;
+    private int ocrThreadNumberOverride = 1;
 
     /**
      * Conversion from screen rotation to JPEG orientation.
@@ -355,7 +357,7 @@ public class Camera2BasicFragment extends Fragment
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
         scanSegment = (ImageView) view.findViewById(R.id.scan_segment);
         manualInput = (Button) view.findViewById(R.id.manual_input_button);
-
+        overlay = (Overlay) view.findViewById(R.id.overlay);
         manualInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -710,6 +712,12 @@ public class Camera2BasicFragment extends Fragment
             matrix.postRotate(180, centerX, centerY);
         }
         mTextureView.setTransform(matrix);
+        int startX = (int) scanSegment.getX();
+        int startY = (int) scanSegment.getY();
+        int width = (scanSegment.getWidth());
+        int length = (scanSegment.getHeight());
+        //left top right bot
+        overlay.setRect(new Rect(startX, startY, startX + width, startY+length));
     }
 
     private void setAutoFlash(CaptureRequest.Builder requestBuilder) {
