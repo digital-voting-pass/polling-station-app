@@ -27,6 +27,7 @@
     <string name="NFC_error">Could not complete NFC scan, please try again.</string>
     <string name="start_con_button">Start ID connection</string>
     <string name="scan_doc_details">Please scan the ID first</string>
+    <string name="transaction_history">Transaction history</string>
 
     <string name="start_OCR">Scan passport</string>
     <string name="title_activity_result">resultActivity</string>

@@ -19,22 +19,8 @@
         tools:layout_editor_absoluteX="8dp" />
 
     <TextView
-        android:id="@+id/pubKey"
-        android:layout_width="match_parent"
-        android:layout_height="169dp"
-        android:scrollHorizontally="true" />
-
-    <TextView
-        android:id="@+id/signedData"
+        android:id="@+id/transaction"
         android:layout_width="match_parent"
         android:layout_height="221dp" />
-
-    <Button
-        android:id="@+id/transactionHistory"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:text="@string/transaction_history" />
-
 </LinearLayout>
+

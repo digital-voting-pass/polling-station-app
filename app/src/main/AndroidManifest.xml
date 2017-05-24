@@ -33,15 +33,16 @@
         </activity>
         <activity
             android:name=".PassportConActivity"
-            android:label="PassportConActivity"></activity>
+            android:label="PassportConActivity" />
         <activity
             android:name=".ManualInputActivity"
-            android:label="@string/title_activity_manual_input"></activity>
-        <activity android:name=".CameraActivity"></activity>
+            android:label="@string/title_activity_manual_input" />
+        <activity android:name=".CameraActivity" />
         <activity
             android:name=".ResultActivity"
             android:label="@string/title_activity_result"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".TransactionHistoryActivity"></activity>
     </application>
 
 </manifest>
