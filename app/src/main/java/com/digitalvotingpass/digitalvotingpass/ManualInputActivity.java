@@ -32,7 +32,9 @@ public class ManualInputActivity extends AppCompatActivity {
         expiryDate = (EditText) findViewById(R.id.expiry_date);
 
         // When docData was previously filled in, update text fields
-        putData(getIntent().getExtras());
+        if(getIntent().hasExtra("docData")) {
+            putData(getIntent().getExtras());
+        }
 
         Button submitBut = (Button) findViewById(R.id.submit_button);
         submitBut.setOnClickListener(new View.OnClickListener() {
