@@ -170,6 +170,19 @@ public class Camera2BasicFragment extends Fragment
     private Size mPreviewSize;
     private boolean resultFound = false;
 
+    private float secTillScanTimeout = 10;
+    private Runnable scanningTakingLongTimeout = new Runnable() {
+        @Override
+        public void run() {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    manualInput.setBackgroundColor(getResources().getColor(R.color.red));
+                }
+            });
+        }
+    };
+
     /**
      * Method for delivering correct MRZ when found. This method returns the MRZ as result data and
      * then exits the activity. This method is synchronized and checks for a boolean to make sure
@@ -591,6 +604,7 @@ public class Camera2BasicFragment extends Fragment
         mBackgroundThread = new HandlerThread("CameraBackground");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+        mBackgroundHandler.postDelayed(scanningTakingLongTimeout, (long) (secTillScanTimeout * 1000));
     }
 
     private void startTesseractThreads() {
@@ -606,6 +620,7 @@ public class Camera2BasicFragment extends Fragment
      * Stops the background thread and its {@link Handler}.
      */
     private void stopBackgroundThread() {
+        mBackgroundHandler.removeCallbacks(scanningTakingLongTimeout);
         mBackgroundThread.quitSafely();
         try {
             mBackgroundThread.join();
