@@ -18,9 +18,12 @@
         tools:layout_editor_absoluteY="0dp"
         tools:layout_editor_absoluteX="8dp" />
 
-    <TextView
-        android:id="@+id/transaction"
+    <ListView
+        android:id="@+id/transaction_list"
         android:layout_width="match_parent"
-        android:layout_height="221dp" />
+        android:layout_height="wrap_content">
+
+
+    </ListView>
 </LinearLayout>
 
