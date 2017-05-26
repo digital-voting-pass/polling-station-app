@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">DigitalVotingPass</string>
+
+    <!--Manual Input-->
+    <string name="submit">Submit</string>
     <string name="title_activity_manual_input">ManualInput</string>
     <string name="manual_input_button">Manual input document details</string>
-    <string name="submit">Submit</string>
     <string name="docNum">Document number</string>
     <string name="expiryDate">Expiry date</string>
     <string name="dateBirth">Date of birth</string>
@@ -15,12 +17,14 @@
     <string name="errInputDocNum">Please fill in the document number.</string>
     <string name="errInputExpiryDate">Please fill in the expiry date of the document.</string>
     <string name="errInputDateBirth">Please fill in your date of birth.</string>
-    <string name="switch_to_manual">Manual Input</string>
-    <string name="description_info">Info</string>
-    <string name="request_permission">This sample needs camera permission.</string>
-    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
-    <string name="permission_explanation">This App needs storage permissions in order to use OCR.</string>
 
+    <!-- OCR Scanning -->
+    <string name="ocr_switch_to_manual">Manual Input</string>
+    <string name="ocr_camera_permission_explanation">This app needs camera permission.</string>
+    <string name="ocr_camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="ocr_storage_permission_explanation">This App needs storage permissions in order to use OCR.</string>
+
+    <!--NFC Scanning-->
     <string name="nfc_not_supported_error">This device doesn\'t support NFC.</string>
     <string name="nfc_disabled_error">NFC is disabled, please enable NFC and hold your ID to the back of the phone to start scanning.</string>
     <string name="general_error">Oops, something went wrong, please check the terminal output.</string>

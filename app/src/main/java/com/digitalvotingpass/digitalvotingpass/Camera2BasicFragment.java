@@ -397,10 +397,10 @@ public class Camera2BasicFragment extends Fragment
             mPendingShowDialog = false;
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
                     != PackageManager.PERMISSION_GRANTED) {
-                showInfoDialog(R.string.request_permission);
+                showInfoDialog(R.string.ocr_camera_permission_explanation);
             } else if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
-                showInfoDialog(R.string.permission_explanation);
+                showInfoDialog(R.string.ocr_storage_permission_explanation);
             }
         } else {
             startTesseractThreads();
@@ -433,7 +433,7 @@ public class Camera2BasicFragment extends Fragment
 
     private void requestCameraPermission() {
         if (FragmentCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
-            ErrorDialog.newInstance(getString(R.string.request_permission))
+            ErrorDialog.newInstance(getString(R.string.ocr_camera_permission_explanation))
                     .show(getChildFragmentManager(), FRAGMENT_DIALOG);
         } else {
             FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
@@ -442,11 +442,10 @@ public class Camera2BasicFragment extends Fragment
     }
 
     private void requestStoragePermissions() {
-        if (FragmentCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
-            ErrorDialog.newInstance(getString(R.string.permission_explanation))
+        if (FragmentCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            ErrorDialog.newInstance(getString(R.string.ocr_storage_permission_explanation))
                     .show(getChildFragmentManager(), FRAGMENT_DIALOG);
         } else {
-            Log.e(TAG, "Inside requesting permissions");
             FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSIONS);
         }
     }
@@ -456,21 +455,19 @@ public class Camera2BasicFragment extends Fragment
                                            @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG, "REJECTED camera permissions");
                 if(mIsStateAlreadySaved){
                     mPendingShowDialog = true;
                 } else {
-                    ErrorDialog.newInstance(getString(R.string.request_permission))
+                    ErrorDialog.newInstance(getString(R.string.ocr_camera_permission_explanation))
                             .show(getChildFragmentManager(), FRAGMENT_DIALOG);
                 }
             }
         } else if (requestCode == REQUEST_WRITE_PERMISSIONS) {
             if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG, "REJECTED storage access permissions");
                 if(mIsStateAlreadySaved){
                     mPendingShowDialog = true;
                 } else {
-                    ErrorDialog.newInstance(getString(R.string.permission_explanation))
+                    ErrorDialog.newInstance(getString(R.string.ocr_storage_permission_explanation))
                             .show(getChildFragmentManager(), FRAGMENT_DIALOG);
                 }
             }
@@ -583,7 +580,7 @@ public class Camera2BasicFragment extends Fragment
         } catch (NullPointerException e) {
             // Currently an NPE is thrown when the Camera2API is used but not supported on the
             // device this code runs.
-            ErrorDialog.newInstance(getString(R.string.camera_error))
+            ErrorDialog.newInstance(getString(R.string.ocr_camera_error))
                     .show(getChildFragmentManager(), FRAGMENT_DIALOG);
         }
     }
@@ -899,36 +896,5 @@ public class Camera2BasicFragment extends Fragment
         int length = (int) (scanSegment.getHeight());
         return Bitmap.createBitmap(bitmap, startX, startY, width > bitmap.getWidth() ? bitmap.getWidth() : width, length);
         //TODO fix the need for inline if, if the aspect ratio causes a vertical bar it will crash otherwise.
-    }
-    /**
-     * Shows OK/Cancel confirmation dialog about camera permission.
-     */
-    public static class ConfirmationDialog extends DialogFragment {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Fragment parent = getParentFragment();
-            return new AlertDialog.Builder(getActivity())
-                    .setMessage(R.string.request_permission)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            FragmentCompat.requestPermissions(parent,
-                                    new String[]{Manifest.permission.CAMERA},
-                                    REQUEST_CAMERA_PERMISSION);
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Activity activity = parent.getActivity();
-                                    if (activity != null) {
-                                        activity.finish();
-                                    }
-                                }
-                            })
-                    .create();
-        }
     }
 }

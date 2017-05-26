@@ -192,24 +192,25 @@ public class TesseractOCR {
     /**
      * Cleans memory used by Tesseract library and closes OCR thread.
      * After this has been called initialize() needs to be called to restart the thread and init Tesseract
-     * TODO thread may not completely exit, see feature/revised_ocr_threading
      */
     public void cleanup () {
-        giveStats();
-        stopping = true;
-        myThread.quitSafely();
-        myHandler.removeCallbacks(scan);
-        timeoutHandler.removeCallbacks(timeout);
-        try {
-            myThread.join(); // Seems to lock indefinitely
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (isInitialized) {
+            giveStats();
+            stopping = true;
+            myThread.quitSafely();
+            myHandler.removeCallbacks(scan);
+            timeoutHandler.removeCallbacks(timeout);
+            try {
+                myThread.join(); // Seems to lock indefinitely
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            myThread = null;
+            myHandler = null;
+            baseApi.end();
+            isInitialized = false;
+            stopping = false;
         }
-        myThread = null;
-        myHandler = null;
-        baseApi.end();
-        isInitialized = false;
-        stopping = false;
     }
 
     /**
