@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/switch_to_manual" />
+            android:text="@string/ocr_switch_to_manual" />
 
     </FrameLayout>
 

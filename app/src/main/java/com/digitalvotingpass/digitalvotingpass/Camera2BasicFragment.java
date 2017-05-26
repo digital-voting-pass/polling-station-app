@@ -86,7 +86,12 @@ public class Camera2BasicFragment extends Fragment
      */
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final int REQUEST_CAMERA_PERMISSION = 1;
+    private static final int REQUEST_WRITE_PERMISSIONS = 3;
+
     private static final String FRAGMENT_DIALOG = "dialog";
+
+    boolean mIsStateAlreadySaved = false;
+    boolean mPendingShowDialog = false;
 
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -338,10 +343,14 @@ public class Camera2BasicFragment extends Fragment
         if (ocrThreadNumberOverride > 0) {
             threadsToStart = ocrThreadNumberOverride;
         }
-        for (int i = 0; i < threadsToStart; i++) {
+        createOCRThreads(threadsToStart);
+    }
+
+    private void createOCRThreads(int amount) {
+        for (int i = 0; i < amount; i++) {
             tesseractThreads.add(new TesseractOCR("Thread no " + i, this, getActivity().getAssets()));
         }
-        Log.e(TAG, "Running threads: " + ocrThreadNumberOverride);
+        Log.e(TAG, "Running threads: " + amount);
     }
 
     @Override
@@ -374,7 +383,6 @@ public class Camera2BasicFragment extends Fragment
     public void onResume() {
         super.onResume();
         startBackgroundThread();
-
         // When the screen is turned off and turned back on, the SurfaceTexture is already
         // available, and "onSurfaceTextureAvailable" will not be called. In that case, we can open
         // a camera and start preview from here (otherwise, we wait until the surface is ready in
@@ -384,33 +392,61 @@ public class Camera2BasicFragment extends Fragment
         } else {
             mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
         }
+        mIsStateAlreadySaved = false;
+        if(mPendingShowDialog){
+            mPendingShowDialog = false;
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED) {
+                showInfoDialog(R.string.ocr_camera_permission_explanation);
+            } else if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                showInfoDialog(R.string.ocr_storage_permission_explanation);
+            }
+        } else {
+            startTesseractThreads();
+        }
+    }
+
+    private void showInfoDialog(int stringid) {
+        ErrorDialog.newInstance(getString(stringid))
+                .show(getChildFragmentManager(), FRAGMENT_DIALOG);
     }
 
     @Override
     public void onPause() {
         closeCamera();
         stopBackgroundThread();
+        stopTesseractThreads();
+        mIsStateAlreadySaved = true;
         super.onPause();
     }
 
     @Override
     public void onStart() {
-        startTesseractThreads();
         super.onStart();
     }
 
     @Override
     public void onStop() {
-        stopTesseractThreads();
         super.onStop();
     }
 
     private void requestCameraPermission() {
         if (FragmentCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
-            new ConfirmationDialog().show(getChildFragmentManager(), FRAGMENT_DIALOG);
+            ErrorDialog.newInstance(getString(R.string.ocr_camera_permission_explanation))
+                    .show(getChildFragmentManager(), FRAGMENT_DIALOG);
         } else {
             FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
                     REQUEST_CAMERA_PERMISSION);
+        }
+    }
+
+    private void requestStoragePermissions() {
+        if (FragmentCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            ErrorDialog.newInstance(getString(R.string.ocr_storage_permission_explanation))
+                    .show(getChildFragmentManager(), FRAGMENT_DIALOG);
+        } else {
+            FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSIONS);
         }
     }
 
@@ -419,8 +455,21 @@ public class Camera2BasicFragment extends Fragment
                                            @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                ErrorDialog.newInstance(getString(R.string.request_permission))
-                        .show(getChildFragmentManager(), FRAGMENT_DIALOG);
+                if(mIsStateAlreadySaved){
+                    mPendingShowDialog = true;
+                } else {
+                    ErrorDialog.newInstance(getString(R.string.ocr_camera_permission_explanation))
+                            .show(getChildFragmentManager(), FRAGMENT_DIALOG);
+                }
+            }
+        } else if (requestCode == REQUEST_WRITE_PERMISSIONS) {
+            if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                if(mIsStateAlreadySaved){
+                    mPendingShowDialog = true;
+                } else {
+                    ErrorDialog.newInstance(getString(R.string.ocr_storage_permission_explanation))
+                            .show(getChildFragmentManager(), FRAGMENT_DIALOG);
+                }
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -466,12 +515,12 @@ public class Camera2BasicFragment extends Fragment
                 boolean swappedDimensions = false;
                 switch (displayRotation) {
                     case Surface.ROTATION_0:
-                    case Surface.ROTATION_180:
+                    case Surface.ROTATION_90:
                         if (mSensorOrientation == 90 || mSensorOrientation == 270) {
                             swappedDimensions = true;
                         }
                         break;
-                    case Surface.ROTATION_90:
+                    case Surface.ROTATION_180:
                     case Surface.ROTATION_270:
                         if (mSensorOrientation == 0 || mSensorOrientation == 180) {
                             swappedDimensions = true;
@@ -531,7 +580,7 @@ public class Camera2BasicFragment extends Fragment
         } catch (NullPointerException e) {
             // Currently an NPE is thrown when the Camera2API is used but not supported on the
             // device this code runs.
-            ErrorDialog.newInstance(getString(R.string.camera_error))
+            ErrorDialog.newInstance(getString(R.string.ocr_camera_error))
                     .show(getChildFragmentManager(), FRAGMENT_DIALOG);
         }
     }
@@ -543,6 +592,11 @@ public class Camera2BasicFragment extends Fragment
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             requestCameraPermission();
+            return;
+        }
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, "Cant start Camera due to no data permissions.");
             return;
         }
         setUpCameraOutputs(width, height);
@@ -592,6 +646,16 @@ public class Camera2BasicFragment extends Fragment
     }
 
     private void startTesseractThreads() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestStoragePermissions();
+            return;
+        }
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, "Cant start OCR due to no camera permissions.");
+            return;
+        }
         int i = 0;
         for(TesseractOCR ocr : tesseractThreads) {
             ocr.initialize();
@@ -659,8 +723,9 @@ public class Camera2BasicFragment extends Fragment
 
                                 // Finally, we start displaying the camera preview.
                                 mPreviewRequest = mPreviewRequestBuilder.build();
-                                mCaptureSession.setRepeatingRequest(mPreviewRequest,
-                                        null, mBackgroundHandler);
+                                if (!mIsStateAlreadySaved)
+                                    mCaptureSession.setRepeatingRequest(mPreviewRequest,
+                                            null, mBackgroundHandler);
                             } catch (CameraAccessException e) {
                                 e.printStackTrace();
                             }
@@ -831,36 +896,5 @@ public class Camera2BasicFragment extends Fragment
         int length = (int) (scanSegment.getHeight());
         return Bitmap.createBitmap(bitmap, startX, startY, width > bitmap.getWidth() ? bitmap.getWidth() : width, length);
         //TODO fix the need for inline if, if the aspect ratio causes a vertical bar it will crash otherwise.
-    }
-    /**
-     * Shows OK/Cancel confirmation dialog about camera permission.
-     */
-    public static class ConfirmationDialog extends DialogFragment {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Fragment parent = getParentFragment();
-            return new AlertDialog.Builder(getActivity())
-                    .setMessage(R.string.request_permission)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            FragmentCompat.requestPermissions(parent,
-                                    new String[]{Manifest.permission.CAMERA},
-                                    REQUEST_CAMERA_PERMISSION);
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Activity activity = parent.getActivity();
-                                    if (activity != null) {
-                                        activity.finish();
-                                    }
-                                }
-                            })
-                    .create();
-        }
     }
 }
