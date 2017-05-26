@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DigitalVotingPass</string>
+    <string name="app_name">Digital Voting Pass</string>
     <string name="title_activity_manual_input">ManualInput</string>
     <string name="manual_input_button">Manual input document details</string>
     <string name="submit">Submit</string>
