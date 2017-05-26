@@ -177,7 +177,7 @@ public class PassportConActivity extends AppCompatActivity {
     public void startResultActivity(PublicKey pubKey, byte[] signedData) {
         if(pubKey != null && signedData != null) {
 
-            Intent intent = new Intent(this, ResultActivity.class);
+            Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
             intent.putExtra("pubKey", pubKey);
             intent.putExtra("signedData", signedData);
             startActivity(intent);

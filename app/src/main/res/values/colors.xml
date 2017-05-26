@@ -12,7 +12,13 @@
     <color name="viewfinder_mask">#60000000</color>  <!-- viewfinder exterior darkened area -->
 
     <color name="govDarkBlue">#01689b</color>
+    <color name="govDarkBluePressed">#01517a</color>
+    <color name="govDarkBlueFocused">#015f8e</color>
     <color name="govLightBlue">#cce0f1</color>
     <color name="govTextBlue">#01689b</color>
     <color name="govLightGray">#f3f3f3</color>
+
+    <color name="redFailed">#d52b1e</color>
+    <color name="orangeWait">#b08800</color>
+    <color name="greenSucces">#328a3b</color>
 </resources>
