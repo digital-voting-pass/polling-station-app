@@ -9,6 +9,8 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 
 
 /**
@@ -31,6 +33,13 @@ public class Overlay extends View {
         xfermode = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
     }
 
+    public void setMargins (int left, int top, int right, int bottom) {
+        if (getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) getLayoutParams();
+            p.setMargins(left, top, right, bottom);
+            requestLayout();
+        }
+    }
     public void setRect(Rect rect) {
         this.rect = rect;
     }

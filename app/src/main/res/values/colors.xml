@@ -6,8 +6,8 @@
 
     <color name="ocr_control_background">#a0ffffff</color>
     <color name="ocr_control_text_color">#cc4285f4</color>
-    <color name="manual_input_button_background">#ffffff</color>
-    <color name="button_after_timeout">#F88938</color>
+    <color name="manual_input_button_background">#a0ffffff</color>
+    <color name="button_after_timeout">#a0f88938</color>
 
     <color name="green">#00ff00</color>
 </resources>

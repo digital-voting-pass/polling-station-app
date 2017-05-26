@@ -57,6 +57,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -385,6 +386,16 @@ public class Camera2BasicFragment extends Fragment
         Typeface typeFace= Typeface.createFromAsset(getActivity().getAssets(), "fonts/ro.ttf");
         infoText.setTypeface(typeFace);
         manualInput.setTypeface(typeFace);
+        manualInput.setBackgroundColor(getResources().getColor(R.color.manual_input_button_background));
+        final ViewTreeObserver observer= view.findViewById(R.id.control).getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // Set the margins when the view is available.
+                overlay.setMargins(0, 0, 0, view.findViewById(R.id.control).getHeight());
+                view.findViewById(R.id.control).getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
     }
 
     @Override
