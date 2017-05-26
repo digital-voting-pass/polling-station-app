@@ -5,7 +5,6 @@
 
     <com.digitalvotingpass.digitalvotingpass.AutoFitTextureView
         android:id="@+id/texture"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -14,8 +13,8 @@
     <com.digitalvotingpass.digitalvotingpass.Overlay
         android:name="com.digitalvotingpass.digitalvotingpass.Overlay"
         android:id="@+id/overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:id="@+id/control"

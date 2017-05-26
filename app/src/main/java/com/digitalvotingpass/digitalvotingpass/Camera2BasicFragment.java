@@ -33,6 +33,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
+import android.graphics.Typeface;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -58,6 +59,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -76,6 +78,7 @@ public class Camera2BasicFragment extends Fragment
     private ImageView scanSegment;
     private Overlay overlay;
     private Button manualInput;
+    private TextView infoText;
 
     private List<TesseractOCR> tesseractThreads = new ArrayList<>();
     /**
@@ -177,7 +180,7 @@ public class Camera2BasicFragment extends Fragment
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    manualInput.setBackgroundColor(getResources().getColor(R.color.red));
+                    manualInput.setBackgroundColor(getResources().getColor(R.color.button_after_timeout));
                 }
             });
         }
@@ -378,6 +381,10 @@ public class Camera2BasicFragment extends Fragment
                 getActivity().startActivityForResult(intent, MainActivity.GET_DOC_INFO);
             }
         });
+        infoText = (TextView) view.findViewById(R.id.info_text);
+        Typeface typeFace= Typeface.createFromAsset(getActivity().getAssets(), "fonts/ro.ttf");
+        infoText.setTypeface(typeFace);
+        manualInput.setTypeface(typeFace);
     }
 
     @Override
@@ -731,7 +738,6 @@ public class Camera2BasicFragment extends Fragment
         int startY = (int) scanSegment.getY();
         int width = (scanSegment.getWidth());
         int length = (scanSegment.getHeight());
-        //left top right bot
         overlay.setRect(new Rect(startX, startY, startX + width, startY+length));
     }
 
