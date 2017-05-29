@@ -91,6 +91,9 @@ public class TestMainActivity {
     public void testGoToManual2() {
         onView(withId(R.id.manual_input_button))
                 .perform(click());
+        try {
+            Thread.sleep(1000);
+        } catch(Exception e) {}
         intended(hasComponent(ManualInputActivity.class.getName()));
         assertEquals(true, withId(R.id.manual_input_button) != null);
     }
