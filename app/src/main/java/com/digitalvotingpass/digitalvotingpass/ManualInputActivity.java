@@ -2,19 +2,35 @@ package com.digitalvotingpass.digitalvotingpass;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class ManualInputActivity extends AppCompatActivity {
     private EditText docNumber;
     private EditText dateBirth;
     private EditText expiryDate;
+
+    Spinner dobDaySpinner;
+    Spinner dobMonthSpinner;
+    Spinner dobYearSpinner;
+
+    Spinner expiryDaySpinner;
+    Spinner expiryMonthSpinner;
+    Spinner expiryYearSpinner;
 
     // Define the length of document details here, because getting maxLength from EditText is complex
     private final int DOC_NUM_LENGTH = 9;
@@ -28,13 +44,6 @@ public class ManualInputActivity extends AppCompatActivity {
         setSupportActionBar(appBar);
 
         docNumber = (EditText) findViewById(R.id.doc_num);
-        dateBirth = (EditText) findViewById(R.id.date_birth);
-        expiryDate = (EditText) findViewById(R.id.expiry_date);
-
-        // When docData was previously filled in, update text fields
-        if(getIntent().hasExtra("docData")) {
-            putData(getIntent().getExtras());
-        }
 
         Button submitBut = (Button) findViewById(R.id.submit_button);
         submitBut.setOnClickListener(new View.OnClickListener() {
@@ -44,10 +53,78 @@ public class ManualInputActivity extends AppCompatActivity {
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("result", getData());
                     setResult(Activity.RESULT_OK, returnIntent);
-                    finish();
+//                    finish();
                 }
             }
         });
+        setupDOBSpinners();
+        setupExpirySpinners();
+
+        // When docData was previously filled in, update text fields
+        if(getIntent().hasExtra("docData")) {
+            putData(getIntent().getExtras());
+        }
+    }
+
+    private void setupExpirySpinners() {
+        expiryDaySpinner = (Spinner) findViewById(R.id.expiry_day_spinner);
+        expiryMonthSpinner = (Spinner) findViewById(R.id.expiry_month_spinner);
+        expiryYearSpinner = (Spinner) findViewById(R.id.expiry_year_spinner);
+
+        List<String> days = new ArrayList<>();
+        for (int i = 0; i < 31; i++) {
+            days.add("" + (i + 1));
+        }
+        ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, days);
+        dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        expiryDaySpinner.setAdapter(dayAdapter);
+
+        ArrayAdapter<CharSequence> monthAdapter = ArrayAdapter.createFromResource(this,
+                R.array.months_array, android.R.layout.simple_spinner_item);
+        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        expiryMonthSpinner.setAdapter(monthAdapter);
+
+        Date dt = new Date();
+        List<String> years = new ArrayList<>();
+        for (int i = 0; i <= 10; i++) {
+            years.add("" + (dt.getYear() + 1900 + i));
+        }
+        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, years);
+        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        expiryYearSpinner.setAdapter(yearAdapter);
+    }
+
+    private void setupDOBSpinners () {
+        dobDaySpinner = (Spinner) findViewById(R.id.dob_day_spinner);
+        dobMonthSpinner = (Spinner) findViewById(R.id.dob_month_spinner);
+        dobYearSpinner = (Spinner) findViewById(R.id.dob_year_spinner);
+
+        List<String> days = new ArrayList<>();
+        for (int i = 0; i < 31; i++) {
+            days.add("" + (i + 1));
+        }
+        ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, days);
+        dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dobDaySpinner.setAdapter(dayAdapter);
+
+        ArrayAdapter<CharSequence> monthAdapter = ArrayAdapter.createFromResource(this,
+                R.array.months_array, android.R.layout.simple_spinner_item);
+        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dobMonthSpinner.setAdapter(monthAdapter);
+
+        Date dt = new Date();
+        List<String> years = new ArrayList<>();
+        int maxYear = dt.getYear() + 1900 - 18;
+        for (int i = 1900; i <= maxYear; i++) {
+            years.add("" + i);
+        }
+        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, years);
+        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dobYearSpinner.setAdapter(yearAdapter);
     }
 
     /**
@@ -55,10 +132,17 @@ public class ManualInputActivity extends AppCompatActivity {
      */
     public void putData(Bundle extras) {
         HashMap<String, String> docData = (HashMap<String, String>) extras.get("docData");
-        if(docData != null) {
+        if(docData != null && docData.size() > 0) {
             docNumber.setText(docData.get(MainActivity.DOCUMENT_NUMBER));
-            dateBirth.setText(docData.get(MainActivity.DATE_OF_BIRTH));
-            expiryDate.setText(docData.get(MainActivity.EXPIRATION_DATE));
+            dobYearSpinner.setSelection(Integer.parseInt(docData.get(MainActivity.DATE_OF_BIRTH).substring(0,2)));
+            dobMonthSpinner.setSelection(Integer.parseInt(docData.get(MainActivity.DATE_OF_BIRTH).substring(2,4))-1);
+            dobDaySpinner.setSelection(Integer.parseInt(docData.get(MainActivity.DATE_OF_BIRTH).substring(4,6))-1);
+
+            Date dt = new Date();
+            int currYear = dt.getYear() - 100;
+            expiryYearSpinner.setSelection(Integer.parseInt(docData.get(MainActivity.EXPIRATION_DATE).substring(0,2)) - currYear);
+            expiryMonthSpinner.setSelection(Integer.parseInt(docData.get(MainActivity.EXPIRATION_DATE).substring(2,4))-1);
+            expiryDaySpinner.setSelection(Integer.parseInt(docData.get(MainActivity.EXPIRATION_DATE).substring(4,6))-1);
         }
     }
 
@@ -68,11 +152,22 @@ public class ManualInputActivity extends AppCompatActivity {
      */
     public HashMap<String, String> getData() {
         HashMap<String, String> data = new HashMap<>();
-
+        DecimalFormat formatter = new DecimalFormat("00");
         data.put(MainActivity.DOCUMENT_NUMBER, docNumber.getText().toString().toUpperCase());
-        data.put(MainActivity.DATE_OF_BIRTH, dateBirth.getText().toString());
-        data.put(MainActivity.EXPIRATION_DATE, expiryDate.getText().toString());
+        data.put(MainActivity.DATE_OF_BIRTH,
+                dobYearSpinner.getSelectedItem().toString().substring(2) +
+                formatter.format(dobMonthSpinner.getSelectedItemId()+1) +
+                formatter.format(Integer.parseInt(dobDaySpinner.getSelectedItem().toString())));
 
+        data.put(MainActivity.EXPIRATION_DATE,
+                expiryYearSpinner.getSelectedItem().toString().substring(2) +
+                formatter.format(expiryMonthSpinner.getSelectedItemId()+1) +
+                formatter.format(Integer.parseInt(expiryDaySpinner.getSelectedItem().toString())));
+
+        Log.e("ManualInput", data.get(MainActivity.DATE_OF_BIRTH));
+        Log.e("ManualInput", data.get(MainActivity.EXPIRATION_DATE));
+
+        //TODO date info
         return data;
     }
 
@@ -92,24 +187,24 @@ public class ManualInputActivity extends AppCompatActivity {
                 docNumber.setError(getResources().getString(R.string.errFormatDocNum));
             }
         }
-        int dateBirthLength = dateBirth.getText().toString().length();
-        if(dateBirthLength != DATE_LENGTH) {
-            valid = false;
-            if(dateBirthLength == 0) {
-                dateBirth.setError(getResources().getString(R.string.errInputDateBirth));
-            } else {
-                dateBirth.setError(getResources().getString(R.string.errFormatDateBirth));
-            }
-        }
-        int expiryDateLength = expiryDate.getText().toString().length();
-        if(expiryDateLength != DATE_LENGTH) {
-            valid = false;
-            if(expiryDateLength == 0) {
-                expiryDate.setError(getResources().getString(R.string.errInputExpiryDate));
-            } else {
-                expiryDate.setError(getResources().getString(R.string.errFormatExpiryDate));
-            }
-        }
+//        int dateBirthLength = dateBirth.getText().toString().length();
+//        if(dateBirthLength != DATE_LENGTH) {
+//            valid = false;
+//            if(dateBirthLength == 0) {
+//                dateBirth.setError(getResources().getString(R.string.errInputDateBirth));
+//            } else {
+//                dateBirth.setError(getResources().getString(R.string.errFormatDateBirth));
+//            }
+//        }
+//        int expiryDateLength = expiryDate.getText().toString().length();
+//        if(expiryDateLength != DATE_LENGTH) {
+//            valid = false;
+//            if(expiryDateLength == 0) {
+//                expiryDate.setError(getResources().getString(R.string.errInputExpiryDate));
+//            } else {
+//                expiryDate.setError(getResources().getString(R.string.errFormatExpiryDate));
+//            }
+//        }
         return valid;
     }
 

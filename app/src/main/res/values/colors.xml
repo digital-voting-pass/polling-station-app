@@ -6,6 +6,7 @@
 
     <color name="control_background">#cc4285f4</color>
     <color name="green">#00ff00</color>
+    <color name="grey">#a0acacac</color>
 
     <color name="viewfinder_corners">#ff0000</color> <!-- four corner elements for viewfinder -->
     <color name="viewfinder_frame">#00f9d7</color> <!-- viewfinder rectangle -->
@@ -15,4 +16,5 @@
     <color name="govLightBlue">#cce0f1</color>
     <color name="govTextBlue">#01689b</color>
     <color name="govLightGray">#f3f3f3</color>
+
 </resources>

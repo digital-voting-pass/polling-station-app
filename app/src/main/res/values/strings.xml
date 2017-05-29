@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">DigitalVotingPass</string>
-    <string name="title_activity_manual_input">ManualInput</string>
+    <string name="title_activity_manual_input">Handmatige Invoer</string>
     <string name="manual_input_button">Manual input document details</string>
-    <string name="submit">Submit</string>
-    <string name="docNum">Document number</string>
-    <string name="expiryDate">Expiry date</string>
-    <string name="dateBirth">Date of birth</string>
-    <string name="hintDocNum">document number</string>
+    <string name="manInputSubmit">Submit</string>
+    <string name="docNum">Documentnummer</string>
+    <string name="expiryDate">Geldig tot</string>
+    <string name="dateBirth">Geboortedatum</string>
+    <string name="hintDocNum">XXP100154</string>
     <string name="hintExpiryDate">yymmdd</string>
     <string name="hintDateBirth">yymmdd</string>
     <string name="choice">or</string>
@@ -32,5 +32,21 @@
 
     <string name="start_OCR">Scan passport</string>
     <string name="title_activity_result">resultActivity</string>
+
+
+    <string-array name="months_array">
+        <item>Januari</item>
+        <item>Februari</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
 
 </resources>
