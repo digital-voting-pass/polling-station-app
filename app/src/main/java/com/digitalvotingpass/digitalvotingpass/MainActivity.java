@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,7 +15,6 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main activity";
-    private TextView resultData;
     HashMap<String, String> documentData = new HashMap<>();
     private Button manualInput;
     private Button startOCR;
@@ -30,19 +30,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         final MainActivity thisActivity = this;
         setContentView(R.layout.activity_main);
+        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(appBar);
 
         manualInput = (Button) findViewById(R.id.manual_input_button);
-        resultData = (TextView) findViewById(R.id.result_data);
         manualInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(thisActivity, ManualInputActivity.class);
+                // send the docData to the manualinput in case a user wants to edit the existing docdata
+                intent.putExtra("docData", documentData);
                 startActivityForResult(intent, GET_DOC_INFO);
             }
         });
 
         startOCR = (Button) findViewById(R.id.start_ocr);
-        resultData = (TextView) findViewById(R.id.result_data);
         startOCR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,11 +74,6 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == GET_DOC_INFO){
             if (resultCode == RESULT_OK) {
                 documentData = (HashMap<String, String>) data.getSerializableExtra("result");
-                HashMap<String, String> map = (HashMap<String, String>) data.getSerializableExtra("result");
-                resultData.setText("");
-                for (String key : map.keySet()) {
-                    resultData.append(key + ": " + map.get(key) + "\n");
-                }
             }
         }
     }

@@ -5,10 +5,13 @@ import android.app.PendingIntent;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.Image;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +29,7 @@ public class PassportConActivity extends AppCompatActivity {
     // Adapter for NFC connection
     private NfcAdapter mNfcAdapter;
     private HashMap<String, String> documentData;
+    private ImageView progressView;
 
     /**
      * This activity usually be loaded from the starting screen of the app.
@@ -40,7 +44,10 @@ public class PassportConActivity extends AppCompatActivity {
         documentData = (HashMap<String, String>) extras.get("docData");
 
         setContentView(R.layout.activity_passport_con);
+        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(appBar);
         TextView notice = (TextView) findViewById(R.id.notice);
+        progressView = (ImageView) findViewById(R.id.progress_view);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null) {
@@ -51,6 +58,8 @@ public class PassportConActivity extends AppCompatActivity {
         }
         if (!mNfcAdapter.isEnabled()) {
             notice.setText(R.string.nfc_disabled_error);
+        } else {
+            notice.setText(R.string.nfc_enabled);
         }
     }
 
@@ -122,7 +131,7 @@ public class PassportConActivity extends AppCompatActivity {
      *
      */
     private void handleIntent(Intent intent) {
-        TextView textSignedData = (TextView) findViewById(R.id.signedData);
+        progressView.setImageResource(R.drawable.nfc_icon_1);
 
         // if nfc tag holds no data, return
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -134,27 +143,48 @@ public class PassportConActivity extends AppCompatActivity {
         PassportConnection pcon= new PassportConnection();
         PassportService ps = pcon.openConnection(tag, documentData);
         try {
-            // Get the BSN from datagroup1 to confirm the ID was scanned correctly.
-            // This is for testing purposes
-            Toast.makeText(this, pcon.getBSN(ps), Toast.LENGTH_LONG).show();
+            progressView.setImageResource(R.drawable.nfc_icon_2);
+
 
             // display data from dg15
-            PublicKey pubk = pcon.getAAPublicKey(ps);
+            PublicKey pubKey = pcon.getAAPublicKey(ps);
 
             // sign 8 bytes of data and display the signed data + length
             byte[] signedData = pcon.signData(ps);
-            textSignedData.setText(Util.byteArrayToHexString(signedData) + " (size: " + signedData.length + ")");
+            progressView.setImageResource(R.drawable.nfc_icon_3);
 
+            // when all data is loaded start ResultActivity
+            startResultActivity(pubKey, signedData);
         } catch (Exception ex) {
             ex.printStackTrace();
-            Toast.makeText(this, R.string.general_error, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.NFC_error, Toast.LENGTH_LONG).show();
+            progressView.setImageResource(R.drawable.nfc_icon_empty);
         } finally {
             try {
                 ps.close();
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(this, R.string.general_error, Toast.LENGTH_LONG).show();
             }
+        }
+    }
+
+    /**
+     * Method to start the ResultActivity once all the data is loaded.
+     * Creates new intent with the read data
+     * @param pubKey
+     * @param signedData
+     */
+    public void startResultActivity(PublicKey pubKey, byte[] signedData) {
+        if(pubKey != null && signedData != null) {
+
+            Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+            intent.putExtra("pubKey", pubKey);
+            intent.putExtra("signedData", signedData);
+            startActivity(intent);
+            finish();
+        } else {
+            Toast.makeText(this, R.string.NFC_error, Toast.LENGTH_LONG).show();
+            progressView.setImageResource(R.drawable.nfc_icon_empty);
         }
     }
 }
