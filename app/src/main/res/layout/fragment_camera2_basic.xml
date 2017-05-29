@@ -42,6 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="end"
+            android:textColor="@android:color/white"
             android:text="@string/ocr_switch_to_manual" />
     </LinearLayout>
 

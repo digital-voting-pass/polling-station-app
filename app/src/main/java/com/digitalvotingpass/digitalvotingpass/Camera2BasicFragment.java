@@ -388,7 +388,6 @@ public class Camera2BasicFragment extends Fragment
         Typeface typeFace= Typeface.createFromAsset(getActivity().getAssets(), "fonts/ro.ttf");
         infoText.setTypeface(typeFace);
         manualInput.setTypeface(typeFace);
-        manualInput.setTextColor(getResources().getColor(R.color.white));
         controlPanel = view.findViewById(R.id.control);
         final ViewTreeObserver observer= view.findViewById(R.id.control).getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
