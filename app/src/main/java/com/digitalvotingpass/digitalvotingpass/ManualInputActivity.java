@@ -3,7 +3,6 @@ package com.digitalvotingpass.digitalvotingpass;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -34,6 +33,7 @@ public class ManualInputActivity extends AppCompatActivity {
 
     // Define the length of document details here, because getting maxLength from EditText is complex
     private final int DOC_NUM_LENGTH = 9;
+    private final int DOB_YEAR_STARTING_INDEX = 60; // Start at 1960
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,9 +82,11 @@ public class ManualInputActivity extends AppCompatActivity {
         for (int i = 0; i < 31; i++) {
             days.add("" + (i + 1));
         }
+
+        // Leave the default view (android.R.layout.simple_spinner_item) but set custom view for dropdown to add extra padding
         ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, days);
-        dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dayAdapter.setDropDownViewResource(R.layout.spinner_dropdown);
         expiryDaySpinner.setAdapter(dayAdapter);
 
         ArrayAdapter<CharSequence> monthAdapter = ArrayAdapter.createFromResource(this,
@@ -114,7 +116,7 @@ public class ManualInputActivity extends AppCompatActivity {
         }
         ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, days);
-        dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dayAdapter.setDropDownViewResource(R.layout.spinner_dropdown);
         dobDaySpinner.setAdapter(dayAdapter);
 
         ArrayAdapter<CharSequence> monthAdapter = ArrayAdapter.createFromResource(this,
@@ -132,6 +134,7 @@ public class ManualInputActivity extends AppCompatActivity {
                 android.R.layout.simple_spinner_item, years);
         yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dobYearSpinner.setAdapter(yearAdapter);
+        dobYearSpinner.setSelection(DOB_YEAR_STARTING_INDEX);
     }
 
     /**
