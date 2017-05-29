@@ -9,6 +9,8 @@ import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,17 +33,6 @@ import static org.junit.Assert.*;
 @RunWith(AndroidJUnit4.class)
 public class TestMainActivity {
 
-    /**
-     * Create an Intent for each test.
-     */
-    @Rule
-    public IntentsTestRule<MainActivity> mActivity = new IntentsTestRule<MainActivity>(MainActivity.class) {
-        @Override
-        protected Intent getActivityIntent() {
-            return new Intent();
-        }
-    };
-
 
     /**
      * Start up the main activity for each test.
@@ -49,6 +40,26 @@ public class TestMainActivity {
     @Rule
     public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(
             MainActivity.class);
+
+
+    /**
+     * Setup intents.
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception{
+        Intents.init();
+    }
+
+    /**
+     * Clean up.
+     * @throws Exception exception
+     */
+    @After
+    public void tearDown() throws Exception{
+        Intents.release();
+    }
+
 
     @Test
     public void useAppContext() throws Exception {
@@ -88,5 +99,6 @@ public class TestMainActivity {
                 .perform(click());
         intended(hasComponent(CameraActivity.class.getName()));
     }
+
 
 }
