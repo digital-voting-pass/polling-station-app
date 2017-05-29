@@ -30,4 +30,7 @@
 
     <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="MainText" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@color/govTextBlue</item>
+    </style>
 </resources>

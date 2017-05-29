@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">Digital Voting Pass</string>
-    <string name="title_activity_manual_input">ManualInput</string>
+    <string name="title_activity_manual_input">Handmatige Invoer</string>
     <string name="manual_input_button">Manual input document details</string>
-    <string name="submit">Submit</string>
-    <string name="docNum">Document number</string>
-    <string name="expiryDate">Expiry date</string>
-    <string name="dateBirth">Date of birth</string>
-    <string name="hintDocNum">document number</string>
+    <string name="manInputSubmit">Submit</string>
+    <string name="docNum">Documentnummer</string>
+    <string name="expiryDate">Geldig tot</string>
+    <string name="dateBirth">Geboortedatum</string>
+    <string name="hintDocNum">XXP100154</string>
     <string name="hintExpiryDate">yymmdd</string>
     <string name="hintDateBirth">yymmdd</string>
     <string name="choice">or</string>
@@ -16,7 +16,6 @@
     <string name="errInputDocNum">Please fill in the document number.</string>
     <string name="errInputExpiryDate">Please fill in the expiry date of the document.</string>
     <string name="errInputDateBirth">Please fill in your date of birth.</string>
-    <string name="switch_to_manual">Manual Input</string>
     <string name="description_info">Info</string>
     <string name="request_permission">This sample needs camera permission.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
@@ -31,7 +30,7 @@
     <string name="transaction_history">Transaction history</string>
 
     <string name="start_OCR">Scan passport</string>
-    <string name="title_activity_result">resultActivity</string>
+    <string name="title_activity_result">Authorization</string>
 
     <string name="proceed_home">Next voter</string>
     <string name="proceed_cast_vote">Confirm vote</string>
@@ -49,4 +48,21 @@
     <string name="election_choice">Choose election</string>
     <string name="election">election</string>
 
+    <string-array name="months_array">
+        <item>Januari</item>
+        <item>Februari</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+
+    <string name="ocr_switch_to_manual">Handmatige Invoer</string>
+    <string name="ocr_help_text">Scan de code onderaan het paspoort of op de achterkant van de ID kaart.</string>
 </resources>
