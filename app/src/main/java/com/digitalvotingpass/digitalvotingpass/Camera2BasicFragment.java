@@ -552,7 +552,7 @@ public class Camera2BasicFragment extends Fragment
                 } else {
                     //TODO find out why and how this +150 removes the black vertical bar
                     mTextureView.setAspectRatio(
-                            mPreviewSize.getHeight() + 150, mPreviewSize.getWidth());
+                            mPreviewSize.getHeight(), mPreviewSize.getWidth());
                 }
 
                 // Check if the flash is supported.
@@ -735,7 +735,6 @@ public class Camera2BasicFragment extends Fragment
         RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
         float centerX = viewRect.centerX();
         float centerY = viewRect.centerY();
-        Log.e(TAG, "Rotation: " + rotation);
         if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
             bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
             matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);

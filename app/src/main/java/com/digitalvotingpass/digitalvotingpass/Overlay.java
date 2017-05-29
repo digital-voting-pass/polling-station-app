@@ -10,12 +10,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-
-
-/**
- * Created by jonathan on 5/23/17.
- */
 
 /**
  * Creates a grey overlay with a rectangular transparent field, set by setRect()
@@ -35,7 +29,6 @@ public class Overlay extends View {
 
     public void setMargins (int left, int top, int right, int bottom) {
         if (getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-            Log.e(TAG, "Margin set to " + bottom);
             ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) getLayoutParams();
             p.setMargins(left, top, right, bottom);
             requestLayout();
