@@ -2,6 +2,7 @@ package com.digitalvotingpass.digitalvotingpass;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -21,8 +23,6 @@ import java.util.List;
 
 public class ManualInputActivity extends AppCompatActivity {
     private EditText docNumber;
-    private EditText dateBirth;
-    private EditText expiryDate;
 
     Spinner dobDaySpinner;
     Spinner dobMonthSpinner;
@@ -42,8 +42,16 @@ public class ManualInputActivity extends AppCompatActivity {
         setContentView(R.layout.activity_manual_input);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
+        Typeface typeFace= Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
 
         docNumber = (EditText) findViewById(R.id.doc_num);
+        docNumber.setTypeface(typeFace);
+        TextView docNumTitle = (TextView) findViewById(R.id.doc_num_title);
+        TextView dobTitle = (TextView) findViewById(R.id.dob_title);
+        TextView expDateTitle = (TextView) findViewById(R.id.exp_date_title);
+        docNumTitle.setTypeface(typeFace);
+        dobTitle.setTypeface(typeFace);
+        expDateTitle.setTypeface(typeFace);
 
         Button submitBut = (Button) findViewById(R.id.submit_button);
         submitBut.setOnClickListener(new View.OnClickListener() {
