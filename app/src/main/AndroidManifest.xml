@@ -41,7 +41,17 @@
             android:name=".ResultActivity"
             android:label="@string/title_activity_result"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".TransactionHistoryActivity"></activity>
+        <activity android:name=".TransactionHistoryActivity" />
+        <activity
+            android:name=".ElectionChoiceActivity"
+            android:label="@string/election_choice"
+            android:windowSoftInputMode="stateHidden"
+            android:launchMode="singleTask">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable">
+            </meta-data>
+            </activity>
     </application>
 
 </manifest>

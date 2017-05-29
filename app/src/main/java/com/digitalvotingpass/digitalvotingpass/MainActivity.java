@@ -67,6 +67,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /** for testing purposes
+     * TODO: remove
+     */
+    public void startElectionChoice(View view) {
+        Intent intent = new Intent(this, ElectionChoiceActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
