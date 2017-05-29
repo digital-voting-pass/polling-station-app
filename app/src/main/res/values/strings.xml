@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">Digital Voting Pass</string>
-    <string name="title_activity_manual_input">Handmatige Invoer</string>
+    <string name="title_activity_manual_input">Manual input</string>
     <string name="manual_input_button">Manual input document details</string>
     <string name="manInputSubmit">Submit</string>
-    <string name="docNum">Documentnummer</string>
-    <string name="expiryDate">Geldig tot</string>
-    <string name="dateBirth">Geboortedatum</string>
+    <string name="docNum">Document number</string>
+    <string name="expiryDate">Date of expiry</string>
+    <string name="dateBirth">Date of birth</string>
     <string name="hintDocNum">XXP100154</string>
     <string name="hintExpiryDate">yymmdd</string>
     <string name="hintDateBirth">yymmdd</string>
@@ -45,8 +45,8 @@
     <string name="voting_passes">Voting passes</string>
 
     <string-array name="months_array">
-        <item>Januari</item>
-        <item>Februari</item>
+        <item>January</item>
+        <item>February</item>
         <item>March</item>
         <item>April</item>
         <item>May</item>
@@ -59,6 +59,6 @@
         <item>December</item>
     </string-array>
 
-    <string name="ocr_switch_to_manual">Handmatige Invoer</string>
-    <string name="ocr_help_text">Scan de code onderaan het paspoort of op de achterkant van de ID kaart.</string>
+    <string name="ocr_switch_to_manual">Manual Input</string>
+    <string name="ocr_help_text">Scan the text at the bottom of the passport or on the backside of the ID card.</string>
 </resources>
