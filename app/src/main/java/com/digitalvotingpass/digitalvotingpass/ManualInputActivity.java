@@ -3,7 +3,6 @@ package com.digitalvotingpass.digitalvotingpass;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;

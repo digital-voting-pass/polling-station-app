@@ -10,7 +10,8 @@
 
     <color name="button_after_timeout">#a0f88938</color>
     <color name="grey">#a0acacac</color>
-    <color name="green">#00ff00</color>    
+    <color name="green">#00ff00</color>
+    <color name="white">#ffffff</color>
 
     <color name="govDarkBlue">#01689b</color>
     <color name="govDarkBluePressed">#01517a</color>

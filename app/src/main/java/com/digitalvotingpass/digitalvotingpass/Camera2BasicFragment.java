@@ -80,6 +80,7 @@ public class Camera2BasicFragment extends Fragment
     private Overlay overlay;
     private Button manualInput;
     private TextView infoText;
+    private View controlPanel;
 
     private List<TesseractOCR> tesseractThreads = new ArrayList<>();
     /**
@@ -181,7 +182,8 @@ public class Camera2BasicFragment extends Fragment
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    manualInput.setBackgroundColor(getResources().getColor(R.color.button_after_timeout));
+                    manualInput.setVisibility(View.VISIBLE);
+                    overlay.setMargins(0,0,0,infoText.getHeight() + manualInput.getHeight());
                 }
             });
         }
@@ -386,13 +388,14 @@ public class Camera2BasicFragment extends Fragment
         Typeface typeFace= Typeface.createFromAsset(getActivity().getAssets(), "fonts/ro.ttf");
         infoText.setTypeface(typeFace);
         manualInput.setTypeface(typeFace);
-        manualInput.setBackgroundColor(getResources().getColor(R.color.manual_input_button_background));
+        manualInput.setTextColor(getResources().getColor(R.color.white));
+        controlPanel = view.findViewById(R.id.control);
         final ViewTreeObserver observer= view.findViewById(R.id.control).getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 // Set the margins when the view is available.
-                overlay.setMargins(0, 0, 0, view.findViewById(R.id.control).getHeight());
+                overlay.setMargins(0, 0, 0, controlPanel.getHeight());
                 view.findViewById(R.id.control).getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });

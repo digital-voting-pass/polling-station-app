@@ -18,7 +18,7 @@
 
     <LinearLayout
         android:id="@+id/control"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -28,23 +28,21 @@
         <TextView
             android:id="@+id/info_text"
             android:layout_gravity="center_vertical"
-            android:layout_weight="0.8"
             android:layout_width="wrap_content"
             android:layout_margin="@dimen/ocr_control_padding"
             android:layout_height="wrap_content"
-            android:textColor="@color/ocr_control_text_color"
+            android:textColor="@color/govTextBlue"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
             android:text="@string/ocr_help_text"/>
 
         <Button
             android:id="@+id/manual_input_button"
-            android:layout_weight="0.2"
-            android:background="@color/manual_input_button_background"
-            android:layout_width="wrap_content"
+            android:visibility="gone"
+            android:background="@drawable/blue_button_bottom"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:text="@string/ocr_switch_to_manual" />
-
     </LinearLayout>
 
     <ImageView
