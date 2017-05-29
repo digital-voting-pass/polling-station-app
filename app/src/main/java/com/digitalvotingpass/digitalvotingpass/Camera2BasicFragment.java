@@ -30,8 +30,10 @@ import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
+import android.graphics.Typeface;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -55,8 +57,10 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -73,7 +77,10 @@ public class Camera2BasicFragment extends Fragment
     private static final int DELAY_BETWEEN_OCR_THREADS_MILLIS = 500;
 
     private ImageView scanSegment;
+    private Overlay overlay;
     private Button manualInput;
+    private TextView infoText;
+    private View controlPanel;
 
     private List<TesseractOCR> tesseractThreads = new ArrayList<>();
     /**
@@ -167,6 +174,20 @@ public class Camera2BasicFragment extends Fragment
      */
     private Size mPreviewSize;
     private boolean resultFound = false;
+
+    private float secTillScanTimeout = 10;
+    private Runnable scanningTakingLongTimeout = new Runnable() {
+        @Override
+        public void run() {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    manualInput.setVisibility(View.VISIBLE);
+                    overlay.setMargins(0,0,0,infoText.getHeight() + manualInput.getHeight());
+                }
+            });
+        }
+    };
 
     /**
      * Method for delivering correct MRZ when found. This method returns the MRZ as result data and
@@ -355,12 +376,26 @@ public class Camera2BasicFragment extends Fragment
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
         scanSegment = (ImageView) view.findViewById(R.id.scan_segment);
         manualInput = (Button) view.findViewById(R.id.manual_input_button);
-
+        overlay = (Overlay) view.findViewById(R.id.overlay);
         manualInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), ManualInputActivity.class);
                 getActivity().startActivityForResult(intent, MainActivity.GET_DOC_INFO);
+            }
+        });
+        infoText = (TextView) view.findViewById(R.id.info_text);
+        Typeface typeFace= Typeface.createFromAsset(getActivity().getAssets(), "fonts/ro.ttf");
+        infoText.setTypeface(typeFace);
+        manualInput.setTypeface(typeFace);
+        controlPanel = view.findViewById(R.id.control);
+        final ViewTreeObserver observer= view.findViewById(R.id.control).getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // Set the margins when the view is available.
+                overlay.setMargins(0, 0, 0, controlPanel.getHeight());
+                view.findViewById(R.id.control).getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
     }
@@ -516,7 +551,7 @@ public class Camera2BasicFragment extends Fragment
                 } else {
                     //TODO find out why and how this +150 removes the black vertical bar
                     mTextureView.setAspectRatio(
-                            mPreviewSize.getHeight() + 150, mPreviewSize.getWidth());
+                            mPreviewSize.getHeight(), mPreviewSize.getWidth());
                 }
 
                 // Check if the flash is supported.
@@ -589,6 +624,7 @@ public class Camera2BasicFragment extends Fragment
         mBackgroundThread = new HandlerThread("CameraBackground");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+        mBackgroundHandler.postDelayed(scanningTakingLongTimeout, (long) (secTillScanTimeout * 1000));
     }
 
     private void startTesseractThreads() {
@@ -604,6 +640,7 @@ public class Camera2BasicFragment extends Fragment
      * Stops the background thread and its {@link Handler}.
      */
     private void stopBackgroundThread() {
+        mBackgroundHandler.removeCallbacks(scanningTakingLongTimeout);
         mBackgroundThread.quitSafely();
         try {
             mBackgroundThread.join();
@@ -697,7 +734,6 @@ public class Camera2BasicFragment extends Fragment
         RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
         float centerX = viewRect.centerX();
         float centerY = viewRect.centerY();
-        Log.e(TAG, "Rotation: " + rotation);
         if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
             bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
             matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
@@ -710,6 +746,11 @@ public class Camera2BasicFragment extends Fragment
             matrix.postRotate(180, centerX, centerY);
         }
         mTextureView.setTransform(matrix);
+        int startX = (int) scanSegment.getX();
+        int startY = (int) scanSegment.getY();
+        int width = (scanSegment.getWidth());
+        int length = (scanSegment.getHeight());
+        overlay.setRect(new Rect(startX, startY, startX + width, startY+length));
     }
 
     private void setAutoFlash(CaptureRequest.Builder requestBuilder) {
