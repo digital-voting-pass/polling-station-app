@@ -23,10 +23,11 @@ public class SplashActivity extends Activity{
         setContentView(R.layout.activity_splash_screen);
 
         //Start MainActivity after SPLASH_DISPLAY_LENGTH
+        //This delay can be removed when we need to actually load data
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
-                /* Create an Intent that will start the Menu-Activity. */
+                // Create an Intent that will start the MainActivity
                 Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
                 SplashActivity.this.startActivity(mainIntent);
                 SplashActivity.this.finish();
