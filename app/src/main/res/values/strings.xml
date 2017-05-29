@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DigitalVotingPass</string>
+    <string name="app_name">Digital Voting Pass</string>
     <string name="title_activity_manual_input">Handmatige Invoer</string>
     <string name="manual_input_button">Manual input document details</string>
     <string name="manInputSubmit">Submit</string>
@@ -33,6 +33,17 @@
     <string name="start_OCR">Scan passport</string>
     <string name="title_activity_result">resultActivity</string>
 
+    <string name="proceed_home">Next voter</string>
+    <string name="proceed_cast_vote">Confirm vote</string>
+    <string name="cancel_vote">Cancel vote</string>
+
+    <string name="authorization_failed">Authorization failed, do not hand out voting ballot.</string>
+    <string name="authorization_succesful">Authorization succesful, hand out voting ballot.</string>
+    <string name="authorization_wait">Waiting for authorization.</string>
+
+    <string name="has_right">%s has right to:</string>
+    <string name="voting_pass">Voting pass</string>
+    <string name="voting_passes">Voting passes</string>
 
     <string-array name="months_array">
         <item>Januari</item>
