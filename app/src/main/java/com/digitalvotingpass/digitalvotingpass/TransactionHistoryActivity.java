@@ -25,7 +25,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
 
         // create a transaction history array with all the transactions and add them to the list
         // TODO: handle actual transaction history input data
-        ArrayList<Transaction> transactionHistory = new ArrayList<Transaction>();
+        ArrayList<Transaction> transactionHistory = new ArrayList<>();
 
         TransactionsAdapter adapter = new TransactionsAdapter(this, transactionHistory);
         transactionList.setAdapter(adapter);

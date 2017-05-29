@@ -57,6 +57,7 @@
             android:gravity="bottom|center"
             android:textColor="@android:color/white"
             android:text="@string/manual_input_button"/>
+
         <Button
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
@@ -64,5 +65,6 @@
             android:paddingRight="8dp"
             android:text="@string/start_con_button"
             android:onClick="startReading" />
+
     </LinearLayout>
 </LinearLayout>

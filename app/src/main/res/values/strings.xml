@@ -44,6 +44,10 @@
     <string name="voting_pass">Voting pass</string>
     <string name="voting_passes">Voting passes</string>
 
+    <string name="search">Search</string>
+    <string name="election_choice">Choose election</string>
+    <string name="election">election</string>
+
     <string-array name="months_array">
         <item>Januari</item>
         <item>Februari</item>
