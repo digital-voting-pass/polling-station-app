@@ -86,7 +86,7 @@ public class Camera2BasicFragment extends Fragment
     /**
      * If this is defined and > 0, use this amount of threads instead of dynamically determined amount.
      */
-    private int ocrThreadNumberOverride = 1;
+    private int ocrThreadNumberOverride;
 
     /**
      * Conversion from screen rotation to JPEG orientation.
