@@ -63,6 +63,18 @@ public class TestMainActivity {
         assertEquals("com.digitalvotingpass.digitalvotingpass", appContext.getPackageName());
     }
 
+    /**
+     * Dummy test.
+     */
+    public void testDummy() {
+        onView(withId(R.id.manual_input_button))
+                .perform(click());
+        try {
+            Thread.sleep(1000);
+        } catch(Exception e) {}
+        assertEquals(true, true);
+    }
+
 
     /**
      * Test if the manual input activity opens.
@@ -71,8 +83,8 @@ public class TestMainActivity {
     public void testGoToManual() {
         onView(withId(R.id.manual_input_button))
                 .perform(click());
-        //intended(hasComponent(ManualInputActivity.class.getName()));
-        assertEquals(true, withId(R.id.manual_input_button) != null);
+        intended(hasComponent(ManualInputActivity.class.getName()));
+        //assertEquals(true, withId(R.id.manual_input_button) != null);
     }
 
     /**
