@@ -4,13 +4,14 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#ff4081</color>
 
-    <color name="control_background">#cc4285f4</color>
-    <color name="green">#00ff00</color>
-    <color name="grey">#a0acacac</color>
+    <color name="ocr_control_background">#a0ffffff</color>
+    <color name="ocr_control_text_color">#cc4285f4</color>
+    <color name="manual_input_button_background">#a0ffffff</color>
 
-    <color name="viewfinder_corners">#ff0000</color> <!-- four corner elements for viewfinder -->
-    <color name="viewfinder_frame">#00f9d7</color> <!-- viewfinder rectangle -->
-    <color name="viewfinder_mask">#60000000</color>  <!-- viewfinder exterior darkened area -->
+    <color name="button_after_timeout">#a0f88938</color>
+    <color name="grey">#a0acacac</color>
+    <color name="green">#00ff00</color>
+    <color name="white">#ffffff</color>
 
     <color name="govDarkBlue">#01689b</color>
     <color name="govDarkBluePressed">#01517a</color>

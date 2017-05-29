@@ -15,7 +15,9 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main activity";
-    HashMap<String, String> documentData = new HashMap<>();
+    public HashMap<String, String> documentData = new HashMap<>();
+    public Election election;
+
     private Button manualInput;
     private Button startOCR;
 
@@ -28,10 +30,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle extras = getIntent().getExtras();
+        election = (Election) extras.get("election");
+
         final MainActivity thisActivity = this;
         setContentView(R.layout.activity_main);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
+        // set the text of the appbar to the selected election
+        getSupportActionBar().setTitle(election.getKind());
+        getSupportActionBar().setSubtitle(election.getPlace());
 
         manualInput = (Button) findViewById(R.id.manual_input_button);
         manualInput.setOnClickListener(new View.OnClickListener() {
