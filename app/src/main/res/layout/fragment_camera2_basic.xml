@@ -10,22 +10,41 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true" />
 
-    <FrameLayout
+    <com.digitalvotingpass.digitalvotingpass.Overlay
+        android:name="com.digitalvotingpass.digitalvotingpass.Overlay"
+        android:id="@+id/overlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
         android:id="@+id/control"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/cam_control_pane_height"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:background="@color/control_background">
+        android:background="@color/ocr_control_background">
+
+        <TextView
+            android:id="@+id/info_text"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_margin="@dimen/ocr_control_padding"
+            android:layout_height="wrap_content"
+            android:textColor="@color/govTextBlue"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:text="@string/ocr_help_text"/>
 
         <Button
             android:id="@+id/manual_input_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/switch_to_manual" />
-
-    </FrameLayout>
+            android:visibility="gone"
+            android:background="@drawable/blue_button_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:textColor="@android:color/white"
+            android:text="@string/ocr_switch_to_manual" />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/scan_segment"
