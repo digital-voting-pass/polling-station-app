@@ -39,14 +39,18 @@ public class CameraActivity extends Activity {
         }
     }
 
+    /**
+     * Pass data from ManualInputActivity to the MainActivity.
+     * @param requestCode requestCode
+     * @param resultCode resultCode
+     * @param data The data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == MainActivity.GET_DOC_INFO) {
-            Intent returnIntent = new Intent();
-            HashMap<String, String> documentData = (HashMap<String, String>) data.getSerializableExtra("result");
-            returnIntent.putExtra("result", documentData);
-            setResult(Activity.RESULT_OK, returnIntent);
+        if (requestCode == MainActivity.GET_DOC_INFO && resultCode == RESULT_OK) {
+            setResult(Activity.RESULT_OK, data);
+            //Clear this activity
             finish();
         }
     }
