@@ -23,25 +23,31 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".PassportConActivity"
-            android:label="PassportConActivity" />
+            android:label="PassportConActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ManualInputActivity"
-            android:label="@string/title_activity_manual_input" />
+            android:label="@string/title_activity_manual_input"
+            android:screenOrientation="portrait"/>
         <activity android:name=".CameraActivity" />
         <activity
             android:name=".ResultActivity"
             android:label="@string/title_activity_result"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".TransactionHistoryActivity"></activity>
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".TransactionHistoryActivity"
+            android:label="@string/transaction_history"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
