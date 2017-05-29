@@ -12,9 +12,9 @@ public class Election implements Parcelable{
     public String place;
 
     /**
-     * Creates a election object with two attributes.
+     * Creates an election object with two attributes.
      * @param kind - The kind of election. (e.g. municipal, parlement)
-     * @param place - The location of the electino. (e.g. Amsterdam, Den Haag, Noord-Brabant)
+     * @param place - The location of the election. (e.g. Amsterdam, Den Haag, Noord-Brabant)
      */
     public Election(String kind, String place) {
         this.kind = kind;
