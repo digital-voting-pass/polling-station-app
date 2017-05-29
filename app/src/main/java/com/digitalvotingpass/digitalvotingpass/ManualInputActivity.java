@@ -34,7 +34,6 @@ public class ManualInputActivity extends AppCompatActivity {
 
     // Define the length of document details here, because getting maxLength from EditText is complex
     private final int DOC_NUM_LENGTH = 9;
-    private final int DATE_LENGTH = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +60,7 @@ public class ManualInputActivity extends AppCompatActivity {
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("result", getData());
                     setResult(Activity.RESULT_OK, returnIntent);
-//                    finish();
+                    finish();
                 }
             }
         });
@@ -195,24 +194,6 @@ public class ManualInputActivity extends AppCompatActivity {
                 docNumber.setError(getResources().getString(R.string.errFormatDocNum));
             }
         }
-//        int dateBirthLength = dateBirth.getText().toString().length();
-//        if(dateBirthLength != DATE_LENGTH) {
-//            valid = false;
-//            if(dateBirthLength == 0) {
-//                dateBirth.setError(getResources().getString(R.string.errInputDateBirth));
-//            } else {
-//                dateBirth.setError(getResources().getString(R.string.errFormatDateBirth));
-//            }
-//        }
-//        int expiryDateLength = expiryDate.getText().toString().length();
-//        if(expiryDateLength != DATE_LENGTH) {
-//            valid = false;
-//            if(expiryDateLength == 0) {
-//                expiryDate.setError(getResources().getString(R.string.errInputExpiryDate));
-//            } else {
-//                expiryDate.setError(getResources().getString(R.string.errFormatExpiryDate));
-//            }
-//        }
         return valid;
     }
 
