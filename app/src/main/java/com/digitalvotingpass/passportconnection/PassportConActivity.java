@@ -1,11 +1,10 @@
-package com.digitalvotingpass.digitalvotingpass;
+package com.digitalvotingpass.passportconnection;
 
 import android.app.Activity;
 import android.app.PendingIntent;
 
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.Image;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -14,6 +13,9 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.digitalvotingpass.ResultActivity;
 
 import org.jmrtd.PassportService;
 import org.spongycastle.jce.provider.BouncyCastleProvider;

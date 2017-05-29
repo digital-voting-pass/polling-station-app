@@ -1,4 +1,4 @@
-package com.digitalvotingpass.digitalvotingpass;
+package com.digitalvotingpass.camera;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,9 +7,10 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.digitalvotingpass.digitalvotingpass.R;
 
 /**
  * Creates a grey overlay with a rectangular transparent field, set by setRect()

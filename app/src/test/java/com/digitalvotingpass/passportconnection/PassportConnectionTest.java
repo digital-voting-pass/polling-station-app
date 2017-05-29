@@ -1,4 +1,6 @@
-package com.digitalvotingpass.digitalvotingpass;
+package com.digitalvotingpass.passportconnection;
+
+import com.digitalvotingpass.utilities.Util;
 
 import org.junit.Test;
 

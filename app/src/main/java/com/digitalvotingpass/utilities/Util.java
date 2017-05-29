@@ -1,4 +1,4 @@
-package com.digitalvotingpass.digitalvotingpass;
+package com.digitalvotingpass.utilities;
 
 import android.util.Log;
 

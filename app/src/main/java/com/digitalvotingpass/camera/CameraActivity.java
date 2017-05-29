@@ -1,4 +1,4 @@
-package com.digitalvotingpass.digitalvotingpass;/*
+package com.digitalvotingpass.camera;/*
  * Copyright 2014 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,9 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v13.app.ActivityCompat;
-import android.widget.Toast;
+
+import com.digitalvotingpass.digitalvotingpass.MainActivity;
+import com.digitalvotingpass.digitalvotingpass.R;
 
 import java.util.HashMap;
 

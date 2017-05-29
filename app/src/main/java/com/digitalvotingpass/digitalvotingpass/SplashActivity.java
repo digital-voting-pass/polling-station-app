@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
+
 /**
  * Created by rico on 29-5-17.
  */

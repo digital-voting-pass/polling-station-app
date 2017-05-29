@@ -1,4 +1,4 @@
-package com.digitalvotingpass.digitalvotingpass;
+package com.digitalvotingpass.ocrscanner;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 
+import com.digitalvotingpass.camera.Camera2BasicFragment;
+import com.digitalvotingpass.utilities.Util;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;

@@ -1,4 +1,4 @@
-package com.digitalvotingpass.digitalvotingpass;
+package com.digitalvotingpass.electionchoice;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+
+import com.digitalvotingpass.digitalvotingpass.R;
 
 import java.util.ArrayList;
 

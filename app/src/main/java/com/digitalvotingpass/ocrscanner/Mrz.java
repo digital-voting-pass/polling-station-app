@@ -1,4 +1,6 @@
-package com.digitalvotingpass.digitalvotingpass;
+package com.digitalvotingpass.ocrscanner;
+
+import com.digitalvotingpass.digitalvotingpass.MainActivity;
 
 import java.util.HashMap;
 

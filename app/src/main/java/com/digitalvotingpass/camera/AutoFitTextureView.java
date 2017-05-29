@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.digitalvotingpass.digitalvotingpass;
+package com.digitalvotingpass.camera;
 
 import android.content.Context;
 import android.util.AttributeSet;

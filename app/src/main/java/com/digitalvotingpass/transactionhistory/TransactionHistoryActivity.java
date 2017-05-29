@@ -1,15 +1,14 @@
-package com.digitalvotingpass.digitalvotingpass;
+package com.digitalvotingpass.transactionhistory;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
+
+import com.digitalvotingpass.digitalvotingpass.R;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class TransactionHistoryActivity extends AppCompatActivity {
     private ListView transactionList;

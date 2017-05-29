@@ -1,4 +1,4 @@
-package com.digitalvotingpass.digitalvotingpass;
+package com.digitalvotingpass.transactionhistory;
 
 import java.util.Date;
 

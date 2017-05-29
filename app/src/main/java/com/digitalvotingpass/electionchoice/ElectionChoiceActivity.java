@@ -1,4 +1,4 @@
-package com.digitalvotingpass.digitalvotingpass;
+package com.digitalvotingpass.electionchoice;
 
 import android.app.SearchManager;
 import android.content.Context;
@@ -12,6 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import com.digitalvotingpass.digitalvotingpass.MainActivity;
+import com.digitalvotingpass.digitalvotingpass.R;
 
 import java.util.ArrayList;
 

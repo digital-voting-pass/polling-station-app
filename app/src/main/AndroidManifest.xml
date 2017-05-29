@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ElectionChoiceActivity"
+            android:name="com.digitalvotingpass.electionchoice.ElectionChoiceActivity"
             android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.app.searchable"
@@ -44,19 +44,19 @@
 
         </activity>
         <activity
-            android:name=".PassportConActivity"
+            android:name="com.digitalvotingpass.passportconnection.PassportConActivity"
             android:label="PassportConActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ManualInputActivity"
             android:label="@string/title_activity_manual_input"
             android:screenOrientation="portrait"/>
-        <activity android:name=".CameraActivity" />
+        <activity android:name="com.digitalvotingpass.camera.CameraActivity" />
         <activity
             android:name=".ResultActivity"
             android:label="@string/title_activity_result"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".TransactionHistoryActivity"
+        <activity android:name="com.digitalvotingpass.transactionhistory.TransactionHistoryActivity"
             android:label="@string/transaction_history"
             android:screenOrientation="portrait"/>
     </application>

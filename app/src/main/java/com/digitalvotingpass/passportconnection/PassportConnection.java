@@ -1,7 +1,10 @@
-package com.digitalvotingpass.digitalvotingpass;
+package com.digitalvotingpass.passportconnection;
 
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
+
+import com.digitalvotingpass.digitalvotingpass.MainActivity;
+import com.digitalvotingpass.utilities.Util;
 
 import net.sf.scuba.smartcards.CardService;
 

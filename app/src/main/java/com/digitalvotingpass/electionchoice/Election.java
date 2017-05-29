@@ -1,4 +1,4 @@
-package com.digitalvotingpass.digitalvotingpass;
+package com.digitalvotingpass.electionchoice;
 
 import android.os.Parcel;
 import android.os.Parcelable;

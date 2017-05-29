@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.digitalvotingpass.transactionhistory.TransactionHistoryActivity;
+
 public class ResultActivity extends AppCompatActivity {
     private TextView textAuthorization;
     private TextView textVoterName;
