@@ -2,18 +2,21 @@ package com.digitalvotingpass.digitalvotingpass;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
 public class ElectionChoiceActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
-    private ListView electionList;
+    private ListView electionListView;
     private ElectionsAdapter electionsAdapter;
     private MenuItem searchItem;
     private SearchView searchView;
@@ -22,11 +25,13 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_election_choice);
+        final ElectionChoiceActivity thisActivity = this;
 
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
+        getSupportActionBar().setTitle(getString(R.string.election_choice));
 
-        electionList = (ListView) findViewById(R.id.election_list);
+        electionListView = (ListView) findViewById(R.id.election_list);
 
         // create a election array with all the elections and add them to the list
         // TODO: handle actual election choice input data
@@ -36,7 +41,19 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
         electionChoices.add(new Election("Provinciale Statenverkiezing", "Zuid-Holland"));
 
         electionsAdapter = new ElectionsAdapter(this, electionChoices);
-        electionList.setAdapter(electionsAdapter);
+        electionListView.setAdapter(electionsAdapter);
+
+        electionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+                Intent intent = new Intent(thisActivity, MainActivity.class);
+                // Get the election associated with the clicked listItem
+                Election election = (Election) parent.getItemAtPosition(position);
+                intent.putExtra("election", election);
+                startActivity(intent);
+            }
+        });
     }
 
     /**

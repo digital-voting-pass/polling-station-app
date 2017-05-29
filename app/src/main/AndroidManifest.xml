@@ -23,13 +23,19 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".ElectionChoiceActivity"
+            android:windowSoftInputMode="stateHidden">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable">
+            </meta-data>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MainActivity"/>
         <activity
             android:name=".PassportConActivity"
             android:label="PassportConActivity" />
@@ -42,16 +48,7 @@
             android:label="@string/title_activity_result"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".TransactionHistoryActivity" />
-        <activity
-            android:name=".ElectionChoiceActivity"
-            android:label="@string/election_choice"
-            android:windowSoftInputMode="stateHidden"
-            android:launchMode="singleTask">
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable">
-            </meta-data>
-            </activity>
+
     </application>
 
 </manifest>
