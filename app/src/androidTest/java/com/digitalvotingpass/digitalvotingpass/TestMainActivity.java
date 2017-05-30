@@ -3,9 +3,13 @@ package com.digitalvotingpass.digitalvotingpass;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.NoMatchingViewException;
+import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.digitalvotingpass.camera.CameraActivity;
 import com.digitalvotingpass.electionchoice.Election;
@@ -19,11 +23,13 @@ import org.junit.runner.RunWith;
 import static android.support.test.espresso.Espresso.closeSoftKeyboard;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.scrollTo;
+import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -65,35 +71,29 @@ public class TestMainActivity {
 
 
 
-    @Test
-    public void useAppContext() throws Exception {
-        // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
-        assertEquals("com.digitalvotingpass.digitalvotingpass", appContext.getPackageName());
-    }
-
-
-
     /**
      * Test if the manual input activity opens.
      */
     @Test
     public void testGoToManual() {
-        closeSoftKeyboard();
         onView(withId(R.id.manual_input_button))
                 .perform(click());
         intended(hasComponent(ManualInputActivity.class.getName()));
     }
 
-    /**
-     * Test if the Camera activity opens.
-     */
     @Test
-    public void testGoToOCR() {
+    public void testMainGetsData() throws InterruptedException {
+        //Go to manual input
+        onView(withId(R.id.manual_input_button))
+                .perform(click());
+        intended(hasComponent(ManualInputActivity.class.getName()));
+
+        //fil in document number
+        onView(withId(R.id.doc_num)).perform(typeText("123456789"));
         closeSoftKeyboard();
-        onView(withId(R.id.start_ocr)).perform(click());
-        intended(hasComponent(CameraActivity.class.getName()));
+        onView(withId(R.id.submit_button)).perform(click());
     }
+
 
 
 
