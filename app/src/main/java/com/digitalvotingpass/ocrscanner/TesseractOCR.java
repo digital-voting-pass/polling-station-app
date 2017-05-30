@@ -35,7 +35,7 @@ public class TesseractOCR {
     private AssetManager assetManager;
     private Camera2BasicFragment fragment;
     private boolean stopping = false;
-    private boolean isInitialized = false;
+    public boolean isInitialized = false;
 
     // Filled with OCR run times for analysis
     private ArrayList<Long> times = new ArrayList<>();
@@ -131,8 +131,9 @@ public class TesseractOCR {
 
     /**
      * Initializes Tesseract library using traineddata file.
+     * Should not be called directly, is public for testing.
      */
-    private void init() {
+    public void init() {
         baseApi = new TessBaseAPI();
         baseApi.setDebug(true);
         String path = Environment.getExternalStorageDirectory() + "/";
@@ -155,10 +156,11 @@ public class TesseractOCR {
 
     /**
      * Performs OCR scan to bitmap provided, if tesseract is initialized and not currently stopping.
+     * Should not be called directly, is public for testing.
      * @param bitmap Bitmap image to be scanned
      * @return Mrz Object containing result data
      */
-    private Mrz ocr(Bitmap bitmap) {
+    public Mrz ocr(Bitmap bitmap) {
         if (bitmap == null) return null;
         if (isInitialized && !stopping) {
             BitmapFactory.Options options = new BitmapFactory.Options();
