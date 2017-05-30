@@ -52,6 +52,16 @@ public class TestMainActivity {
     };
 
 
+    @Before
+    public void setUp() {
+        Intents.init();
+    }
+
+    @After
+    public void destroy() {
+        Intents.release();
+    }
+
 
 
     @Test
@@ -70,8 +80,16 @@ public class TestMainActivity {
     public void testGoToManual() {
         onView(withId(R.id.manual_input_button))
                 .perform(click());
-        //intended(hasComponent(ManualInputActivity.class.getName()));
-        assertEquals(true, withId(R.id.manual_input_button) != null);
+        intended(hasComponent(ManualInputActivity.class.getName()));
+    }
+
+    /**
+     * Test if the Camera activity opens.
+     */
+    @Test
+    public void testGoToOCR() {
+        onView(withId(R.id.start_ocr)).perform(click());
+        intended(hasComponent(CameraActivity.class.getName()));
     }
 
 
