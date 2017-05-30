@@ -51,4 +51,4 @@ before_script:
 script:
   - android list target
   - ./gradlew connectedAndroidTest
-#  - pandoc builder/build/reports/tests/index.html -t plain | sed -n '/^Failed tests/,/default-package/p'
+  - ./gradlew test
