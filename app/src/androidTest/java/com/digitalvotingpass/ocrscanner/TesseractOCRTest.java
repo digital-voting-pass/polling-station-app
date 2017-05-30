@@ -32,9 +32,9 @@ public class TesseractOCRTest {//extends InstrumentationTestCase {
     private String image1 = "paspoort_mrz_1.jpg";
     private String image1Result = "P<NLDDE<BRUIJN<<WILLEKE<LISELOTTE<<<<<<<<<<<\nSPECI20142NLD6503101F2401151999999990<<<<<82";
     private String image2 = "paspoort_mrz_2.jpg";
-    private String image2Result = "P<NLDDE<BRUIJN<<WILLEKE<LISELOTTE<<<<<<<<<<<\nSPECI20142NLD6503101F2401151999999990<<<<<82";
+    private String image2Result = "P<NLDNICOLAI<<ATZO<<<<<<<<<<<<<<<<<<<<<<<<<<\nNX6P975712NLD6002224M1108143000000000<<<<<94";
     private String imageId1 = "id_mrz_1.jpg";
-    private String imageId1Result = "P<NLDDE<BRUIJN<<WILLEKE<LISELOTTE<<<<<<<<<<<\nSPECI20142NLD6503101F2401151999999990<<<<<82";
+    private String imageId1Result = "I<NLDSPECI20142999999990<<<<<8\n6503101F2403096NLD<<<<<<<<<<<8\nDE<BRUIJN<<WILLEKE<LISELOTTE<<";
 
     @Mock
     Camera2BasicFragment fragmentMock;
@@ -48,8 +48,8 @@ public class TesseractOCRTest {//extends InstrumentationTestCase {
      */
     @Rule
     public ActivityTestRule<SplashActivity> activityRule
-            = new SplashActivity<>(
-            ElectionChoiceActivity.class);
+            = new ActivityTestRule<>(
+            SplashActivity.class);
 
     @Before
     public void init() throws Exception {
@@ -76,11 +76,24 @@ public class TesseractOCRTest {//extends InstrumentationTestCase {
     }
 
     @Test
-    public void testOCRInputComplex() throws Exception {
+    public void testOCRInputPassport1() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(image1));
         assertNotNull(mrzImage);
         assertEquals(image1Result, tesseractOCR.ocr(mrzImage).getText());
     }
 
+    @Test
+    public void testOCRInputPassport2() throws Exception {
+        Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(image2));
+        assertNotNull(mrzImage);
+        assertEquals(image2Result, tesseractOCR.ocr(mrzImage).getText());
+    }
+
+    @Test
+    public void testOCRInputId1() throws Exception {
+        Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(imageId1));
+        assertNotNull(mrzImage);
+        assertEquals(imageId1Result, tesseractOCR.ocr(mrzImage).getText());
+    }
 
 }
