@@ -3,10 +3,6 @@ package com.digitalvotingpass.electionchoice;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by wkmeijer on 29-5-17.
- */
-
 public class Election implements Parcelable{
     public String kind;
     public String place;

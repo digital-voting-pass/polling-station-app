@@ -174,15 +174,12 @@ public class ManualInputActivity extends AppCompatActivity {
                 formatter.format(expiryMonthSpinner.getSelectedItemId()+1) +
                 formatter.format(Integer.parseInt(expiryDaySpinner.getSelectedItem().toString())));
 
-        Log.e("ManualInput", data.get(MainActivity.DATE_OF_BIRTH));
-        Log.e("ManualInput", data.get(MainActivity.EXPIRATION_DATE));
-
-        //TODO date info
         return data;
     }
 
     /**
      * Check if all the fields have been filled in and check for wrong length input.
+     * TODO this does not check if dates exist, e.g no error is given when feb 31st is entered.
      * @return valid - boolean which indicates whether the input is valid.
      */
     public boolean verifyInput() {

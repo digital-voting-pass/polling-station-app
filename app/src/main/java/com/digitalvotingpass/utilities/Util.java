@@ -8,10 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * Created by jonathan on 5/14/17.
- */
-
 public class Util {
 
     /**

@@ -17,12 +17,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
-/**
- * Created by jonathan on 5/16/17.
- */
-
 public class TesseractOCR {
-    public static final String TAG = "TesseractOCR";
+    private static final String TAG = "TesseractOCR";
 
     private static final long INTER_SCAN_DELAY_MILLIS = 500;
     private static final long OCR_SCAN_TIMEOUT_MILLIS = 5000;
@@ -183,7 +179,6 @@ public class TesseractOCR {
 //            recognizedText = recognizedText.replaceAll("&lt;", "<");
 //            recognizedText = recognizedText.replaceAll("^$", "");
             Log.v(TAG, "OCR Result: " + recognizedText);
-//            Log.v(TAG, "OCR Result2: " + s);
             return new Mrz(recognizedText);
         } else {
             Log.e(TAG, "Trying ocr() while not initalized or stopping!");
@@ -203,7 +198,7 @@ public class TesseractOCR {
             myHandler.removeCallbacks(scan);
             timeoutHandler.removeCallbacks(timeout);
             try {
-                myThread.join(); // Seems to lock indefinitely
+                myThread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

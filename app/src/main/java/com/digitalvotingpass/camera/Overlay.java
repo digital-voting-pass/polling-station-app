@@ -18,6 +18,11 @@ import com.digitalvotingpass.digitalvotingpass.R;
 public class Overlay extends View {
     public static final String TAG = "Overlay";
 
+    /**
+     * Transparency of overlaid part in hex, 0-255
+     */
+    private static final int TRANSPARENCY = 0xA0;
+
     private Paint paint = new Paint();
     private Paint transparentPaint = new Paint();
     private Rect rect = new Rect(0,0,0,0);
@@ -35,6 +40,7 @@ public class Overlay extends View {
             requestLayout();
         }
     }
+
     public void setRect(Rect rect) {
         this.rect = rect;
     }
@@ -44,7 +50,7 @@ public class Overlay extends View {
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         // The color I chose is just a random existing grey color
         paint.setColor(getResources().getColor(R.color.cardview_dark_background));
-        paint.setAlpha(0xA0);
+        paint.setAlpha(TRANSPARENCY);
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), paint);
 
         transparentPaint.setAlpha(0xFF);

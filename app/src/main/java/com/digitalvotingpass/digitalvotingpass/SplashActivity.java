@@ -7,16 +7,12 @@ import android.os.Handler;
 
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
 
-/**
- * Created by rico on 29-5-17.
- */
-
 public class SplashActivity extends Activity{
-    // Duration of splash screen
+    // Duration of splash screen in millis
     private final int SPLASH_DISPLAY_LENGTH = 1000;
 
     /**
-     * Create splash screen/
+     * Creates a splash screen
      * @param bundle
      */
     @Override

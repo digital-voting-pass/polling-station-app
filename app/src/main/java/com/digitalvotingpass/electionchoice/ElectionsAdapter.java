@@ -13,9 +13,6 @@ import com.digitalvotingpass.digitalvotingpass.R;
 
 import java.util.ArrayList;
 
-/**
- * Created by wkmeijer on 29-5-17.
- */
 
 public class ElectionsAdapter extends BaseAdapter implements Filterable {
     private Context context;

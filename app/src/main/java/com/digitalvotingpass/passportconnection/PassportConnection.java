@@ -18,10 +18,6 @@ import java.io.InputStream;
 import java.security.PublicKey;
 import java.util.HashMap;
 
-/**
- * Created by wkmeijer on 16-5-17.
- */
-
 public class PassportConnection {
 
     /**

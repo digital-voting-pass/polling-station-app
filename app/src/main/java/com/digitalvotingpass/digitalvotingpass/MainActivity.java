@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
         // set the text of the appbar to the selected election
+
         getSupportActionBar().setTitle(election.getKind());
         getSupportActionBar().setSubtitle(election.getPlace());
 
@@ -64,7 +65,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /** Called when the user taps the "Start Reading ID" button */
+    /**
+     * Called when the user taps the "Start Reading ID" button
+     */
     public void startReading(View view) {
         if(documentData.isEmpty()) {
             Toast.makeText(this,R.string.scan_doc_details, Toast.LENGTH_LONG).show();
