@@ -1,10 +1,14 @@
 package com.digitalvotingpass.digitalvotingpass;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+
+import com.digitalvotingpass.camera.CameraActivity;
+import com.digitalvotingpass.electionchoice.Election;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,30 +34,24 @@ public class TestMainActivity {
 
 
     /**
-     * Start up the main activity for each test.
+     * Start up the splash activity for each test.
      */
     @Rule
-    public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(
-            MainActivity.class);
+    public ActivityTestRule mActivityRule = new ActivityTestRule<MainActivity>(
+            MainActivity.class) {
+        @Override
+        protected Intent getActivityIntent() {
+            Context targetContext = InstrumentationRegistry.getInstrumentation()
+                    .getTargetContext();
+            Intent result = new Intent(targetContext, MainActivity.class);
+            Election election = new Election("Election", "election");
+            result.putExtra("election", election);
+            return result;
+        }
+
+    };
 
 
-    /**
-     * Setup intents.
-     * @throws Exception
-     */
-    @Before
-    public void setUp() throws Exception{
-        Intents.init();
-    }
-
-    /**
-     * Clean up.
-     * @throws Exception exception
-     */
-    @After
-    public void tearDown() throws Exception{
-        Intents.release();
-    }
 
 
     @Test
@@ -63,17 +61,6 @@ public class TestMainActivity {
         assertEquals("com.digitalvotingpass.digitalvotingpass", appContext.getPackageName());
     }
 
-    /**
-     * Dummy test.
-     */
-    public void testDummy() {
-        onView(withId(R.id.manual_input_button))
-                .perform(click());
-        try {
-            Thread.sleep(1000);
-        } catch(Exception e) {}
-        assertEquals(true, true);
-    }
 
 
     /**
@@ -87,38 +74,6 @@ public class TestMainActivity {
         assertEquals(true, withId(R.id.manual_input_button) != null);
     }
 
-    @Test
-    public void testGoToManual2() {
-        onView(withId(R.id.manual_input_button))
-                .perform(click());
-        try {
-            Thread.sleep(1000);
-        } catch(Exception e) {}
-        intended(hasComponent(ManualInputActivity.class.getName()));
-        assertEquals(true, withId(R.id.manual_input_button) != null);
-    }
-
-
-    /**
-     * Test if the OCR opens.
-     */
-    @Test
-    public void testGoToOCR() {
-        onView(withId(R.id.start_ocr))
-                .perform(click());
-        intended(hasComponent(CameraActivity.class.getName()));
-    }
-
-
-    /**
-     * Test if the OCR opens when there is no data available and you press start id connection.
-     */
-    @Test
-    public void testClickStartConnection() {
-        onView(withText(R.string.start_con_button))
-                .perform(click());
-        intended(hasComponent(CameraActivity.class.getName()));
-    }
 
 
 }

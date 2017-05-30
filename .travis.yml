@@ -51,11 +51,4 @@ before_script:
 script:
   - android list target
   - ./gradlew connectedAndroidTest
-after_failure:
-  - wget http://imgur.com/tools/imgurbash.sh
-  - chmod a+x imgurbash.sh
-  - adb shell screencap -p /sdcard/screen.png
-  - adb pull /sdcard/screen.png
-  - adb shell rm /sdcard/screen.png
-  - ./imgurbash.sh screen.png
 #  - pandoc builder/build/reports/tests/index.html -t plain | sed -n '/^Failed tests/,/default-package/p'

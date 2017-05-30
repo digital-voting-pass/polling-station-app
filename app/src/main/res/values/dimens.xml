@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="cam_control_pane_height">112dp</dimen>
+    <dimen name="cam_control_pane_height">150dp</dimen>
+    <dimen name="ocr_control_padding">15dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="large_button">190dp</dimen>
 </resources>
