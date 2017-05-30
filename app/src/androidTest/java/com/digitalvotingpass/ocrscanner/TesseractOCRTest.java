@@ -1,5 +1,7 @@
 package com.digitalvotingpass.ocrscanner;
 
+import android.app.Instrumentation;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,7 +14,10 @@ import android.test.InstrumentationTestCase;
 
 import com.digitalvotingpass.camera.Camera2BasicFragment;
 import com.digitalvotingpass.camera.CameraActivity;
+import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.digitalvotingpass.SplashActivity;
+import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +31,10 @@ public class TesseractOCRTest {//extends InstrumentationTestCase {
     private TesseractOCR tesseractOCR;
     private String image1 = "paspoort_mrz_1.jpg";
     private String image1Result = "P<NLDDE<BRUIJN<<WILLEKE<LISELOTTE<<<<<<<<<<<\nSPECI20142NLD6503101F2401151999999990<<<<<82";
+    private String image2 = "paspoort_mrz_2.jpg";
+    private String image2Result = "P<NLDDE<BRUIJN<<WILLEKE<LISELOTTE<<<<<<<<<<<\nSPECI20142NLD6503101F2401151999999990<<<<<82";
+    private String imageId1 = "id_mrz_1.jpg";
+    private String imageId1Result = "P<NLDDE<BRUIJN<<WILLEKE<LISELOTTE<<<<<<<<<<<\nSPECI20142NLD6503101F2401151999999990<<<<<82";
 
     @Mock
     Camera2BasicFragment fragmentMock;
@@ -33,17 +42,20 @@ public class TesseractOCRTest {//extends InstrumentationTestCase {
     @Mock
     AssetManager assetmanagerMock;
 
+    /**
+     * Start an activity to be able to access the assets. Needed for loading the traineddata to the
+     * emulator. SplashActivity is the simplest activity in the app.
+     */
     @Rule
-    public ActivityTestRule<CameraActivity> activityRule
-
-            = new ActivityTestRule<>(
-            CameraActivity.class,
-            true,     // initialTouchMode
-            false);   // launchActivity. False to customize the intent
+    public ActivityTestRule<SplashActivity> activityRule
+            = new SplashActivity<>(
+            ElectionChoiceActivity.class);
 
     @Before
     public void init() throws Exception {
-        tesseractOCR = new TesseractOCR("test", fragmentMock, assetmanagerMock);
+        AssetManager assetmanager;
+        assetmanager = activityRule.getActivity().getAssets();
+        tesseractOCR = new TesseractOCR("test", fragmentMock, assetmanager);
         tesseractOCR.init();
         tesseractOCR.isInitialized = true;
     }
@@ -69,5 +81,6 @@ public class TesseractOCRTest {//extends InstrumentationTestCase {
         assertNotNull(mrzImage);
         assertEquals(image1Result, tesseractOCR.ocr(mrzImage).getText());
     }
+
 
 }
