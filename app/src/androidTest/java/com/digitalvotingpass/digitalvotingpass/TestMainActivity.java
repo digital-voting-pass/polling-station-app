@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static android.support.test.espresso.Espresso.closeSoftKeyboard;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.intent.Intents.intended;
@@ -34,7 +35,7 @@ public class TestMainActivity {
 
 
     /**
-     * Start up the splash activity for each test.
+     * Start up the main activity for each test.
      */
     @Rule
     public ActivityTestRule mActivityRule = new ActivityTestRule<MainActivity>(
@@ -78,6 +79,7 @@ public class TestMainActivity {
      */
     @Test
     public void testGoToManual() {
+        closeSoftKeyboard();
         onView(withId(R.id.manual_input_button))
                 .perform(click());
         intended(hasComponent(ManualInputActivity.class.getName()));
@@ -88,6 +90,7 @@ public class TestMainActivity {
      */
     @Test
     public void testGoToOCR() {
+        closeSoftKeyboard();
         onView(withId(R.id.start_ocr)).perform(click());
         intended(hasComponent(CameraActivity.class.getName()));
     }
