@@ -31,14 +31,15 @@ public class TesseractOCR {
     private final String name;
 
     private TessBaseAPI baseApi;
-    private boolean initialized = false;
     private HandlerThread myThread;
     private Handler myHandler;
+    private Handler cleanHandler;
     private Handler timeoutHandler;
 
     private AssetManager assetManager;
     private Camera2BasicFragment fragment;
     private boolean stopping = false;
+    private boolean isInitialized = false;
 
     // Filled with OCR run times for analysis
     private ArrayList<Long> times = new ArrayList<>();
@@ -64,7 +65,7 @@ public class TesseractOCR {
     private Runnable scan = new Runnable() {
         @Override
         public void run() {
-            if (!stopping) {
+            while (!stopping) {
                 Log.v(TAG, "Start Scan");
                 timeoutHandler.postDelayed(timeout, OCR_SCAN_TIMEOUT_MILLIS);
                 long time = System.currentTimeMillis();
@@ -77,8 +78,13 @@ public class TesseractOCR {
                     fragment.scanResultFound(mrz);
                 }
                 timeoutHandler.removeCallbacks(timeout);
-                myHandler.postDelayed(this, INTER_SCAN_DELAY_MILLIS);
+                try {
+                    Thread.sleep(INTER_SCAN_DELAY_MILLIS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+            Log.e(TAG, "Stopping scan");
         }
     };
 
@@ -100,7 +106,8 @@ public class TesseractOCR {
      * Starts (enqueues) a stop routine in a new thread, then returns immediately.
      */
     public void stopScanner() {
-        myHandler.post(new Runnable() {
+        cleanHandler = new Handler();
+        cleanHandler.post(new Runnable() {
             @Override
             public void run() {
                 cleanup();
@@ -123,6 +130,7 @@ public class TesseractOCR {
                 Log.e(TAG, "INIT DONE");
             }
         });
+        isInitialized = true;
     }
 
     /**
@@ -143,7 +151,6 @@ public class TesseractOCR {
             }
             mDeviceStorageAccessLock.release();
             baseApi.init(path, trainedData.replace(".traineddata", "")); //extract language code from trained data file
-            initialized = true;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             //TODO show error to user, coping failed
@@ -157,7 +164,7 @@ public class TesseractOCR {
      */
     private Mrz ocr(Bitmap bitmap) {
         if (bitmap == null) return null;
-        if (initialized && !stopping) {
+        if (isInitialized && !stopping) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 2;
             Log.v(TAG, "Image dims x: " + bitmap.getWidth() + ", y: " + bitmap.getHeight());
@@ -187,19 +194,25 @@ public class TesseractOCR {
     /**
      * Cleans memory used by Tesseract library and closes OCR thread.
      * After this has been called initialize() needs to be called to restart the thread and init Tesseract
-     * TODO thread may not completely exit, see feature/revised_ocr_threading
      */
     public void cleanup () {
-        giveStats();
-        stopping = true;
-        myThread.quitSafely();
-        myHandler.removeCallbacks(scan);
-        timeoutHandler.removeCallbacks(timeout);
-        myThread = null;
-        myHandler = null;
-        baseApi.end();
-        initialized = false;
-        stopping = false;
+        if (isInitialized) {
+            giveStats();
+            stopping = true;
+            myThread.quitSafely();
+            myHandler.removeCallbacks(scan);
+            timeoutHandler.removeCallbacks(timeout);
+            try {
+                myThread.join(); // Seems to lock indefinitely
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            myThread = null;
+            myHandler = null;
+            baseApi.end();
+            isInitialized = false;
+            stopping = false;
+        }
     }
 
     /**

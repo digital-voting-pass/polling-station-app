@@ -15,7 +15,6 @@ package com.digitalvotingpass.camera;/*
  */
 
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -30,15 +29,11 @@ import java.util.HashMap;
 
 public class CameraActivity extends Activity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            }
-        }
         if (null == savedInstanceState) {
             getFragmentManager().beginTransaction()
                     .replace(R.id.container, Camera2BasicFragment.newInstance())
@@ -46,14 +41,18 @@ public class CameraActivity extends Activity {
         }
     }
 
+    /**
+     * Pass data from ManualInputActivity to the MainActivity.
+     * @param requestCode requestCode
+     * @param resultCode resultCode
+     * @param data The data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == MainActivity.GET_DOC_INFO) {
-            Intent returnIntent = new Intent();
-            HashMap<String, String> documentData = (HashMap<String, String>) data.getSerializableExtra("result");
-            returnIntent.putExtra("result", documentData);
-            setResult(Activity.RESULT_OK, returnIntent);
+        if (requestCode == MainActivity.GET_DOC_INFO && resultCode == RESULT_OK) {
+            setResult(Activity.RESULT_OK, data);
+            //Clear this activity
             finish();
         }
     }
