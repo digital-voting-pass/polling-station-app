@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.digitalvotingpass.digitalvotingpass.MainActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/govDarkBlue"
+        android:elevation="4dp"
+        android:theme="@style/AppBarOverlay"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+        <Button
+            android:id="@+id/start_ocr"
+            android:layout_height="@dimen/large_button"
+            android:layout_width="@dimen/large_button"
+            android:layout_marginTop="30dp"
+            android:padding="24dp"
+            android:background="@drawable/blue_button"
+            android:drawableTop="@drawable/scan_passport_icon"
+            android:gravity="bottom|center"
+            android:textColor="@android:color/white"
+            android:text="@string/start_OCR" />
+
+        <TextView
+            android:id="@+id/divider"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/govTextBlue"
+            android:text="@string/choice"/>
+
+        <Button
+            android:id="@+id/manual_input_button"
+            android:layout_height="@dimen/large_button"
+            android:layout_width="@dimen/large_button"
+            android:layout_gravity="center"
+            android:padding="24dp"
+            android:background="@drawable/blue_button"
+            android:drawableTop="@drawable/manual_input_icon"
+            android:gravity="bottom|center"
+            android:textColor="@android:color/white"
+            android:text="@string/manual_input_button"/>
+
+        <Button
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="@string/start_con_button"
+            android:onClick="startReading" />
+
+    </LinearLayout>
+</LinearLayout>

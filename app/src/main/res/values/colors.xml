@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3f51b5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#ff4081</color>
+
+    <color name="ocr_control_background">#a0ffffff</color>
+    <color name="ocr_control_text_color">#cc4285f4</color>
+    <color name="manual_input_button_background">#a0ffffff</color>
+
+    <color name="button_after_timeout">#a0f88938</color>
+    <color name="grey">#a0acacac</color>
+    <color name="green">#00ff00</color>
+    <color name="white">#ffffff</color>
+
+    <color name="govDarkBlue">#01689b</color>
+    <color name="govDarkBluePressed">#01517a</color>
+    <color name="govDarkBlueFocused">#015f8e</color>
+    <color name="govLightBlue">#cce0f1</color>
+    <color name="govTextBlue">#01689b</color>
+    <color name="govLightGray">#f3f3f3</color>
+
+    <color name="redFailed">#d52b1e</color>
+    <color name="orangeWait">#b08800</color>
+    <color name="greenSucces">#328a3b</color>
+</resources>
