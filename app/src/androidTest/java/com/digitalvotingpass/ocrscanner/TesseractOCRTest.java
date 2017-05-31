@@ -5,12 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.digitalvotingpass.camera.Camera2BasicFragment;
-import com.digitalvotingpass.digitalvotingpass.ManualInputActivity;
-import com.digitalvotingpass.digitalvotingpass.SplashActivity;
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
 
 import org.junit.Before;
@@ -24,7 +21,7 @@ public class TesseractOCRTest {
     private TesseractOCR tesseractOCR;
     private static final String TAG = "TestTesseractOCR: ";
     // minimum accuracy for detecting the right strings with ocr
-    private final double MINIMUM_ACCURACY = 0.8;
+    private final double MINIMUM_ACCURACY = 0.95;
 
     private String image1 = "testimages/paspoort_mrz_1.jpg";
     private String image1Result = "P<NLDDE<BRUIJN<<WILLEKE<LISELOTTE<<<<<<<<<<<\nSPECI20142NLD6503101F2401151999999990<<<<<82";
@@ -73,17 +70,6 @@ public class TesseractOCRTest {
         assertNotNull(tesseractOCR.ocr(Bitmap.createBitmap(10,10,Bitmap.Config.ARGB_8888)));
     }
 
-    // 17-06-01 similarity eng.traineddata 0.8876404494382022
-    // 17-06-01 similarity nld.traineddata 0.9101123595505618
-    // 17-06-01 similarity fra.traineddata 0.8314606741573034
-    // 17-06-01 similarity rus.traineddata 0.5393258426966292
-    // 17-06-01 similarity jpn.traineddata 0.6404494382022472
-    // 17-06-01 similarity ita.traineddata 0.8426966292134831
-    // 17-06-01 similarity pol.traineddata 0.8539325842696629
-
-    // 17-06-01 similarity own traineddata 0.8089887640449438
-    //17-06-01 similarity ocrb.traineddata 0.9550561797752809
-
     @Test
     public void testOCRInputPassport1() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(image1));
@@ -93,19 +79,6 @@ public class TesseractOCRTest {
         assertTrue(similarity > MINIMUM_ACCURACY);
     }
 
-    // 17-06-01 similarity eng.traineddata 0.9213483146067416
-    // 17-06-01 similarity nld.traineddata 0.9325842696629213
-    // 17-06-01 similarity fra.traineddata 0.9662921348314607
-    // 17-06-01 similarity rus.traineddata 0.6966292134831461
-    // 17-06-01 similarity jpn.traineddata 0.6629213483146067
-    // 17-06-01 similarity ita.traineddata 0.9550561797752809
-    // 17-06-01 similarity pol.traineddata 0.9213483146067416
-
-    // 17-06-01 similarity own traineddata 0.8651685393258427
-    //17-06-01 similarity ocrb.traineddata 0.9775280898876404
-
-
-
     @Test
     public void testOCRInputPassport2() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(image2));
@@ -114,17 +87,6 @@ public class TesseractOCRTest {
         Log.e(TAG, "Similarity passport2: " + similarity);
         assertTrue(similarity > MINIMUM_ACCURACY);
     }
-
-    // 17-06-01 similarity eng.traineddata 0.9672131147540983
-    // 17-06-01 similarity nld.traineddata 0.9672131147540983
-    // 17-06-01 similarity fra.traineddata 0.9672131147540983
-    // 17-06-01 similarity rus.traineddata 0.7704918032786885
-    // 17-06-01 similarity jpn.traineddata 0.9180327868852459
-    // 17-06-01 similarity ita.traineddata 0.9672131147540983
-    // 17-06-01 similarity pol.traineddata 1.0
-
-    // 17-06-01 similarity own traineddata 0.9180327868852459
-    //17-06-01 similarity ocrb.traineddata 1.0
 
     @Test
     public void testOCRInputId1() throws Exception {
@@ -187,7 +149,5 @@ public class TesseractOCRTest {
         }
         return costs[string2.length()];
     }
-
-
 
 }
