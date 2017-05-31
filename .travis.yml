@@ -52,3 +52,7 @@ script:
   - android list target
   - ./gradlew connectedAndroidTest
   - ./gradlew test
+
+after_failure:
+  - chmod +x artefact.sh
+  - ./artefact.sh
