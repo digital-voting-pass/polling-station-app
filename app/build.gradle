@@ -39,4 +39,5 @@ dependencies {
     compile 'com.madgag.spongycastle:prov:1.54.0.0'
     compile 'net.sf.scuba:scuba-sc-android:0.0.9'
     testCompile 'junit:junit:4.12'
+    compile 'org.bitcoinj:bitcoinj-core:0.14.4'
 }

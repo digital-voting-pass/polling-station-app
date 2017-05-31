@@ -1,8 +1,11 @@
 package com.digitalvotingpass.passportconnection;
 
+import com.digitalvotingpass.utilities.AddressGenerator;
 import com.digitalvotingpass.utilities.Util;
 
 import org.junit.Test;
+
+import java.security.PublicKey;
 
 import static org.junit.Assert.*;
 
