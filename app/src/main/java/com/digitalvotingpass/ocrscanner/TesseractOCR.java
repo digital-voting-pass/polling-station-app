@@ -23,7 +23,7 @@ public class TesseractOCR {
     private static final long INTER_SCAN_DELAY_MILLIS = 500;
     private static final long OCR_SCAN_TIMEOUT_MILLIS = 5000;
 
-    private static final String trainedData = "eng.traineddata";
+    private static final String trainedData = "ocrb.traineddata";
     private final String name;
 
     private TessBaseAPI baseApi;
@@ -170,6 +170,8 @@ public class TesseractOCR {
             baseApi.setVariable("tessedit_char_whitelist",
                     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<");
             baseApi.setVariable("max_permuter_attempts", "20");//Sets the max no. of tries TODO try some more values
+            baseApi.setVariable("classify_font_name"," OCR-B");
+//            Log.e(TAG, "tesseract version: " + baseApi.getVersion());
 //            baseApi.setVariable("load_freq_dawg", "0");
 //            baseApi.setVariable("load_system_dawg", "0");
 //            baseApi.setVariable("load_punc_dawg", "0");
