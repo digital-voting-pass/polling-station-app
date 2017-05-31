@@ -69,32 +69,12 @@ public class TestMainActivity {
         Intents.release();
     }
 
-
-
     /**
      * Test if the manual input activity opens.
      */
     @Test
     public void testGoToManual() {
-        onView(withId(R.id.manual_input_button))
-                .perform(click());
+        onView(withText(R.string.manual_input_button)).perform(click());
         intended(hasComponent(ManualInputActivity.class.getName()));
     }
-
-    @Test
-    public void testMainGetsData() throws InterruptedException {
-        //Go to manual input
-        onView(withId(R.id.manual_input_button))
-                .perform(click());
-        intended(hasComponent(ManualInputActivity.class.getName()));
-
-        //fil in document number
-        onView(withId(R.id.doc_num)).perform(typeText("123456789"));
-        closeSoftKeyboard();
-        onView(withId(R.id.submit_button)).perform(click());
-    }
-
-
-
-
 }
