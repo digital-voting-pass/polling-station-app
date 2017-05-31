@@ -169,19 +169,7 @@ public class TesseractOCR {
             baseApi.setImage(bitmap);
             baseApi.setVariable("tessedit_char_whitelist",
                     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<");
-            baseApi.setVariable("max_permuter_attempts", "20");//Sets the max no. of tries TODO try some more values
-            baseApi.setVariable("classify_font_name"," OCR-B");
-//            Log.e(TAG, "tesseract version: " + baseApi.getVersion());
-//            baseApi.setVariable("load_freq_dawg", "0");
-//            baseApi.setVariable("load_system_dawg", "0");
-//            baseApi.setVariable("load_punc_dawg", "0");
-            baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO);
-//            baseApi.setVariable(TessBaseAPI.OEM_TESSERACT_ONLY, "1");
-//            String s = baseApi.getHOCRText(0);
             String recognizedText = baseApi.getUTF8Text();
-//            recognizedText = recognizedText.replaceAll("<.*?>","");
-//            recognizedText = recognizedText.replaceAll("&lt;", "<");
-//            recognizedText = recognizedText.replaceAll("^$", "");
             Log.v(TAG, "OCR Result: " + recognizedText);
             return new Mrz(recognizedText);
         } else {

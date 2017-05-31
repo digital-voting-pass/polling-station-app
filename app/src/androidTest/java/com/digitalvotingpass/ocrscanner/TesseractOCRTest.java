@@ -27,9 +27,11 @@ public class TesseractOCRTest {
     private String image1Result = "P<NLDDE<BRUIJN<<WILLEKE<LISELOTTE<<<<<<<<<<<\nSPECI20142NLD6503101F2401151999999990<<<<<82";
     private String image2 = "testimages/paspoort_mrz_2.jpg";
     private String image2Result = "P<NLDNICOLAI<<ATZO<<<<<<<<<<<<<<<<<<<<<<<<<<\nNX6P975712NLD6002224M1108143000000000<<<<<94";
-    private String imageId1 = "testimages/id_mrz_1.jpg";
     // Third line of id is not needed
+    private String imageId1 = "testimages/id_mrz_1.jpg";
     private String imageId1Result = "I<NLDSPECI20142999999990<<<<<8\n6503101F2403096NLD<<<<<<<<<<<8";
+    private String imageId2 = "testimages/id_mrz_2.jpg";
+    private String imageId2Result = "I<POLZZC9000094<<<<<<<<<<<<<<<\n8101028M2501305POL810102001412";
 
     @Mock
     Camera2BasicFragment fragmentMock;
@@ -94,6 +96,15 @@ public class TesseractOCRTest {
         assertNotNull(mrzImage);
         double similarity = stringSimilarity(imageId1Result, tesseractOCR.ocr(mrzImage).getText());
         Log.e(TAG, "Similarity id1: " + similarity);
+        assertTrue(similarity > MINIMUM_ACCURACY);
+    }
+
+    @Test
+    public void testOCRInputId2() throws Exception {
+        Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(imageId2));
+        assertNotNull(mrzImage);
+        double similarity = stringSimilarity(imageId2Result, tesseractOCR.ocr(mrzImage).getText());
+        Log.e(TAG, "Similarity id2: " + similarity);
         assertTrue(similarity > MINIMUM_ACCURACY);
     }
 
