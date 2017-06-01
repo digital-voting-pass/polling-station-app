@@ -19,7 +19,7 @@ android {
 }
 
 task runTests(type: Test) {
-    exclude 'com/digitalvotingpass/ocrscanner/TesseractOCRTest.class'
+    exclude '**/TesseractOCRTest.class'
 }
 
 dependencies {
