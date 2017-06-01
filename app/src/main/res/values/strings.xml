@@ -42,6 +42,7 @@
 
     <string name="start_OCR">Scan passport</string>
     <string name="title_activity_result">Authorization</string>
+    <string name="edit_election">Edit election</string>
 
     <string name="proceed_home">Next voter</string>
     <string name="proceed_cast_vote">Confirm vote</string>

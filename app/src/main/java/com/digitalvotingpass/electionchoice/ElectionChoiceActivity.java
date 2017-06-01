@@ -64,6 +64,7 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
 
                 Intent intent = new Intent(thisActivity, MainActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
     }

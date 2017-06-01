@@ -7,13 +7,15 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.camera.CameraActivity;
+import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
 import com.digitalvotingpass.passportconnection.PassportConActivity;
 import com.google.gson.Gson;
 
@@ -70,6 +72,34 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, GET_DOC_INFO);
             }
         });
+    }
+
+    /**
+     * Set the main_menu setup to the app bar.
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    /**
+     * Handles the action buttons on the app bar.
+     * In our case it is only one that needs to be handled, the edit election action.
+     * Starts the ElectionChoiceActivity
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.edit_election:
+                startActivity(new Intent(this, ElectionChoiceActivity.class));
+                finish();
+                return true;
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
