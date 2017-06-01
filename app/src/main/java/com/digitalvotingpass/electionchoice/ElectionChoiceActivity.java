@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.utilities.Util;
 
 import java.util.ArrayList;
 
@@ -33,6 +34,7 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
         getSupportActionBar().setTitle(getString(R.string.election_choice));
+        Util.setupAppBar(appBar, this);
 
         electionListView = (ListView) findViewById(R.id.election_list);
 

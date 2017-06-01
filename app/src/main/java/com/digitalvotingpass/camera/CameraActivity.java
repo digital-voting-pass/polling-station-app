@@ -18,12 +18,14 @@ package com.digitalvotingpass.camera;/*
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v13.app.ActivityCompat;
 
 import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.HashMap;
 

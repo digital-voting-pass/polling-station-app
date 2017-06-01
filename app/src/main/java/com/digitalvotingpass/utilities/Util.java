@@ -1,6 +1,12 @@
 package com.digitalvotingpass.utilities;
 
+import android.app.Activity;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,6 +15,25 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Util {
+
+
+    public static int getStatusBarHeight(Resources resources) {
+        int result = 0;
+        int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = resources.getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    public static void setupAppBar(Toolbar appBar, Activity activity) {
+        appBar.setPadding(0, getStatusBarHeight(activity.getResources()), 0, 0);
+
+        SystemBarTintManager tintManager = new SystemBarTintManager(activity);
+        tintManager.setStatusBarTintEnabled(true);
+        tintManager.setNavigationBarTintEnabled(true);
+        tintManager.setTintColor(Color.parseColor("#10000000"));
+    }
 
     /**
      * Copies an InputStream into a File.

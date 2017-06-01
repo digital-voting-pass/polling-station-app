@@ -1,6 +1,7 @@
 package com.digitalvotingpass.digitalvotingpass;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -12,6 +13,8 @@ import android.widget.Toast;
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.camera.CameraActivity;
 import com.digitalvotingpass.passportconnection.PassportConActivity;
+import com.digitalvotingpass.utilities.Util;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.HashMap;
 
@@ -39,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
+        Util.setupAppBar(appBar, this);
+
         // set the text of the appbar to the selected election
 
         getSupportActionBar().setTitle(election.getKind());

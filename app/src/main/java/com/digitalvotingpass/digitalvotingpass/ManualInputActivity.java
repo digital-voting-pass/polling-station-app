@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.digitalvotingpass.utilities.Util;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,6 +43,7 @@ public class ManualInputActivity extends AppCompatActivity {
         setContentView(R.layout.activity_manual_input);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
+        Util.setupAppBar(appBar, this);
         Typeface typeFace= Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
 
         docNumber = (EditText) findViewById(R.id.doc_num);

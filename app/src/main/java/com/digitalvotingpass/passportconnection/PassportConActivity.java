@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.digitalvotingpass.ResultActivity;
+import com.digitalvotingpass.utilities.Util;
 
 import org.jmrtd.PassportService;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
@@ -48,6 +49,7 @@ public class PassportConActivity extends AppCompatActivity {
         setContentView(R.layout.activity_passport_con);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
+        Util.setupAppBar(appBar, this);
         TextView notice = (TextView) findViewById(R.id.notice);
         progressView = (ImageView) findViewById(R.id.progress_view);
 
