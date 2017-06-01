@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
-import com.google.gson.Gson;
 
 public class SplashActivity extends Activity{
     // Duration of splash screen in millis
