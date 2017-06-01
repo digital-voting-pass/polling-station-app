@@ -1,1 +1,1 @@
-include ':app'
+include ':app', ':bitcoinj-core-0.15-SNAPSHOT-bundled'

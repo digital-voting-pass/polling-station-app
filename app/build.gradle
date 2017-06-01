@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 25
@@ -9,6 +10,7 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -17,13 +19,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+retrolambda {
+    // If you have arguments for the Java VM you want to keep,
+    // move them to your project's gradle.properties file.
+    jvmArgs '-Xmx2048m'
 }
 
 
 
-
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -38,5 +49,7 @@ dependencies {
     compile 'org.jmrtd:jmrtd:0.5.5'
     compile 'com.madgag.spongycastle:prov:1.54.0.0'
     compile 'net.sf.scuba:scuba-sc-android:0.0.9'
+    //    compile 'com.github.digital-voting-pass:digital-voting-pass-bitcoinj:-SNAPSHOT'
     testCompile 'junit:junit:4.12'
+    compile project(':bitcoinj-core-0.15-SNAPSHOT-bundled')
 }

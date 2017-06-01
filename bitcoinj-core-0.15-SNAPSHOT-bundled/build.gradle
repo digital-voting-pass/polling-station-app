@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('bitcoinj-core-0.15-SNAPSHOT-bundled.jar'))
