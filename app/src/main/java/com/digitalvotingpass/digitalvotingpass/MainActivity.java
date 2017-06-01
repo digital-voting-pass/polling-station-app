@@ -13,21 +13,16 @@ import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.camera.CameraActivity;
 import com.digitalvotingpass.passportconnection.PassportConActivity;
 
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main activity";
-    public HashMap<String, String> documentData = new HashMap<>();
+    public DocumentData documentData = new DocumentData();
     public Election election;
 
     private Button manualInput;
     private Button startOCR;
 
     public static final int GET_DOC_INFO = 1;
-
-    public static final String DOCUMENT_NUMBER = "Document Number";
-    public static final String DATE_OF_BIRTH = "Date of Birth";
-    public static final String EXPIRATION_DATE = "Expiration Date";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
      * Called when the user taps the "Start Reading ID" button
      */
     public void startReading(View view) {
-        if(documentData.isEmpty()) {
+        if(!documentData.isValid()) {
             Toast.makeText(this,R.string.scan_doc_details, Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this, CameraActivity.class);
             startActivityForResult(intent, GET_DOC_INFO);
@@ -83,10 +78,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // Both switches do the same thing, this might change in the future
+        // Check if we got good data
         if(requestCode == GET_DOC_INFO){
             if (resultCode == RESULT_OK) {
-                documentData = (HashMap<String, String>) data.getSerializableExtra("result");
+                documentData = (DocumentData) data.getExtras().get("result");
             }
         }
     }

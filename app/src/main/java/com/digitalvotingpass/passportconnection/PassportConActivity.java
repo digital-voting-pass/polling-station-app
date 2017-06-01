@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.digitalvotingpass.digitalvotingpass.DocumentData;
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.digitalvotingpass.ResultActivity;
 
@@ -22,7 +23,6 @@ import org.spongycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.PublicKey;
 import java.security.Security;
-import java.util.HashMap;
 
 public class PassportConActivity extends AppCompatActivity {
     static {
@@ -30,7 +30,7 @@ public class PassportConActivity extends AppCompatActivity {
     }
     // Adapter for NFC connection
     private NfcAdapter mNfcAdapter;
-    private HashMap<String, String> documentData;
+    private DocumentData documentData;
     private ImageView progressView;
 
     /**
@@ -43,7 +43,7 @@ public class PassportConActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
-        documentData = (HashMap<String, String>) extras.get("docData");
+        documentData = (DocumentData) extras.get("docData");
 
         setContentView(R.layout.activity_passport_con);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
