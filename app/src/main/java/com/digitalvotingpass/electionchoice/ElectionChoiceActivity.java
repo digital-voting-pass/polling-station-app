@@ -3,10 +3,12 @@ package com.digitalvotingpass.electionchoice;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.widget.ListView;
 
 import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -50,10 +53,16 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                Intent intent = new Intent(thisActivity, MainActivity.class);
-                // Get the election associated with the clicked listItem
+                // Get the election associated with the clicked listItem and save it to sharedpreferences
                 Election election = (Election) parent.getItemAtPosition(position);
-                intent.putExtra("election", election);
+                SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
+                SharedPreferences.Editor prefsEditor = sharedPrefs.edit();
+                Gson gson = new Gson();
+                String json = gson.toJson(election);
+                prefsEditor.putString(getString(R.string.shared_preferences_key_election), json);
+                prefsEditor.commit();
+
+                Intent intent = new Intent(thisActivity, MainActivity.class);
                 startActivity(intent);
             }
         });

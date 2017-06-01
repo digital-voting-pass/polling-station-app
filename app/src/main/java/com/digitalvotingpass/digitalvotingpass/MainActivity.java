@@ -1,10 +1,13 @@
 package com.digitalvotingpass.digitalvotingpass;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -12,6 +15,7 @@ import android.widget.Toast;
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.camera.CameraActivity;
 import com.digitalvotingpass.passportconnection.PassportConActivity;
+import com.google.gson.Gson;
 
 import java.util.HashMap;
 
@@ -32,17 +36,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle extras = getIntent().getExtras();
-        election = (Election) extras.get("election");
-
         final MainActivity thisActivity = this;
+        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
+        election = gson.fromJson(json, Election.class);
+
         setContentView(R.layout.activity_main);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
-        // set the text of the appbar to the selected election
 
-        getSupportActionBar().setTitle(election.getKind());
-        getSupportActionBar().setSubtitle(election.getPlace());
+        // set the text of the appbar to the selected election
+        if(election != null) {
+            getSupportActionBar().setTitle(election.getKind());
+            getSupportActionBar().setSubtitle(election.getPlace());
+        }
 
         manualInput = (Button) findViewById(R.id.manual_input_button);
         manualInput.setOnClickListener(new View.OnClickListener() {
@@ -54,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, GET_DOC_INFO);
             }
         });
-
         startOCR = (Button) findViewById(R.id.start_ocr);
         startOCR.setOnClickListener(new View.OnClickListener() {
             @Override

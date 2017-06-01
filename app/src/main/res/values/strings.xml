@@ -58,6 +58,8 @@
     <string name="search">Search</string>
     <string name="election_choice">Choose election</string>
     <string name="election">election</string>
+    <string name="shared_preferences_key_election">com.digitalvotingpass.ELECTION_OBJECT_KEY</string>
+    <string name="shared_preferences_file">com.digitalvotingpass.shared</string>
 
     <string-array name="months_array">
         <item>January</item>
