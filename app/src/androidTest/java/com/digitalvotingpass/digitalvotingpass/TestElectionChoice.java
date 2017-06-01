@@ -8,13 +8,10 @@ import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
 import android.view.View;
 import android.widget.ListView;
 
-import com.digitalvotingpass.camera.CameraActivity;
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
 
@@ -27,30 +24,17 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Map;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withInputType;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.any;
-import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasEntry;
+
 import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 public class TestElectionChoice {
 
@@ -65,8 +49,6 @@ public class TestElectionChoice {
             Context targetContext = InstrumentationRegistry.getInstrumentation()
                     .getTargetContext();
             Intent result = new Intent(targetContext, ElectionChoiceActivity.class);
-//            Election election = new Election("Election", "election");
-//            result.putExtra("election", election);
             return result;
         }
 
@@ -82,12 +64,6 @@ public class TestElectionChoice {
         Intents.release();
     }
 
-    @Test
-    public void useAppContext() throws Exception {
-        // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
-        assertEquals("com.digitalvotingpass.digitalvotingpass", appContext.getPackageName());
-    }
 
     @Test
     public void atElectionActivity() throws Exception {
@@ -97,7 +73,6 @@ public class TestElectionChoice {
                 assertEquals(((Toolbar) view).getTitle(), "Choose election");
             }
         });
-//        intended(hasComponent(ElectionChoiceActivity.class.getName()));
     }
 
     @Test
@@ -120,23 +95,23 @@ public class TestElectionChoice {
 
     @Test
     public void performSearch() throws Exception {
-        List<Election> unfilteredlist = ((ElectionChoiceActivity) mActivityRule.getActivity()).getAdapter().getList();
+        List<Election> unfilteredList = ((ElectionChoiceActivity) mActivityRule.getActivity()).getAdapter().getList();
 
-        onView (withId (R.id.election_list)).check (ViewAssertions.matches (new Matchers().withListSize (unfilteredlist.size())));
+        onView (withId (R.id.election_list)).check (ViewAssertions.matches (new Matchers().withListSize (unfilteredList.size())));
         onView(withId(R.id.search)).perform(click());
         onView(withId(android.support.design.R.id.search_src_text)).perform(typeText("something"));
 
-        List<Election> filteredlist = ((ElectionChoiceActivity) mActivityRule.getActivity()).getAdapter().getList();
-        onView (withId (R.id.election_list)).check (ViewAssertions.matches (new Matchers().withListSize (filteredlist.size())));
+        List<Election> filteredList = ((ElectionChoiceActivity) mActivityRule.getActivity()).getAdapter().getList();
+        onView (withId (R.id.election_list)).check (ViewAssertions.matches (new Matchers().withListSize (filteredList.size())));
     }
 
     @Test
     public void searchCityAndClick() throws Exception {
-        List<Election> unfilteredlist = ((ElectionChoiceActivity) mActivityRule.getActivity()).getAdapter().getList();
+        List<Election> unfilteredList = ((ElectionChoiceActivity) mActivityRule.getActivity()).getAdapter().getList();
 
         onView(withId(R.id.search)).perform(click());
 
-        final Election toClick = unfilteredlist.get(0);
+        final Election toClick = unfilteredList.get(0);
         onView(withId(android.support.design.R.id.search_src_text)).perform(typeText(toClick.getPlace()));
 
         onView (withId (R.id.election_list)).check (ViewAssertions.matches (new Matchers().withListSize (1)));
@@ -155,8 +130,8 @@ public class TestElectionChoice {
         });
     }
 
-    class Matchers {
-        public Matcher<View> withListSize (final int size) {
+    private class Matchers {
+        private Matcher<View> withListSize (final int size) {
             return new TypeSafeMatcher<View> () {
                 @Override public boolean matchesSafely (final View view) {
                     return ((ListView) view).getCount () == size;

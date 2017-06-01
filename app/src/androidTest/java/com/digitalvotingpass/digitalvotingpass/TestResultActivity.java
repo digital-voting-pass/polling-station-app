@@ -7,7 +7,6 @@ import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.digitalvotingpass.electionchoice.Election;
 
 import org.junit.After;
 import org.junit.Before;
@@ -53,6 +52,9 @@ public class TestResultActivity {
         Intents.release();
     }
 
+    /**
+     * Test if the 'next voter' button appears after pressing case vote.
+     */
     @Test
     public void testConfirmVote() {
         onView(withText(R.string.proceed_cast_vote)).perform(click());
