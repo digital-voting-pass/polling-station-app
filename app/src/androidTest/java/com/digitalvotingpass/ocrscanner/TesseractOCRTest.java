@@ -76,36 +76,36 @@ public class TesseractOCRTest {
     public void testOCRInputPassport1() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(image1));
         assertNotNull(mrzImage);
-//        double similarity = stringSimilarity(image1Result, tesseractOCR.ocr(mrzImage).getText());
-//        Log.e(TAG, "Similarity passport1: " + similarity);
-//        assertTrue(similarity > MINIMUM_ACCURACY);
+        double similarity = stringSimilarity(image1Result, tesseractOCR.ocr(mrzImage).getText());
+        Log.e(TAG, "Similarity passport1: " + similarity);
+        assertTrue(similarity > MINIMUM_ACCURACY);
     }
 
     @Test
     public void testOCRInputPassport2() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(image2));
         assertNotNull(mrzImage);
-//        double similarity = stringSimilarity(image2Result, tesseractOCR.ocr(mrzImage).getText());
-//        Log.e(TAG, "Similarity passport2: " + similarity);
-//        assertTrue(similarity > MINIMUM_ACCURACY);
+        double similarity = stringSimilarity(image2Result, tesseractOCR.ocr(mrzImage).getText());
+        Log.e(TAG, "Similarity passport2: " + similarity);
+        assertTrue(similarity > MINIMUM_ACCURACY);
     }
 
     @Test
     public void testOCRInputId1() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(imageId1));
         assertNotNull(mrzImage);
-//        double similarity = stringSimilarity(imageId1Result, tesseractOCR.ocr(mrzImage).getText());
-//        Log.e(TAG, "Similarity id1: " + similarity);
-//        assertTrue(similarity > MINIMUM_ACCURACY);
+        double similarity = stringSimilarity(imageId1Result, tesseractOCR.ocr(mrzImage).getText());
+        Log.e(TAG, "Similarity id1: " + similarity);
+        assertTrue(similarity > MINIMUM_ACCURACY);
     }
 
     @Test
     public void testOCRInputId2() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(imageId2));
         assertNotNull(mrzImage);
-//        double similarity = stringSimilarity(imageId2Result, tesseractOCR.ocr(mrzImage).getText());
-//        Log.e(TAG, "Similarity id2: " + similarity);
-//        assertTrue(similarity > MINIMUM_ACCURACY);
+        double similarity = stringSimilarity(imageId2Result, tesseractOCR.ocr(mrzImage).getText());
+        Log.e(TAG, "Similarity id2: " + similarity);
+        assertTrue(similarity > MINIMUM_ACCURACY);
     }
 
     /**

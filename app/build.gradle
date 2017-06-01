@@ -18,8 +18,9 @@ android {
     }
 }
 
-
-
+task runTests(type: Test) {
+    exclude 'com/digitalvotingpass/ocrscanner/TesseractOCRTest.class'
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
