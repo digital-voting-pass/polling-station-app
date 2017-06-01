@@ -4,7 +4,6 @@ import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 
 import com.digitalvotingpass.digitalvotingpass.DocumentData;
-import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.utilities.Util;
 
 import net.sf.scuba.smartcards.CardService;
@@ -17,7 +16,6 @@ import org.jmrtd.lds.LDSFileUtil;
 
 import java.io.InputStream;
 import java.security.PublicKey;
-import java.util.HashMap;
 
 public class PassportConnection {
 

@@ -1,9 +1,6 @@
 package com.digitalvotingpass.ocrscanner;
 
 import com.digitalvotingpass.digitalvotingpass.DocumentData;
-import com.digitalvotingpass.digitalvotingpass.MainActivity;
-
-import java.util.HashMap;
 
 /**
  * Created by jonathan on 5/16/17.
