@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.digitalvotingpass.transactionhistory.TransactionHistoryActivity;
+import com.digitalvotingpass.utilities.Util;
 
 public class ResultActivity extends AppCompatActivity {
     private TextView textAuthorization;
@@ -36,6 +37,7 @@ public class ResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_result);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
+        Util.setupAppBar(appBar, this);
 
         textAuthorization = (TextView) findViewById(R.id.authorization);
         textVoterName = (TextView) findViewById(R.id.voter_name);

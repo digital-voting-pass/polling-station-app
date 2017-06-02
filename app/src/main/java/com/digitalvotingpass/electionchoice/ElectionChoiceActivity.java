@@ -5,8 +5,8 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.utilities.Util;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
         getSupportActionBar().setTitle(getString(R.string.election_choice));
+        Util.setupAppBar(appBar, this);
 
         electionListView = (ListView) findViewById(R.id.election_list);
 

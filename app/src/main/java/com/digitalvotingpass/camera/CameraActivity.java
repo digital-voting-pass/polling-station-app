@@ -17,15 +17,10 @@ package com.digitalvotingpass.camera;/*
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v13.app.ActivityCompat;
 
 import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
-
-import java.util.HashMap;
 
 public class CameraActivity extends Activity {
 
