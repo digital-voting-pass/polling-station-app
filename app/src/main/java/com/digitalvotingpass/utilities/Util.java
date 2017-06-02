@@ -17,6 +17,11 @@ import java.io.OutputStream;
 public class Util {
 
 
+    /**
+     * Returns the height of the status bar in pixels
+     * @param resources Resources object required to get the height attribute.
+     * @return int
+     */
     public static int getStatusBarHeight(Resources resources) {
         int result = 0;
         int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
@@ -26,6 +31,13 @@ public class Util {
         return result;
     }
 
+    /**
+     * Sets up a top-padding for the given app bar equal to the height of the status bar.
+     * This increases the length of the app bar so it fits nicely below the status bar.
+     * This method also sets the status bar transparency.
+     * @param appBar Toolbar to set padding to
+     * @param activity Activity - current activity
+     */
     public static void setupAppBar(Toolbar appBar, Activity activity) {
         appBar.setPadding(0, getStatusBarHeight(activity.getResources()), 0, 0);
 

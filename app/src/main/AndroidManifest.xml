@@ -24,7 +24,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".SplashActivity" >
+        <activity android:name=".SplashActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -54,8 +55,8 @@
         <activity android:name="com.digitalvotingpass.camera.CameraActivity" />
         <activity
             android:name=".ResultActivity"
-            android:label="@string/title_activity_result"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:label="@string/title_activity_result" >
+        </activity>
         <activity android:name="com.digitalvotingpass.transactionhistory.TransactionHistoryActivity"
             android:label="@string/transaction_history"
             android:screenOrientation="portrait"/>
