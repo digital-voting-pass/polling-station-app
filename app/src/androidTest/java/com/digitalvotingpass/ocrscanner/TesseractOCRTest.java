@@ -57,22 +57,22 @@ public class TesseractOCRTest {
         tesseractOCR.isInitialized = true;
     }
 
-    @Test
+//    @Test
     public void testConstructor() throws Exception {
         assertNotNull(tesseractOCR);
     }
 
-    @Test
+//    @Test
     public void testOcrNullInput() throws Exception {
         assertNull(tesseractOCR.ocr(null));
     }
 
-    @Test
+//    @Test
     public void testOCRInputSimple() throws Exception {
         assertNotNull(tesseractOCR.ocr(Bitmap.createBitmap(10,10,Bitmap.Config.ARGB_8888)));
     }
 
-    @Test
+//    @Test
     public void testOCRInputPassport1() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(image1));
         assertNotNull(mrzImage);
@@ -81,7 +81,7 @@ public class TesseractOCRTest {
         assertTrue(similarity > MINIMUM_ACCURACY);
     }
 
-    @Test
+//    @Test
     public void testOCRInputPassport2() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(image2));
         assertNotNull(mrzImage);
@@ -90,7 +90,7 @@ public class TesseractOCRTest {
         assertTrue(similarity > MINIMUM_ACCURACY);
     }
 
-    @Test
+//    @Test
     public void testOCRInputId1() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(imageId1));
         assertNotNull(mrzImage);
@@ -99,7 +99,7 @@ public class TesseractOCRTest {
         assertTrue(similarity > MINIMUM_ACCURACY);
     }
 
-    @Test
+//    @Test
     public void testOCRInputId2() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(imageId2));
         assertNotNull(mrzImage);
