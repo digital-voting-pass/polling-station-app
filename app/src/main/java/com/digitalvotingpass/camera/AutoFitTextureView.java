@@ -57,20 +57,29 @@ public class AutoFitTextureView extends TextureView {
         requestLayout();
     }
 
+    /**
+     * Crops the camera output to the same aspect ratio as the screen.
+     * @param widthMeasureSpec
+     * @param heightMeasureSpec
+     */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
         if (0 == mRatioWidth || 0 == mRatioHeight) {
             setMeasuredDimension(width, height);
-        } else {
-            if (width < height * mRatioWidth / mRatioHeight) {
-                setMeasuredDimension(width, width * mRatioHeight / mRatioWidth);
-            } else {
-                setMeasuredDimension(height * mRatioWidth / mRatioHeight, height);
+        }
+        else {
+            if (width > height*mRatioWidth/mRatioHeight) {
+                setMeasuredDimension(width, width*mRatioHeight/mRatioWidth);
+            }
+            else {
+                setMeasuredDimension(height*mRatioWidth/mRatioHeight, height);
             }
         }
+
     }
 
 }
