@@ -4,7 +4,7 @@ import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 
 import com.digitalvotingpass.digitalvotingpass.MainActivity;
-import com.digitalvotingpass.digitalvotingpass.Person;
+import com.digitalvotingpass.digitalvotingpass.Voter;
 import com.digitalvotingpass.utilities.Util;
 
 import net.sf.scuba.smartcards.CardService;
@@ -111,17 +111,17 @@ public class PassportConnection {
     }
 
     /**
-     * Get Personal information from datagroup1.
-     * @return Person - Person object containing personal data.
+     * Get personal information about a voter from datagroup1.
+     * @return Voter - Voter object containing personal data.
      */
-    public Person getPerson(PassportService ps) {
+    public Voter getVoter(PassportService ps) {
         InputStream is = null;
         try {
             is = ps.getInputStream(PassportService.EF_DG1);
             DG1File dg1 = (DG1File) LDSFileUtil.getLDSFile(PassportService.EF_DG1, is);
             MRZInfo mrzInfo = dg1.getMRZInfo();
             //Replace '<' with spaces since JMRTD does not remove these.
-            return new Person(mrzInfo.getSecondaryIdentifier().replaceAll("<", " ").trim(),
+            return new Voter(mrzInfo.getSecondaryIdentifier().replaceAll("<", " ").trim(),
                     mrzInfo.getPrimaryIdentifier().replaceAll("<", " ").trim(),
                     mrzInfo.getGender());
         } catch (Exception ex) {

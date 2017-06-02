@@ -100,8 +100,8 @@ public class ResultActivity extends AppCompatActivity {
      * TODO: handle actual data
      */
     public void handleData(Bundle extras) {
-        Person person = (Person) extras.get("person");
-        String preamble = createPreamble(person);
+        Voter voter = (Voter) extras.get("voter");
+        String preamble = createPreamble(voter);
         int votingPasses = 1;
         int authState = SUCCES;
 
@@ -118,25 +118,25 @@ public class ResultActivity extends AppCompatActivity {
 
     /**
      * Create preamble string, so Mrs de Vries or Mr de Vries.
-     * @param person The person.
+     * @param voter The voter.
      * @return The preamble string.
      */
-    private String createPreamble(Person person) {
+    private String createPreamble(Voter voter) {
         //set the gender strings, this is necessary because we can't get
-        //the strings in the person class and passing a Context object might
+        //the strings in the voter class and passing a Context object might
         //cause memory leaks
-        person.setGenderStrings(getString(R.string.gender_male), getString(R.string.gender_female),
+        voter.setGenderStrings(getString(R.string.gender_male), getString(R.string.gender_female),
                 getString(R.string.gender_unspecified), getString(R.string.gender_unknown));
 
-        Gender gender = person.getGender();
+        Gender gender = voter.getGender();
         String preamble;
-        //Only show a preamble when the person is a male or female
+        //Only show a preamble when the voter is a male or female
         if(gender == Gender.FEMALE || gender == Gender.MALE) {
             //Capitalize the first word since this is sometimes van or van de.
-            String firstWord = Person.capitalizeFirstLetter(person.getLastName().split(" ")[0]);
-            preamble = person.genderToString() + " " + firstWord + " " + person.getLastName().substring(firstWord.length());
+            String firstWord = Voter.capitalizeFirstLetter(voter.getLastName().split(" ")[0]);
+            preamble = voter.genderToString() + " " + firstWord + " " + voter.getLastName().substring(firstWord.length());
         } else {
-            preamble = person.getFirstName() + " " + person.getLastName();
+            preamble = voter.getFirstName() + " " + voter.getLastName();
         }
         return preamble.trim();
 

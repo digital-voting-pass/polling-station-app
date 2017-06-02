@@ -6,11 +6,11 @@ import android.os.Parcelable;
 import net.sf.scuba.data.Gender;
 
 /**
- * Represents a person.
+ * Represents a voter.
  * Created by rico on 1-6-17.
  */
 
-public class Person implements Parcelable {
+public class Voter implements Parcelable {
 
 
     private String firstName;
@@ -19,17 +19,17 @@ public class Person implements Parcelable {
     private String stringFemale, stringMale, stringUnspecified, stringUnknown;
 
     /**
-     * Create a person without info.
+     * Create a voter without info.
      */
-    public Person() {}
+    public Voter() {}
 
     /**
-     * Create a person with info.
+     * Create a voter with info.
      * @param firstName First name.
      * @param lastName Last name.
      * @param gender Gender.
      */
-    public Person(String firstName, String lastName, Gender gender) {
+    public Voter(String firstName, String lastName, Gender gender) {
         setFirstName(firstName);
         setLastName(lastName);
         setGender(gender);
@@ -47,7 +47,7 @@ public class Person implements Parcelable {
     public void setFirstName(String firstName) {
         if (firstName != null && firstName.length() >= 1) {
             firstName = firstName.toLowerCase();
-            firstName = Person.capitalizeFirstLetter(firstName);
+            firstName = Voter.capitalizeFirstLetter(firstName);
         }
         this.firstName = firstName;
     }
@@ -73,7 +73,7 @@ public class Person implements Parcelable {
             String[] names = lastName.toLowerCase().split(" ");
 
             int last = names.length -1;
-            names[last]=  Person.capitalizeFirstLetter(names[last]);
+            names[last]=  Voter.capitalizeFirstLetter(names[last]);
             lastName = "";
             for(int i=0; i < names.length; i++) {
                 lastName += names[i] + " ";
@@ -125,10 +125,10 @@ public class Person implements Parcelable {
 
 
     /**
-     * Create a Person object via a parcel
+     * Create a Voter object via a parcel
      * @param in The parcel.
      */
-    protected Person(Parcel in) {
+    protected Voter(Parcel in) {
         String data[] = new String[2];
         in.readStringArray(data);
         setFirstName(data[0]);
@@ -136,15 +136,15 @@ public class Person implements Parcelable {
         setGender(Gender.getInstance(in.readInt()));
     }
 
-    public static final Creator<Person> CREATOR = new Creator<Person>() {
+    public static final Creator<Voter> CREATOR = new Creator<Voter>() {
         @Override
-        public Person createFromParcel(Parcel in) {
-            return new Person(in);
+        public Voter createFromParcel(Parcel in) {
+            return new Voter(in);
         }
 
         @Override
-        public Person[] newArray(int size) {
-            return new Person[size];
+        public Voter[] newArray(int size) {
+            return new Voter[size];
         }
     };
 
