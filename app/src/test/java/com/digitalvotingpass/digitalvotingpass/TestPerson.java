@@ -7,12 +7,13 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Test class for Person.
  * Created by rico on 2-6-17.
  */
 
 public class TestPerson {
 
-    private String frontName = "Tom";
+    private String firstName = "Tom";
     private String lastName = "de Vries";
 
     private Gender[] genders  = new Gender[] { Gender.getInstance(Gender.MALE.toInt()),
@@ -25,8 +26,8 @@ public class TestPerson {
 
     @Test
     public void testGetters() {
-        person = new Person(frontName, lastName, genders[0]);
-        assertEquals(frontName, person.getFrontName());
+        person = new Person(firstName, lastName, genders[0]);
+        assertEquals(firstName, person.getFirstName());
         assertEquals(lastName, person.getLastName());
         assertEquals(genders[0].toInt(), person.getGender().toInt());
     }
@@ -34,10 +35,10 @@ public class TestPerson {
     @Test
     public void testSetters() {
         person = new Person();
-        person.setFrontName(frontName);
+        person.setFirstName(firstName);
         person.setLastName(lastName);
         person.setGender(genders[0]);
-        assertEquals(frontName, person.getFrontName());
+        assertEquals(firstName, person.getFirstName());
         assertEquals(lastName, person.getLastName());
         assertEquals(genders[0].toInt(), person.getGender().toInt());
     }
@@ -55,17 +56,17 @@ public class TestPerson {
     @Test
     public void testLastName1() {
         String lName = "VAN DE VORst";
-        String expextedLName = "van de Vorst";
-        person = new Person(frontName, lName, genders[0]);
-        assertEquals(expextedLName, person.getLastName());
+        String expectedLName = "van de Vorst";
+        person = new Person(firstName, lName, genders[0]);
+        assertEquals(expectedLName, person.getLastName());
     }
 
     @Test
     public void testLastName2() {
         String lName = "VorsT";
-        String expextedLName = "Vorst";
-        person = new Person(frontName, lName, genders[0]);
-        assertEquals(expextedLName, person.getLastName());
+        String expectedLName = "Vorst";
+        person = new Person(firstName, lName, genders[0]);
+        assertEquals(expectedLName, person.getLastName());
     }
 
 }

@@ -134,7 +134,7 @@ public class ResultActivity extends AppCompatActivity {
         if(gender == Gender.FEMALE || gender == Gender.MALE) {
             preamble = person.genderToString() + " " + person.getLastName();
         } else {
-            preamble = person.getFrontName() + " " + person.getLastName();
+            preamble = person.getFirstName() + " " + person.getLastName();
         }
         return preamble;
 

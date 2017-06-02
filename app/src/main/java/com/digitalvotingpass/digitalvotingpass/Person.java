@@ -13,7 +13,7 @@ import net.sf.scuba.data.Gender;
 public class Person implements Parcelable {
 
 
-    private String frontName;
+    private String firstName;
     private String lastName;
     private Gender gender;
     private String stringFemale, stringMale, stringUnspecified, stringUnknown;
@@ -25,31 +25,31 @@ public class Person implements Parcelable {
 
     /**
      * Create a person with info.
-     * @param frontName Front name.
+     * @param firstName First name.
      * @param lastName Last name.
      * @param gender Gender.
      */
-    public Person(String frontName, String lastName, Gender gender) {
-        setFrontName(frontName);
+    public Person(String firstName, String lastName, Gender gender) {
+        setFirstName(firstName);
         setLastName(lastName);
         setGender(gender);
     }
 
 
-    public String getFrontName() {
-        return frontName;
+    public String getFirstName() {
+        return firstName;
     }
 
     /**
-     * Set the front name and capitalize it.
-     * @param frontName
+     * Set the first name and capitalize it.
+     * @param firstName
      */
-    public void setFrontName(String frontName) {
-        if (frontName != null && frontName.length() >= 1) {
-            frontName = frontName.toLowerCase();
-            frontName = frontName.substring(0, 1).toUpperCase() + frontName.substring(1);
+    public void setFirstName(String firstName) {
+        if (firstName != null && firstName.length() >= 1) {
+            firstName = firstName.toLowerCase();
+            firstName = firstName.substring(0, 1).toUpperCase() + firstName.substring(1);
         }
-        this.frontName = frontName;
+        this.firstName = firstName;
     }
 
     public Gender getGender() {
@@ -128,7 +128,7 @@ public class Person implements Parcelable {
     protected Person(Parcel in) {
         String data[] = new String[2];
         in.readStringArray(data);
-        setFrontName(data[0]);
+        setFirstName(data[0]);
         setLastName(data[1]);
         setGender(Gender.getInstance(in.readInt()));
     }
@@ -152,7 +152,7 @@ public class Person implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeStringArray(new String[] { getFrontName(), getLastName() });
+        parcel.writeStringArray(new String[] { getFirstName(), getLastName() });
         parcel.writeInt(getGender().toInt());
     }
 }
