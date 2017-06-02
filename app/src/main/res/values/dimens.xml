@@ -4,4 +4,5 @@
     <dimen name="ocr_control_padding">15dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="large_button">190dp</dimen>
+    <dimen name="actionBarHeight">80dp</dimen>
 </resources>

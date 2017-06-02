@@ -2,7 +2,6 @@ package com.digitalvotingpass.passportconnection;
 
 import android.app.Activity;
 import android.app.PendingIntent;
-
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
@@ -15,15 +14,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.digitalvotingpass.digitalvotingpass.Voter;
+import com.digitalvotingpass.digitalvotingpass.DocumentData;
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.digitalvotingpass.ResultActivity;
+import com.digitalvotingpass.utilities.Util;
 
 import org.jmrtd.PassportService;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.PublicKey;
 import java.security.Security;
-import java.util.HashMap;
 
 public class PassportConActivity extends AppCompatActivity {
     static {
@@ -31,7 +31,7 @@ public class PassportConActivity extends AppCompatActivity {
     }
     // Adapter for NFC connection
     private NfcAdapter mNfcAdapter;
-    private HashMap<String, String> documentData;
+    private DocumentData documentData;
     private ImageView progressView;
 
     /**
@@ -44,11 +44,12 @@ public class PassportConActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
-        documentData = (HashMap<String, String>) extras.get("docData");
+        documentData = (DocumentData) extras.get("docData");
 
         setContentView(R.layout.activity_passport_con);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
+        Util.setupAppBar(appBar, this);
         TextView notice = (TextView) findViewById(R.id.notice);
         progressView = (ImageView) findViewById(R.id.progress_view);
 
