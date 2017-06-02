@@ -17,6 +17,7 @@ import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ElectionChoiceActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
     private ListView electionListView;
@@ -57,6 +58,10 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
                 startActivity(intent);
             }
         });
+    }
+
+    public ElectionsAdapter getAdapter() {
+        return electionsAdapter;
     }
 
     /**
