@@ -1,5 +1,6 @@
 package com.digitalvotingpass.electionchoice;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -53,19 +54,32 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
                 // Get the election associated with the clicked listItem and save it to sharedpreferences
-                Election election = (Election) parent.getItemAtPosition(position);
-                SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
-                SharedPreferences.Editor prefsEditor = sharedPrefs.edit();
-                Gson gson = new Gson();
-                String json = gson.toJson(election);
-                prefsEditor.putString(getString(R.string.shared_preferences_key_election), json);
-                prefsEditor.commit();
+                saveElection((Election) parent.getItemAtPosition(position));
 
-                Intent intent = new Intent(thisActivity, MainActivity.class);
-                startActivity(intent);
-                finish();
+                // If the activity was not started for result (from mainactivity) start mainActivity.
+                // Otherwise finish this activity to return to mainactivity and set flag that something changed.
+                if(getCallingActivity() == null) {
+                    Intent intent = new Intent(thisActivity, MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    thisActivity.setResult(Activity.RESULT_OK, new Intent());
+                    finish();
+                }
             }
         });
+    }
+
+    /**
+     * Saves an election object to the sharedpreferences so other activities can access it.
+     * @param election
+     */
+    private void saveElection(Election election) {
+        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = sharedPrefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(election);
+        prefsEditor.putString(getString(R.string.shared_preferences_key_election), json);
+        prefsEditor.commit();
     }
 
     /**

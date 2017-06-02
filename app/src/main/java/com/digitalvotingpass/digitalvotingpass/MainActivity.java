@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private Button startOCR;
 
     public static final int GET_DOC_INFO = 1;
+    public static final int CHOOSE_ELECTION = 2;
 
     public static final String DOCUMENT_NUMBER = "Document Number";
     public static final String DATE_OF_BIRTH = "Date of Birth";
@@ -39,20 +40,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final MainActivity thisActivity = this;
-        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
-        election = gson.fromJson(json, Election.class);
 
         setContentView(R.layout.activity_main);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
 
-        // set the text of the appbar to the selected election
-        if(election != null) {
-            getSupportActionBar().setTitle(election.getKind());
-            getSupportActionBar().setSubtitle(election.getPlace());
-        }
+        setElectionInAppBar();
 
         manualInput = (Button) findViewById(R.id.manual_input_button);
         manualInput.setOnClickListener(new View.OnClickListener() {
@@ -92,8 +85,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.edit_election:
-                startActivity(new Intent(this, ElectionChoiceActivity.class));
-                finish();
+                startActivityForResult(new Intent(this, ElectionChoiceActivity.class), CHOOSE_ELECTION);
                 return true;
             default:
                 // If we got here, the user's action was not recognized.
@@ -120,11 +112,28 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // Both switches do the same thing, this might change in the future
-        if(requestCode == GET_DOC_INFO){
-            if (resultCode == RESULT_OK) {
-                documentData = (HashMap<String, String>) data.getSerializableExtra("result");
-            }
+        if(requestCode == GET_DOC_INFO && resultCode == RESULT_OK) {
+            documentData = (HashMap<String, String>) data.getSerializableExtra("result");
+        }
+        // reload the election choice from sharedpreferences
+        if(requestCode == CHOOSE_ELECTION && resultCode == RESULT_OK) {
+            setElectionInAppBar();
+        }
+    }
+
+    /**
+     * Gets the Election Object from sharedpreferences, sets the election attribute to the found
+     * election and updates the textfields in the appbar to display the selected election.
+     */
+    public void setElectionInAppBar() {
+        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
+        election = gson.fromJson(json, Election.class);
+
+        if(election != null) {
+            getSupportActionBar().setTitle(election.getKind());
+            getSupportActionBar().setSubtitle(election.getPlace());
         }
     }
 
