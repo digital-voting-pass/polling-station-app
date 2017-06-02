@@ -50,7 +50,7 @@ before_script:
   - adb shell input keyevent 82 &
 script:
   - android list target
-  - ./gradlew connectedAndroidTest --debug
+  - ./gradlew connectedAndroidTest
   - ./gradlew test
 
 after_failure:
