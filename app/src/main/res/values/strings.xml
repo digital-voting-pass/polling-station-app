@@ -58,6 +58,10 @@
     <string name="search">Search</string>
     <string name="election_choice">Choose election</string>
     <string name="election">election</string>
+    <string name="gender_male">Mr.</string>
+    <string name="gender_female">Ms.</string>
+    <string name="gender_unspecified">Unspecified</string>
+    <string name="gender_unknown">Unknown</string>
 
     <string-array name="months_array">
         <item>January</item>

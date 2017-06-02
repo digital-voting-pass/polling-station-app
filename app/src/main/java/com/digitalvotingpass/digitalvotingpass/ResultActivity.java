@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import com.digitalvotingpass.transactionhistory.TransactionHistoryActivity;
 
+import net.sf.scuba.data.Gender;
+
 public class ResultActivity extends AppCompatActivity {
     private TextView textAuthorization;
     private TextView textVoterName;
@@ -98,11 +100,12 @@ public class ResultActivity extends AppCompatActivity {
      * TODO: handle actual data
      */
     public void handleData(Bundle extras) {
-        String name = "Piet Jansen";
+        Person person = (Person) extras.get("person");
+        String preamble = createPreamble(person);
         int votingPasses = 1;
         int authState = SUCCES;
 
-        textVoterName.setText(getString(R.string.has_right, name));
+        textVoterName.setText(getString(R.string.has_right, preamble));
         // display singular or plural form of voting passes based on amount
         if(votingPasses == 1) {
             textVotingPasses.setText(R.string.voting_pass);
@@ -113,6 +116,29 @@ public class ResultActivity extends AppCompatActivity {
         setAuthorizationStatus(authState);
     }
 
+    /**
+     * Create preamble string, so Mrs de Vries or Mr de Vries.
+     * @param person The person.
+     * @return The preamble string.
+     */
+    private String createPreamble(Person person) {
+        //set the gender strings, this is necessary because we can't get
+        //the strings in the person class and passing a Context object might
+        //cause memory leaks
+        person.setGenderStrings(getString(R.string.gender_male), getString(R.string.gender_female),
+                getString(R.string.gender_unspecified), getString(R.string.gender_unknown));
+
+        Gender gender = person.getGender();
+        String preamble;
+        //Only show a preamble when the person is a male or female
+        if(gender == Gender.FEMALE || gender == Gender.MALE) {
+            preamble = person.genderToString() + " " + person.getLastName();
+        } else {
+            preamble = person.getFrontName() + " " + person.getLastName();
+        }
+        return preamble;
+
+    }
     /**
      * Sets the textview which displays the authorization status, based on the current state of the
      * process to one of the following:
