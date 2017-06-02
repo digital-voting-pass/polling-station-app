@@ -6,7 +6,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 public class ManualInputActivity extends AppCompatActivity {
@@ -141,39 +139,35 @@ public class ManualInputActivity extends AppCompatActivity {
      * Update textFields with docData if it was previously filled in, else leave as is.
      */
     public void putData(Bundle extras) {
-        HashMap<String, String> docData = (HashMap<String, String>) extras.get("docData");
-        if(docData != null && docData.size() > 0) {
-            docNumber.setText(docData.get(MainActivity.DOCUMENT_NUMBER));
-            dobYearSpinner.setSelection(Integer.parseInt(docData.get(MainActivity.DATE_OF_BIRTH).substring(0,2)));
-            dobMonthSpinner.setSelection(Integer.parseInt(docData.get(MainActivity.DATE_OF_BIRTH).substring(2,4))-1);
-            dobDaySpinner.setSelection(Integer.parseInt(docData.get(MainActivity.DATE_OF_BIRTH).substring(4,6))-1);
+        DocumentData docData = (DocumentData) extras.get("docData");
+        if(docData != null && docData.isValid()) {
+            docNumber.setText(docData.getDocumentNumber());
+            dobYearSpinner.setSelection(Integer.parseInt(docData.getDateOfBirth().substring(0,2)));
+            dobMonthSpinner.setSelection(Integer.parseInt(docData.getDateOfBirth().substring(2,4))-1);
+            dobDaySpinner.setSelection(Integer.parseInt(docData.getDateOfBirth().substring(4,6))-1);
 
             Date dt = new Date();
             int currYear = dt.getYear() - 100;
-            expiryYearSpinner.setSelection(Integer.parseInt(docData.get(MainActivity.EXPIRATION_DATE).substring(0,2)) - currYear);
-            expiryMonthSpinner.setSelection(Integer.parseInt(docData.get(MainActivity.EXPIRATION_DATE).substring(2,4))-1);
-            expiryDaySpinner.setSelection(Integer.parseInt(docData.get(MainActivity.EXPIRATION_DATE).substring(4,6))-1);
+            expiryYearSpinner.setSelection(Integer.parseInt(docData.getExpiryDate().substring(0,2)) - currYear);
+            expiryMonthSpinner.setSelection(Integer.parseInt(docData.getExpiryDate().substring(2,4))-1);
+            expiryDaySpinner.setSelection(Integer.parseInt(docData.getExpiryDate().substring(4,6))-1);
         }
     }
 
     /**
-     * Create a hashmap of the input date in the same way as the OCR scanner does.
-     * @return data - A String Hashmap of the required document data for BAC.
+     * Create a @link{DocumentData} object of the input date in the same way as the OCR scanner does.
+     * @return data - A DocumentData object of the required document data for BAC.
      */
-    public HashMap<String, String> getData() {
-        HashMap<String, String> data = new HashMap<>();
+    public DocumentData getData() {
+        DocumentData data = new DocumentData();
         DecimalFormat formatter = new DecimalFormat("00");
-        data.put(MainActivity.DOCUMENT_NUMBER, docNumber.getText().toString().toUpperCase());
-        data.put(MainActivity.DATE_OF_BIRTH,
-                dobYearSpinner.getSelectedItem().toString().substring(2) +
+        data.setDocumentNumber(docNumber.getText().toString().toUpperCase());
+        data.setDateOfBirth(dobYearSpinner.getSelectedItem().toString().substring(2) +
                 formatter.format(dobMonthSpinner.getSelectedItemId()+1) +
                 formatter.format(Integer.parseInt(dobDaySpinner.getSelectedItem().toString())));
-
-        data.put(MainActivity.EXPIRATION_DATE,
-                expiryYearSpinner.getSelectedItem().toString().substring(2) +
+        data.setExpiryDate(expiryYearSpinner.getSelectedItem().toString().substring(2) +
                 formatter.format(expiryMonthSpinner.getSelectedItemId()+1) +
                 formatter.format(Integer.parseInt(expiryDaySpinner.getSelectedItem().toString())));
-
         return data;
     }
 

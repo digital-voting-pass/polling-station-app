@@ -19,11 +19,10 @@ import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
 import com.digitalvotingpass.passportconnection.PassportConActivity;
 import com.google.gson.Gson;
 
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main activity";
-    public HashMap<String, String> documentData = new HashMap<>();
+    public DocumentData documentData = new DocumentData();
     public Election election;
 
     private Button manualInput;
@@ -31,10 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int GET_DOC_INFO = 1;
     public static final int CHOOSE_ELECTION = 2;
-
-    public static final String DOCUMENT_NUMBER = "Document Number";
-    public static final String DATE_OF_BIRTH = "Date of Birth";
-    public static final String EXPIRATION_DATE = "Expiration Date";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
      * Called when the user taps the "Start Reading ID" button
      */
     public void startReading(View view) {
-        if(documentData.isEmpty()) {
+        if(!documentData.isValid()) {
             Toast.makeText(this,R.string.scan_doc_details, Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this, CameraActivity.class);
             startActivityForResult(intent, GET_DOC_INFO);
@@ -112,8 +107,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        // Check if we got documentdata and set the documentData attribute
         if(requestCode == GET_DOC_INFO && resultCode == RESULT_OK) {
-            documentData = (HashMap<String, String>) data.getSerializableExtra("result");
+            documentData = (DocumentData) data.getExtras().get("result");
         }
         // reload the election choice from sharedpreferences
         if(requestCode == CHOOSE_ELECTION && resultCode == RESULT_OK) {
