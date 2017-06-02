@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.digitalvotingpass.digitalvotingpass.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ElectionsAdapter extends BaseAdapter implements Filterable {
@@ -27,6 +28,10 @@ public class ElectionsAdapter extends BaseAdapter implements Filterable {
         this.filteredList = elections;
 
         getFilter();
+    }
+
+    public List<Election> getList() {
+        return filteredList;
     }
 
     /**
