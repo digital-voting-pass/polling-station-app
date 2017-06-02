@@ -8,6 +8,8 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 
+import net.sf.scuba.data.Gender;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,7 +38,12 @@ public class TestResultActivity {
         protected Intent getActivityIntent() {
             Context targetContext = InstrumentationRegistry.getInstrumentation()
                     .getTargetContext();
+            //create voter object
+            Voter voter = new Voter("Jannus Wallus", "de Vries", Gender.getInstance(Gender.MALE.toInt()));
+
+            //put in intent and return
             Intent result = new Intent(targetContext, MainActivity.class);
+            result.putExtra("voter", voter);
             return result;
         }
 

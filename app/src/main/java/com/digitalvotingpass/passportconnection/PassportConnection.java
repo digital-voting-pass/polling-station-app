@@ -3,6 +3,7 @@ package com.digitalvotingpass.passportconnection;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 
+import com.digitalvotingpass.digitalvotingpass.Voter;
 import com.digitalvotingpass.digitalvotingpass.DocumentData;
 import com.digitalvotingpass.utilities.Util;
 
@@ -13,6 +14,7 @@ import org.jmrtd.PassportService;
 import org.jmrtd.lds.DG15File;
 import org.jmrtd.lds.DG1File;
 import org.jmrtd.lds.LDSFileUtil;
+import org.jmrtd.lds.MRZInfo;
 
 import java.io.InputStream;
 import java.security.PublicKey;
@@ -108,15 +110,19 @@ public class PassportConnection {
     }
 
     /**
-     * Get the BSN from datagroup1 to confirm the ID was scanned correctly
-     * This is for testing purposes
+     * Get personal information about a voter from datagroup1.
+     * @return Voter - Voter object containing personal data.
      */
-    public String getBSN(PassportService ps) {
+    public Voter getVoter(PassportService ps) {
         InputStream is = null;
         try {
             is = ps.getInputStream(PassportService.EF_DG1);
             DG1File dg1 = (DG1File) LDSFileUtil.getLDSFile(PassportService.EF_DG1, is);
-            return dg1.getMRZInfo().getPersonalNumber();
+            MRZInfo mrzInfo = dg1.getMRZInfo();
+            //Replace '<' with spaces since JMRTD does not remove these.
+            return new Voter(mrzInfo.getSecondaryIdentifier().replaceAll("<", " ").trim(),
+                    mrzInfo.getPrimaryIdentifier().replaceAll("<", " ").trim(),
+                    mrzInfo.getGender());
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {

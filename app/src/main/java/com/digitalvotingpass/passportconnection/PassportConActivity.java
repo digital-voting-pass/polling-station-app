@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.digitalvotingpass.digitalvotingpass.Voter;
 import com.digitalvotingpass.digitalvotingpass.DocumentData;
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.digitalvotingpass.ResultActivity;
@@ -149,15 +150,17 @@ public class PassportConActivity extends AppCompatActivity {
             progressView.setImageResource(R.drawable.nfc_icon_2);
 
 
-            // display data from dg15
+            // Get public key from dg15
             PublicKey pubKey = pcon.getAAPublicKey(ps);
+            // Get voter information from dg1
+            Voter voter = pcon.getVoter(ps);
 
-            // sign 8 bytes of data and display the signed data + length
+            // sign 8 bytes of data
             byte[] signedData = pcon.signData(ps);
             progressView.setImageResource(R.drawable.nfc_icon_3);
 
             // when all data is loaded start ResultActivity
-            startResultActivity(pubKey, signedData);
+            startResultActivity(pubKey, signedData, voter);
         } catch (Exception ex) {
             ex.printStackTrace();
             Toast.makeText(this, R.string.NFC_error, Toast.LENGTH_LONG).show();
@@ -174,19 +177,21 @@ public class PassportConActivity extends AppCompatActivity {
     /**
      * Method to start the ResultActivity once all the data is loaded.
      * Creates new intent with the read data
-     * @param pubKey
-     * @param signedData
+     * @param pubKey The public key.
+     * @param signedData Signed data.
+     * @param voter The voter.
      */
-    public void startResultActivity(PublicKey pubKey, byte[] signedData) {
+    public void startResultActivity(PublicKey pubKey, byte[] signedData, Voter voter) {
         if(pubKey != null && signedData != null) {
 
             Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+            intent.putExtra("voter", voter);
             intent.putExtra("pubKey", pubKey);
             intent.putExtra("signedData", signedData);
             startActivity(intent);
             finish();
         } else {
-            Toast.makeText(this, R.string.NFC_error, Toast.LENGTH_LONG).show();
+            Toast.makeText(this,    R.string.NFC_error, Toast.LENGTH_LONG).show();
             progressView.setImageResource(R.drawable.nfc_icon_empty);
         }
     }
