@@ -47,7 +47,7 @@ public class Person implements Parcelable {
     public void setFirstName(String firstName) {
         if (firstName != null && firstName.length() >= 1) {
             firstName = firstName.toLowerCase();
-            firstName = firstName.substring(0, 1).toUpperCase() + firstName.substring(1);
+            firstName = Person.capitalizeFirstLetter(firstName);
         }
         this.firstName = firstName;
     }
@@ -73,8 +73,7 @@ public class Person implements Parcelable {
             String[] names = lastName.toLowerCase().split(" ");
 
             int last = names.length -1;
-            names[last]= names[last].substring(0,1).toUpperCase() +
-                    names[last].substring(1);
+            names[last]=  Person.capitalizeFirstLetter(names[last]);
             lastName = "";
             for(int i=0; i < names.length; i++) {
                 lastName += names[i] + " ";
@@ -118,6 +117,10 @@ public class Person implements Parcelable {
                 return stringUnspecified;
         }
         return null;
+    }
+
+    public static String capitalizeFirstLetter(String word) {
+        return word.substring(0,1).toUpperCase() + word.substring(1);
     }
 
 

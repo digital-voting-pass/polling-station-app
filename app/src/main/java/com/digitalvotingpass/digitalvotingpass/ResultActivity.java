@@ -132,11 +132,13 @@ public class ResultActivity extends AppCompatActivity {
         String preamble;
         //Only show a preamble when the person is a male or female
         if(gender == Gender.FEMALE || gender == Gender.MALE) {
-            preamble = person.genderToString() + " " + person.getLastName();
+            //Capitalize the first word since this is sometimes van or van de.
+            String firstWord = Person.capitalizeFirstLetter(person.getLastName().split(" ")[0]);
+            preamble = person.genderToString() + " " + firstWord + " " + person.getLastName().substring(firstWord.length());
         } else {
             preamble = person.getFirstName() + " " + person.getLastName();
         }
-        return preamble;
+        return preamble.trim();
 
     }
     /**
