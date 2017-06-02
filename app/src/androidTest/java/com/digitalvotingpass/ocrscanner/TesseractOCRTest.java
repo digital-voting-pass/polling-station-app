@@ -62,7 +62,7 @@ public class TesseractOCRTest {
         assertNotNull(tesseractOCR);
     }
 
-//    @Test
+    @Test
     public void testOcrNullInput() throws Exception {
         assertNull(tesseractOCR.ocr(null));
     }
