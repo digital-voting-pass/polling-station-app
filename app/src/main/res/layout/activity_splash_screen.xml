@@ -24,4 +24,29 @@
         android:contentDescription="@string/app_name"
         android:gravity="center"
         />
+
+    <TextView
+        android:id="@+id/progress_current_task"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/govLightGray"
+        android:textSize="20sp"
+        android:text="Initializing..." />
+
+    <ProgressBar
+        android:id="@+id/download_progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:minHeight="30dp"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/download_progress_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/govLightGray"
+        android:textSize="20sp" />
 </LinearLayout>
