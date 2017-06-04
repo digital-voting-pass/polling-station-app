@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -23,10 +22,9 @@ import java.util.Date;
 
 public class SplashActivity extends Activity implements BlockchainCallBackListener {
     public static final int REQUEST_CODE_STORAGE = 15;
-    public static final int REQUEST_CODE_INTERNET = 5;
+    private int DELAY_INIT_TEXT_UPDATES = 800;
 
     // Duration of splash screen in millis
-    private final int SPLASH_DISPLAY_LENGTH = 1000;
     private String TAG = getClass().getSimpleName();
 
     private TextView downloadPogressText;
@@ -46,28 +44,28 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
                 requestStoragePermissions();
                 return;
             }
-            BlockChain.getInstance().receiveBlockChain(thisActivity);
+            BlockChain.getInstance().startDownload(thisActivity);
         }
     };
 
-    Runnable initUpdate = new Runnable() {
+    Runnable initTextUpdater = new Runnable() {
         int i = 0;
         @Override
         public void run() {
             String[] s = ((Activity)thisActivity).getResources().getStringArray(R.array.init_array);
             currentTask.setText(s[i % s.length]);
             i++;
-            initTextHandler.postDelayed(this, 500);
+            initTextHandler.postDelayed(this, DELAY_INIT_TEXT_UPDATES);
         }
     };
 
     /**
      * Creates a splash screen
-     * @param bundle
+     * @param savedInstanceState
      */
     @Override
-    public void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
         downloadPogressText = (TextView) findViewById(R.id.download_progress_text);
@@ -75,10 +73,12 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         downloadProgressBar = (ProgressBar) findViewById(R.id.download_progress_bar);
 
         thisActivity = this;
-        handler = new Handler();
-        initTextHandler = new Handler();
-        initTextHandler.post(initUpdate);
-        handler.post(startBlockChain);
+        if (savedInstanceState == null) {
+            handler = new Handler();
+            initTextHandler = new Handler();
+            initTextHandler.post(initTextUpdater);
+            handler.post(startBlockChain);
+        }
     }
 
     @Override
@@ -105,26 +105,30 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
 
     @Override
     public void onInitComplete() {
-        initTextHandler.removeCallbacks(initUpdate);
+        initTextHandler.removeCallbacks(initTextUpdater);
+        currentTask.setText(R.string.downloading_text);
+        downloadPogressText.setText(percentFormatter.format(0) + "%");
     }
 
     @Override
     public void onDownloadComplete() {
         Intent mainIntent = new Intent(SplashActivity.this, ElectionChoiceActivity.class);
-        SplashActivity.this.startActivity(mainIntent);
-        SplashActivity.this.finish();
+        startActivity(mainIntent);
+        finish();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.e("","");
-        initTextHandler.removeCallbacks(initUpdate);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override
     public void onDownloadProgress(double pct, int blocksSoFar, Date date) {
-        onInitComplete();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

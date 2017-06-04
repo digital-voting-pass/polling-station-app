@@ -1,1 +1,2 @@
-include ':app', ':bitcoinj-core-0.15-SNAPSHOT-bundled'
+include ':app', ':bitcoinj-core'
+//include(':app', 'digital-voting-pass-bitcoinj')

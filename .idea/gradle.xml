@@ -9,7 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/bitcoinj-core-0.15-SNAPSHOT-bundled" />
+            <option value="$PROJECT_DIR$/bitcoinj-core" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

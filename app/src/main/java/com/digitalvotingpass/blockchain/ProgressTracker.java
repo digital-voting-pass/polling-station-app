@@ -16,10 +16,18 @@ class ProgressTracker extends DownloadProgressTracker {
 
     @Override
     protected void progress(double pct, int blocksSoFar, Date date) {
-        Log.e("Progress", "Progress update");
         listener.onDownloadProgress(pct, blocksSoFar, date);
-        if (pct == 100) {
-            listener.onDownloadComplete();
-        }
+    }
+
+    @Override
+    protected void startDownload(int blocks) {
+        super.startDownload(blocks);
+        listener.onInitComplete();
+    }
+
+    @Override
+    protected void doneDownload() {
+        super.doneDownload();
+        listener.onDownloadComplete();
     }
 }
