@@ -1,2 +1,1 @@
 include ':app', ':bitcoinj-core'
-//include(':app', 'digital-voting-pass-bitcoinj')

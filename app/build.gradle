@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 25
@@ -19,17 +18,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
 }
 
-retrolambda {
-    // If you have arguments for the Java VM you want to keep,
-    // move them to your project's gradle.properties file.
-    jvmArgs '-Xmx2048m'
-}
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
@@ -51,18 +41,12 @@ dependencies {
     compile 'org.jmrtd:jmrtd:0.5.5'
     compile 'com.madgag.spongycastle:prov:1.54.0.0'
     compile 'net.sf.scuba:scuba-sc-android:0.0.9'
-//    compile('com.github.jonathanraes:digital-voting-pass-bitcoinj', {
-//        exclude group: 'bitcoinj-examples'
-//        exclude group: 'bitcoinj-tools'
-//        exclude group: 'bitcoinj-parent'
-//    })
     testCompile 'junit:junit:4.12'
 
+//  Logging dependencies for bitcoinj
     compile group: 'org.slf4j', name:'slf4j-api', version: '1.7.2'
     compile group: 'ch.qos.logback', name:'logback-classic', version: '1.0.9'
     compile group: 'ch.qos.logback', name:'logback-core', version: '1.0.9'
-    compile 'com.android.volley:volley:1.0.0'
 
-//    compile project(':digital-voting-pass-bitcoinj')
     compile project(':bitcoinj-core')
 }

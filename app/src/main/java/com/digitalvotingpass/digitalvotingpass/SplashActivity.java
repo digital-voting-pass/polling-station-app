@@ -34,7 +34,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
     private Handler handler;
     private Handler initTextHandler;
 
-    DecimalFormat percentFormatter = new DecimalFormat("###.0");
+    DecimalFormat percentFormatter = new DecimalFormat("##0.0");
 
     Runnable startBlockChain = new Runnable(){
         @Override
@@ -106,8 +106,13 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
     @Override
     public void onInitComplete() {
         initTextHandler.removeCallbacks(initTextUpdater);
-        currentTask.setText(R.string.downloading_text);
-        downloadPogressText.setText(percentFormatter.format(0) + "%");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                currentTask.setText(R.string.downloading_text);
+                downloadPogressText.setText(percentFormatter.format(0) + "%");
+            }
+        });
     }
 
     @Override
@@ -128,7 +133,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
     }
 
     @Override
-    public void onDownloadProgress(double pct, int blocksSoFar, Date date) {
+    public void onDownloadProgress(final double pct, int blocksSoFar, Date date) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
