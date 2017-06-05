@@ -3,13 +3,8 @@ package com.digitalvotingpass.utilities;
 import net.sf.scuba.smartcards.BuildConfig;
 
 import org.bitcoinj.core.Base58;
-import org.spongycastle.asn1.ASN1InputStream;
-import org.spongycastle.asn1.ASN1Primitive;
-import org.spongycastle.asn1.util.ASN1Dump;
 import org.spongycastle.crypto.digests.RIPEMD160Digest;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;

@@ -1,4 +1,4 @@
-package com.digitalvotingpass;
+package com.digitalvotingpass.utilities;
 
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
 import com.digitalvotingpass.utilities.Util;
