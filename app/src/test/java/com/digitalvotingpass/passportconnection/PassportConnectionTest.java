@@ -1,13 +1,11 @@
 package com.digitalvotingpass.passportconnection;
 
-import com.digitalvotingpass.utilities.AddressGenerator;
 import com.digitalvotingpass.utilities.Util;
 
 import org.junit.Test;
 
-import java.security.PublicKey;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by wkmeijer on 16-5-17.

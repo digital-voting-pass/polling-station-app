@@ -19,7 +19,6 @@ import java.security.PublicKey;
 import java.util.HashMap;
 
 public class PassportConnection {
-    
     /**
      * Opens a connection with the ID by doing BAC
      * Uses hardcoded parameters for now

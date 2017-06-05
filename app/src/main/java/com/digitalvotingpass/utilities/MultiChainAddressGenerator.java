@@ -3,21 +3,18 @@ package com.digitalvotingpass.utilities;
 import net.sf.scuba.smartcards.BuildConfig;
 
 import org.bitcoinj.core.Base58;
+import org.spongycastle.asn1.ASN1InputStream;
+import org.spongycastle.asn1.ASN1Primitive;
+import org.spongycastle.asn1.util.ASN1Dump;
 import org.spongycastle.crypto.digests.RIPEMD160Digest;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 
-public class AddressGenerator {
-
-    private final String[] version;
-    private final String addressChecksum;
-
-    public AddressGenerator(String[] version, String addressChecksum) {
-        this.version = version;
-        this.addressChecksum = addressChecksum;
-    }
+public class MultiChainAddressGenerator {
 
     /**
      * Converts a given public key to a valid MultiChain address.
@@ -25,7 +22,7 @@ public class AddressGenerator {
      * @param pubKey byte array containing the public key
      * @return String representing the corresponding address.
      */
-    public String getPublicAddress(byte[] pubKey) {
+    public static String getPublicAddress(String[] version, String addressChecksum, byte[] pubKey) {
         //Step 3
         MessageDigest digest=null;
         try {
@@ -80,14 +77,21 @@ public class AddressGenerator {
     }
 
     /**
-     * UNTESTED
+     * NOT WORKING, NEEDS PROPER ASN1 DECODING.
      * Takes a java.security.PublicKey and returns a valid MultiChain address.
-     * Uses the {@link #getPublicAddress(byte[]) getPublicAddress method to generate the address.
+     * Uses the {@link #getPublicAddress(String[], String, byte[]) getPublicAddress method to generate the address.
      * @param pubKey java.security.PublicKey containing the public key
      * @return String representing the corresponding address.
      */
-    public String getPublicAddress(PublicKey pubKey) {
-        return getPublicAddress(pubKey.getEncoded());
+    public static String getPublicAddress(String[] version, String addressChecksum, PublicKey pubKey) {
+        ASN1InputStream bIn = new ASN1InputStream(new ByteArrayInputStream(pubKey.getEncoded()));
+        ASN1Primitive obj = null;
+        try {
+            obj = bIn.readObject();
+            return getPublicAddress(version, addressChecksum, obj.getEncoded());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
-
 }
