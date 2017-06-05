@@ -35,4 +35,8 @@
     <style name="MainText" parent="@android:style/TextAppearance.Medium">
         <item name="android:textColor">@color/govTextBlue</item>
     </style>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splashscreen</item>
+    </style>
 </resources>
