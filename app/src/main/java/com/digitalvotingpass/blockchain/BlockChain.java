@@ -3,7 +3,6 @@ package com.digitalvotingpass.blockchain;
 import android.os.Environment;
 import android.util.Log;
 
-import com.digitalvotingpass.digitalvotingpass.SplashActivity;
 import com.google.common.util.concurrent.Service;
 
 import org.bitcoinj.core.NetworkParameters;
