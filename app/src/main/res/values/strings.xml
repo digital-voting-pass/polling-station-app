@@ -60,6 +60,7 @@
     <string name="election_choice">Choose election</string>
     <string name="election">election</string>
     <string name="downloading_text">Downloading...</string>
+    <string name="initializing_text">Initializing...</string>
 
     <string name="gender_male">Mr.</string>
     <string name="gender_female">Ms.</string>

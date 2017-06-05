@@ -26,8 +26,6 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
     public static final int REQUEST_CODE_STORAGE = 15;
     private int DELAY_INIT_TEXT_UPDATES = 800;
 
-    private String TAG = getClass().getSimpleName();
-
     private TextView downloadPogressText;
     private TextView currentTask;
     private ProgressBar downloadProgressBar;
