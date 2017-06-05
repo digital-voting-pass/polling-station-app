@@ -77,21 +77,13 @@ public class MultiChainAddressGenerator {
     }
 
     /**
-     * NOT WORKING, NEEDS PROPER ASN1 DECODING.
+     * UNTESTED, should work
      * Takes a java.security.PublicKey and returns a valid MultiChain address.
      * Uses the {@link #getPublicAddress(String[], String, byte[]) getPublicAddress method to generate the address.
      * @param pubKey java.security.PublicKey containing the public key
      * @return String representing the corresponding address.
      */
     public static String getPublicAddress(String[] version, String addressChecksum, PublicKey pubKey) {
-        ASN1InputStream bIn = new ASN1InputStream(new ByteArrayInputStream(pubKey.getEncoded()));
-        ASN1Primitive obj = null;
-        try {
-            obj = bIn.readObject();
-            return getPublicAddress(version, addressChecksum, obj.getEncoded());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return getPublicAddress(version, addressChecksum, pubKey.getEncoded());
     }
 }
