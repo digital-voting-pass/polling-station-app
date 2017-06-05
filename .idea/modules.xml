@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bitcoinj-core/bitcoinj-core.iml" filepath="$PROJECT_DIR$/bitcoinj-core/bitcoinj-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bitcoinj-core/bitcoinj-core.iml" filepath="$PROJECT_DIR$/bitcoinj-core/bitcoinj-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/digital-voting-pass-app.iml" filepath="$PROJECT_DIR$/digital-voting-pass-app.iml" />
     </modules>
   </component>

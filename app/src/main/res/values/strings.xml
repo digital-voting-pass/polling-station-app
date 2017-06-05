@@ -59,6 +59,8 @@
     <string name="search">Search</string>
     <string name="election_choice">Choose election</string>
     <string name="election">election</string>
+    <string name="downloading_text">Downloading...</string>
+    <string name="initializing_text">Initializing...</string>
 
     <string name="gender_male">Mr.</string>
     <string name="gender_female">Ms.</string>
@@ -81,5 +83,12 @@
         <item>October</item>
         <item>November</item>
         <item>December</item>
+    </string-array>
+
+    <string-array name="init_array">
+        <item>Initializing</item>
+        <item>Initializing.</item>
+        <item>Initializing..</item>
+        <item>Initializing...</item>
     </string-array>
 </resources>
