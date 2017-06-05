@@ -1,10 +1,12 @@
 package com.digitalvotingpass.electionchoice;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -15,8 +17,11 @@ import android.widget.ListView;
 
 import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.utilities.Util;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ElectionChoiceActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
     private ListView electionListView;
@@ -33,6 +38,7 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
         getSupportActionBar().setTitle(getString(R.string.election_choice));
+        Util.setupAppBar(appBar, this);
 
         electionListView = (ListView) findViewById(R.id.election_list);
 
@@ -50,13 +56,37 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                Intent intent = new Intent(thisActivity, MainActivity.class);
-                // Get the election associated with the clicked listItem
-                Election election = (Election) parent.getItemAtPosition(position);
-                intent.putExtra("election", election);
-                startActivity(intent);
+                // Get the election associated with the clicked listItem and save it to sharedpreferences
+                saveElection((Election) parent.getItemAtPosition(position));
+
+                // If the activity was not started for result (from mainactivity) start mainActivity.
+                // Otherwise finish this activity to return to mainactivity and set flag that something changed.
+                if(getCallingActivity() == null) {
+                    Intent intent = new Intent(thisActivity, MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    thisActivity.setResult(Activity.RESULT_OK, new Intent());
+                    finish();
+                }
             }
         });
+    }
+
+    public ElectionsAdapter getAdapter() {
+        return electionsAdapter;
+    }
+
+    /**
+     * Saves an election object to the sharedpreferences so other activities can access it.
+     * @param election
+     */
+    private void saveElection(Election election) {
+        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = sharedPrefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(election);
+        prefsEditor.putString(getString(R.string.shared_preferences_key_election), json);
+        prefsEditor.commit();
     }
 
     /**

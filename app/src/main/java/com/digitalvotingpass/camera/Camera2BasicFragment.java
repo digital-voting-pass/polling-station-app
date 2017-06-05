@@ -62,6 +62,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.digitalvotingpass.digitalvotingpass.DocumentData;
 import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.ManualInputActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
@@ -208,7 +209,8 @@ public class Camera2BasicFragment extends Fragment
     public synchronized void scanResultFound(final Mrz mrz) {
         if (!resultFound) {
             Intent returnIntent = new Intent();
-            returnIntent.putExtra("result", mrz.getPrettyData());
+            DocumentData data = mrz.getPrettyData();
+            returnIntent.putExtra("result", data);
             getActivity().setResult(Activity.RESULT_OK, returnIntent);
             resultFound = true;
             finishActivity();
@@ -603,7 +605,6 @@ public class Camera2BasicFragment extends Fragment
                     mTextureView.setAspectRatio(
                             mPreviewSize.getWidth(), mPreviewSize.getHeight());
                 } else {
-                    //TODO find out why and how this +150 removes the black vertical bar
                     mTextureView.setAspectRatio(
                             mPreviewSize.getHeight(), mPreviewSize.getWidth());
                 }

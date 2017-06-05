@@ -12,6 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.digitalvotingpass.transactionhistory.TransactionHistoryActivity;
+import com.digitalvotingpass.utilities.Util;
+
+import net.sf.scuba.data.Gender;
 
 public class ResultActivity extends AppCompatActivity {
     private TextView textAuthorization;
@@ -36,6 +39,7 @@ public class ResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_result);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
+        Util.setupAppBar(appBar, this);
 
         textAuthorization = (TextView) findViewById(R.id.authorization);
         textVoterName = (TextView) findViewById(R.id.voter_name);
@@ -98,11 +102,12 @@ public class ResultActivity extends AppCompatActivity {
      * TODO: handle actual data
      */
     public void handleData(Bundle extras) {
-        String name = "Piet Jansen";
+        Voter voter = (Voter) extras.get("voter");
+        String preamble = createPreamble(voter);
         int votingPasses = 1;
         int authState = SUCCES;
 
-        textVoterName.setText(getString(R.string.has_right, name));
+        textVoterName.setText(getString(R.string.has_right, preamble));
         // display singular or plural form of voting passes based on amount
         if(votingPasses == 1) {
             textVotingPasses.setText(R.string.voting_pass);
@@ -113,6 +118,31 @@ public class ResultActivity extends AppCompatActivity {
         setAuthorizationStatus(authState);
     }
 
+    /**
+     * Create preamble string, so Mrs de Vries or Mr de Vries.
+     * @param voter The voter.
+     * @return The preamble string.
+     */
+    private String createPreamble(Voter voter) {
+        //set the gender strings, this is necessary because we can't get
+        //the strings in the voter class and passing a Context object might
+        //cause memory leaks
+        voter.setGenderStrings(getString(R.string.gender_male), getString(R.string.gender_female),
+                getString(R.string.gender_unspecified), getString(R.string.gender_unknown));
+
+        Gender gender = voter.getGender();
+        String preamble;
+        //Only show a preamble when the voter is a male or female
+        if(gender == Gender.FEMALE || gender == Gender.MALE) {
+            //Capitalize the first word since this is sometimes van or van de.
+            String firstWord = Voter.capitalizeFirstLetter(voter.getLastName().split(" ")[0]);
+            preamble = voter.genderToString() + " " + firstWord + " " + voter.getLastName().substring(firstWord.length());
+        } else {
+            preamble = voter.getFirstName() + " " + voter.getLastName();
+        }
+        return preamble.trim();
+
+    }
     /**
      * Sets the textview which displays the authorization status, based on the current state of the
      * process to one of the following:

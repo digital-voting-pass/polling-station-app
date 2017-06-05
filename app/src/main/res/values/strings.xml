@@ -42,6 +42,7 @@
 
     <string name="start_OCR">Scan passport</string>
     <string name="title_activity_result">Authorization</string>
+    <string name="edit_election">Edit election</string>
 
     <string name="proceed_home">Next voter</string>
     <string name="proceed_cast_vote">Confirm vote</string>
@@ -58,6 +59,16 @@
     <string name="search">Search</string>
     <string name="election_choice">Choose election</string>
     <string name="election">election</string>
+    <string name="downloading_text">Downloading...</string>
+    <string name="initializing_text">Initializing...</string>
+
+    <string name="gender_male">Mr.</string>
+    <string name="gender_female">Ms.</string>
+    <string name="gender_unspecified">Unspecified</string>
+    <string name="gender_unknown">Unknown</string>
+
+    <string name="shared_preferences_key_election">com.digitalvotingpass.ELECTION_OBJECT_KEY</string>
+    <string name="shared_preferences_file">com.digitalvotingpass.shared</string>
 
     <string-array name="months_array">
         <item>January</item>
@@ -72,5 +83,12 @@
         <item>October</item>
         <item>November</item>
         <item>December</item>
+    </string-array>
+
+    <string-array name="init_array">
+        <item>Initializing</item>
+        <item>Initializing.</item>
+        <item>Initializing..</item>
+        <item>Initializing...</item>
     </string-array>
 </resources>
