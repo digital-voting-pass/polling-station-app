@@ -19,9 +19,11 @@ import java.net.UnknownHostException;
 public class BlockChain {
     public static final String PEER_IP = "188.226.149.56";
     private static BlockChain instance;
-    InetAddress peeraddr;
-    WalletAppKit kit;
+    private WalletAppKit kit;
+    private BlockchainCallBackListener listener;
     private boolean initialized = false;
+
+    private InetAddress peeraddr;
 
     private BlockChain() {
         try {
@@ -38,7 +40,13 @@ public class BlockChain {
         return instance;
     }
 
-    public void startDownload(BlockchainCallBackListener listener) {
+    public void setCallBackListener(BlockchainCallBackListener listener) {
+        this.listener = listener;
+        if (kit != null)
+            kit = kit.setDownloadListener(new ProgressTracker(listener));
+    }
+
+    public void startDownload() {
         if (!initialized) {
             BriefLogFormatter.init();
             final NetworkParameters params = MultiChainParams.get(
@@ -63,7 +71,8 @@ public class BlockChain {
                 kit.connectToLocalHost();
             }
 
-            kit = kit.setDownloadListener(new ProgressTracker(listener));
+            if (listener != null)
+                kit = kit.setDownloadListener(new ProgressTracker(listener));
             kit.setBlockingStartup(false);
 
             PeerAddress peer = new PeerAddress(params, peeraddr);
