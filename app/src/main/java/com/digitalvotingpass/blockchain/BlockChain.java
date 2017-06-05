@@ -43,7 +43,7 @@ public class BlockChain {
 
     public void setCallBackListener(BlockchainCallBackListener listener) {
         this.listener = listener;
-        if (kit != null)
+        if (kit != null && listener != null)
             kit = kit.setDownloadListener(new ProgressTracker(listener));
     }
 

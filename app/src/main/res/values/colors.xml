@@ -12,6 +12,8 @@
     <color name="grey">#a0acacac</color>
     <color name="green">#00ff00</color>
     <color name="white">#ffffff</color>
+    <color name="transparent">#00000000</color>
+    <color name="statusBar">#20000000</color>
 
     <color name="govDarkBlue">#01689b</color>
     <color name="govDarkBluePressed">#01517a</color>

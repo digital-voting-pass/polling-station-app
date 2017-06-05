@@ -6,6 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ListView;
 
 import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.utilities.Util;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +20,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_transaction_history);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
+        Util.setupAppBar(appBar, this);
 
         transactionList = (ListView) findViewById(R.id.transaction_list);
 

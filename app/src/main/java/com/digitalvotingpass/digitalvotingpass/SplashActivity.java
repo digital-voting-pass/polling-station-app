@@ -2,8 +2,10 @@ package com.digitalvotingpass.digitalvotingpass;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -68,12 +70,12 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        thisActivity = this;
 
         downloadPogressText = (TextView) findViewById(R.id.download_progress_text);
         currentTask = (TextView) findViewById(R.id.progress_current_task);
         downloadProgressBar = (ProgressBar) findViewById(R.id.download_progress_bar);
 
-        thisActivity = this;
         if (savedInstanceState == null) {
             blockChain = BlockChain.getInstance();
             handler = new Handler();
@@ -119,9 +121,18 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
 
     @Override
     public void onDownloadComplete() {
-        Intent mainIntent = new Intent(SplashActivity.this, ElectionChoiceActivity.class);
-        startActivity(mainIntent);
-        finish();
+        // Create an Intent that will start either the Election choice or the mainactivity
+        // based on whether or not an election was already selected.
+        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
+        String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "not found");
+        Intent intent;
+        if(json.equals("not found")) {
+            intent = new Intent(SplashActivity.this, ElectionChoiceActivity.class);
+        } else {
+            intent = new Intent(SplashActivity.this, MainActivity.class);
+        }
+        thisActivity.startActivity(intent);
+        thisActivity.finish();
     }
 
     @Override
