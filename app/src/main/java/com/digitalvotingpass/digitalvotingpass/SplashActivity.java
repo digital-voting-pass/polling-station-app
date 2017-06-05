@@ -24,27 +24,28 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
     public static final int REQUEST_CODE_STORAGE = 15;
     private int DELAY_INIT_TEXT_UPDATES = 800;
 
-    // Duration of splash screen in millis
     private String TAG = getClass().getSimpleName();
 
     private TextView downloadPogressText;
     private TextView currentTask;
     private ProgressBar downloadProgressBar;
-    private BlockchainCallBackListener thisActivity;
+    private Activity thisActivity;
     private Handler handler;
     private Handler initTextHandler;
+    private BlockChain blockChain;
 
     DecimalFormat percentFormatter = new DecimalFormat("##0.0");
 
     Runnable startBlockChain = new Runnable(){
         @Override
         public void run() {
-            if (ContextCompat.checkSelfPermission((Activity)thisActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            if (ContextCompat.checkSelfPermission(thisActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 requestStoragePermissions();
                 return;
             }
-            BlockChain.getInstance().startDownload(thisActivity);
+            blockChain.setCallBackListener((BlockchainCallBackListener) thisActivity);
+            blockChain.startDownload();
         }
     };
 
@@ -52,7 +53,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         int i = 0;
         @Override
         public void run() {
-            String[] s = ((Activity)thisActivity).getResources().getStringArray(R.array.init_array);
+            String[] s = thisActivity.getResources().getStringArray(R.array.init_array);
             currentTask.setText(s[i % s.length]);
             i++;
             initTextHandler.postDelayed(this, DELAY_INIT_TEXT_UPDATES);
@@ -74,6 +75,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
 
         thisActivity = this;
         if (savedInstanceState == null) {
+            blockChain = BlockChain.getInstance();
             handler = new Handler();
             initTextHandler = new Handler();
             initTextHandler.post(initTextUpdater);
@@ -125,6 +127,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        blockChain.setCallBackListener(null);
     }
 
     @Override
