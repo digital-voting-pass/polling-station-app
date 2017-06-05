@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.security.PublicKey;
 
 public class PassportConnection {
-
     /**
      * Opens a connection with the ID by doing BAC
      * Uses hardcoded parameters for now
@@ -134,4 +133,5 @@ public class PassportConnection {
         }
         return null;
     }
+
 }

@@ -10,6 +10,7 @@ android {
         versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -34,7 +35,6 @@ dependencies {
     androidTestCompile ('com.android.support.test.espresso:espresso-intents:2.2.2') {
         exclude module: 'support-annotations'
     }
-    compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'

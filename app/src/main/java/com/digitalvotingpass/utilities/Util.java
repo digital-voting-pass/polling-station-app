@@ -79,8 +79,8 @@ public class Util {
             ex.printStackTrace();
         }
     }
-    
-        /**
+
+    /**
      * Method for converting a hexString to a byte array.
      * This method is used for signing transaction hashes (which are in hex).
      */
