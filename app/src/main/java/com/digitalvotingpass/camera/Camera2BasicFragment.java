@@ -16,12 +16,8 @@ package com.digitalvotingpass.camera;/*
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -68,6 +64,7 @@ import com.digitalvotingpass.digitalvotingpass.ManualInputActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.ocrscanner.Mrz;
 import com.digitalvotingpass.ocrscanner.TesseractOCR;
+import com.digitalvotingpass.utilities.ErrorDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -442,7 +439,7 @@ public class Camera2BasicFragment extends Fragment
                 showInfoDialog(R.string.ocr_camera_permission_explanation);
             } else if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
-                showInfoDialog(R.string.ocr_storage_permission_explanation);
+                showInfoDialog(R.string.storage_permission_explanation);
             }
         } else {
             startTesseractThreads();
@@ -485,7 +482,7 @@ public class Camera2BasicFragment extends Fragment
 
     private void requestStoragePermissions() {
         if (FragmentCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            ErrorDialog.newInstance(getString(R.string.ocr_storage_permission_explanation))
+            ErrorDialog.newInstance(getString(R.string.storage_permission_explanation))
                     .show(getChildFragmentManager(), FRAGMENT_DIALOG);
         } else {
             FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSIONS);
@@ -509,7 +506,7 @@ public class Camera2BasicFragment extends Fragment
                 if(mIsStateAlreadySaved){
                     mPendingShowDialog = true;
                 } else {
-                    ErrorDialog.newInstance(getString(R.string.ocr_storage_permission_explanation))
+                    ErrorDialog.newInstance(getString(R.string.storage_permission_explanation))
                             .show(getChildFragmentManager(), FRAGMENT_DIALOG);
                 }
             }
@@ -841,37 +838,6 @@ public class Camera2BasicFragment extends Fragment
             // We cast here to ensure the multiplications won't overflow
             return Long.signum((long) lhs.getWidth() * lhs.getHeight() -
                     (long) rhs.getWidth() * rhs.getHeight());
-        }
-
-    }
-
-    /**
-     * Shows an error message dialog.
-     */
-    public static class ErrorDialog extends DialogFragment {
-
-        private static final String ARG_MESSAGE = "message";
-
-        public static ErrorDialog newInstance(String message) {
-            ErrorDialog dialog = new ErrorDialog();
-            Bundle args = new Bundle();
-            args.putString(ARG_MESSAGE, message);
-            dialog.setArguments(args);
-            return dialog;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Activity activity = getActivity();
-            return new AlertDialog.Builder(activity)
-                    .setMessage(getArguments().getString(ARG_MESSAGE))
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            activity.finish();
-                        }
-                    })
-                    .create();
         }
 
     }
