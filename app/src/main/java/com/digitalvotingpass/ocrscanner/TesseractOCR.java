@@ -9,7 +9,6 @@ import android.os.HandlerThread;
 import android.util.Log;
 
 import com.digitalvotingpass.camera.Camera2BasicFragment;
-import com.digitalvotingpass.utilities.StringStore;
 import com.digitalvotingpass.utilities.Util;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
@@ -25,6 +24,11 @@ public class TesseractOCR {
     private static final long OCR_SCAN_TIMEOUT_MILLIS = 5000;
 
     private static final String trainedData = "ocrb.traineddata";
+
+    private static final String FOLDER_TESSERACT_DATA = "tessdata";
+    private static final String TRAINED_DATA_EXTENSION = ".traineddata";
+
+
     private final String name;
 
     private TessBaseAPI baseApi;
@@ -137,8 +141,8 @@ public class TesseractOCR {
     public void init() {
         baseApi = new TessBaseAPI();
         baseApi.setDebug(true);
-        String path = Environment.getExternalStorageDirectory() + "/" + StringStore.FOLDER_DIGITAL_VOTING_PASS + "/";
-        File trainedDataFile = new File(path, StringStore.FOLDER_TESSERACT_DATA + "/" + trainedData);
+        String path = Environment.getExternalStorageDirectory() + "/" + Util.FOLDER_DIGITAL_VOTING_PASS + "/";
+        File trainedDataFile = new File(path, TesseractOCR.FOLDER_TESSERACT_DATA + "/" + trainedData);
         try {
             mDeviceStorageAccessLock.acquire();
             if (!trainedDataFile.exists()) {
@@ -148,7 +152,7 @@ public class TesseractOCR {
                 Log.i(TAG, "Existing trained data found");
             }
             mDeviceStorageAccessLock.release();
-            baseApi.init(path, trainedData.replace(StringStore.TRAINED_DATA_EXTENSION, "")); //extract language code from trained data file
+            baseApi.init(path, trainedData.replace(TesseractOCR.TRAINED_DATA_EXTENSION, "")); //extract language code from trained data file
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             //TODO show error to user, coping failed
