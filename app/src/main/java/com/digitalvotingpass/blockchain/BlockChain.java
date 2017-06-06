@@ -19,6 +19,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -115,8 +116,17 @@ public class BlockChain {
         return (int) kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance();
     }
 
-    public List<Asset> getAssets() {
+    public ArrayList<Asset> getAssets() {
         return kit.wallet().getAvailableAssets();
+    }
+
+    public boolean assetExists(Asset asset) {
+        for(Asset a : getAssets()) {
+            if(a.getName().equals(asset.getName())){
+                return true;
+            }
+        }
+        return false;
     }
 
 }
