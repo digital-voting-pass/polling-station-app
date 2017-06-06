@@ -108,17 +108,12 @@ public class BlockChain {
      * @return - The amount of voting tokens available
      * @throws NullPointerException - When the address is not found on the blockchain.
      */
-    public int getVotingPassAmount(PublicKey pubKey, Asset mcAsset) throws NullPointerException {
+    public int getVotingPassAmount(PublicKey pubKey, Asset mcAsset) {
         Log.e(this.toString(), "total assets: " + kit.wallet().getAvailableAssets().size());
         Address mcAddress = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
-        // Throw an exception when the address is not found on the blockchain
-        if(!kit.wallet().getIssuedReceiveAddresses().contains(mcAddress)){
-            throw new NullPointerException("Address not available on blockchain");
-        } else{
-            mcAsset = kit.wallet().getAvailableAssets().get(0); // TODO: remove this
-            Log.e(this.toString(), "asset 0: " + kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance());
-            return (int) kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance();
-        }
+        mcAsset = kit.wallet().getAvailableAssets().get(0); // TODO: remove this
+        Log.e(this.toString(), "asset 0: " + kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance());
+        return (int) kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance();
     }
 
 }
