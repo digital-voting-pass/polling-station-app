@@ -3,17 +3,25 @@ package com.digitalvotingpass.blockchain;
 import android.os.Environment;
 import android.util.Log;
 
+import com.digitalvotingpass.passportconnection.PassportConnection;
+import com.digitalvotingpass.passportconnection.PassportTransaction;
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Asset;
+import org.bitcoinj.core.AssetBalance;
+import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerAddress;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MultiChainParams;
 import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.utils.BriefLogFormatter;
+import org.bitcoinj.wallet.Wallet;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -93,6 +101,7 @@ public class BlockChain {
 
     /**
      * Gets the amount of voting tokens associated with the given public key.
+     *
      * @param pubKey - The Public Key read from the ID of the voter
      * @param mcAsset - The asset (election) that is chosen at app start-up.
      * @return - The amount of voting tokens available
@@ -104,6 +113,47 @@ public class BlockChain {
         mcAsset = kit.wallet().getAvailableAssets().get(0); // TODO: remove this
         Log.e(this.toString(), "asset 0: " + kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance());
         return (int) kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance();
+    }
+
+    public AssetBalance getVotingPassBalance(PublicKey pubKey) {
+
+        Address mcAddress = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
+        System.out.println(mcAddress);
+        Asset mcAsset = kit.wallet().getAvailableAssets().get(1); // TODO: remove this
+        Log.e(this.toString(), "asset 0: " + kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance());
+        return kit.wallet().getAssetBalance(mcAsset, mcAddress);
+    }
+
+    /**
+     * Create a new transaction, signes it with the travel document and broadcasts it to the
+     * network
+     *
+     * @param balance
+     * @param pcon
+     */
+    public void confirmVotingPass(AssetBalance balance, PassportConnection pcon) {
+
+        PassportTransaction transaction = new PassportTransaction(params);
+        TransactionOutput original = balance.get(0);
+
+        byte[] bytes = original.getScriptBytes();
+        TransactionOutput output = new TransactionOutput(params, transaction, Coin.ZERO, bytes);
+
+        transaction.addOutput(original);
+        transaction.addPassportSignedInput(original, pcon);
+
+        final Wallet.SendResult result = new Wallet.SendResult();
+        result.tx = transaction;
+        result.broadcast = kit.peerGroup().broadcastTransaction(transaction);
+        result.broadcastComplete = result.broadcast.future();
+
+        result.broadcastComplete.addListener(new Runnable() {
+            @Override
+            public void run() {
+                // The wallet has changed now, it'll get auto saved shortly or when the app shuts down.
+                System.out.println("Sent coins onwards! Transaction hash is " + result.tx.getHashAsString());
+            }
+        }, MoreExecutors.directExecutor());
     }
 
 }

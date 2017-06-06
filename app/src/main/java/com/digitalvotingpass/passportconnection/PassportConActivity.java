@@ -13,12 +13,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.digitalvotingpass.Voter;
 import com.digitalvotingpass.digitalvotingpass.DocumentData;
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.digitalvotingpass.ResultActivity;
 import com.digitalvotingpass.utilities.Util;
 
+import org.bitcoinj.core.AssetBalance;
 import org.jmrtd.PassportService;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
@@ -144,7 +146,7 @@ public class PassportConActivity extends AppCompatActivity {
         }
 
         // Open a connection with the ID, return a PassportService object which holds the open connection
-        PassportConnection pcon= new PassportConnection();
+        PassportConnection pcon = new PassportConnection();
         PassportService ps = pcon.openConnection(tag, documentData);
         try {
             progressView.setImageResource(R.drawable.nfc_icon_2);
@@ -156,8 +158,12 @@ public class PassportConActivity extends AppCompatActivity {
             Voter voter = pcon.getVoter(ps);
 
             // sign 8 bytes of data
-            byte[] signedData = pcon.signData(ps);
+            byte[] signedData = pcon.signData(Util.hexStringToByteArray("0a1b3c4d5e6faabb"));
             progressView.setImageResource(R.drawable.nfc_icon_3);
+
+            BlockChain bc = BlockChain.getInstance();
+            AssetBalance balance  = bc.getVotingPassBalance(pubKey);
+            bc.confirmVotingPass(balance, pcon);
 
             // when all data is loaded start ResultActivity
             startResultActivity(pubKey, signedData, voter);
