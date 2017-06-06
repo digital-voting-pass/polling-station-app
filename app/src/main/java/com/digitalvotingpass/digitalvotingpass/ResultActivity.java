@@ -11,10 +11,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.transactionhistory.TransactionHistoryActivity;
 import com.digitalvotingpass.utilities.Util;
 
 import net.sf.scuba.data.Gender;
+
+import org.bitcoinj.core.Asset;
+import org.bitcoinj.core.Block;
+
+import java.security.PublicKey;
 
 public class ResultActivity extends AppCompatActivity {
     private TextView textAuthorization;
@@ -24,10 +30,13 @@ public class ResultActivity extends AppCompatActivity {
     private Button butTransactionHistory;
     private Button butProceed;
     private MenuItem cancelAction;
+
     private int authorizationState = 1;
     private final int FAILED = 0;
     private final int WAITING = 1;
     private final int SUCCES = 2;
+    private PublicKey pubKey;
+    private Asset mcAsset;
 
 
     @Override
@@ -35,6 +44,8 @@ public class ResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         final ResultActivity thisActivity = this;
         Bundle extras = getIntent().getExtras();
+
+        pubKey = (PublicKey) extras.get("pubKey");
 
         setContentView(R.layout.activity_result);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
@@ -99,13 +110,19 @@ public class ResultActivity extends AppCompatActivity {
      * Displays all the data gotten from the blockchain and the passport. Transferred in the extras
      * field of the intent.
      *
-     * TODO: handle actual data
      */
     public void handleData(Bundle extras) {
         Voter voter = (Voter) extras.get("voter");
         String preamble = createPreamble(voter);
-        int votingPasses = 1;
-        int authState = SUCCES;
+        int votingPasses, authState;
+        try {
+            votingPasses = BlockChain.getInstance().getVotingPassAmount(pubKey, mcAsset);
+            authState = SUCCES;
+        } catch (NullPointerException e){
+            Toast.makeText(this, getString(R.string.address_not_found), Toast.LENGTH_LONG).show();
+            votingPasses = 0;
+            authState = FAILED;
+        }
 
         textVoterName.setText(getString(R.string.has_right, preamble));
         // display singular or plural form of voting passes based on amount
