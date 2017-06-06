@@ -1,33 +1,22 @@
 package com.digitalvotingpass.electionchoice;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import org.bitcoinj.core.Asset;
 
-public class Election implements Parcelable{
+public class Election {
     public String kind;
     public String place;
+    public Asset asset;
 
     /**
      * Creates an election object with two attributes.
      * @param kind - The kind of election. (e.g. municipal, parlement)
      * @param place - The location of the election. (e.g. Amsterdam, Den Haag, Noord-Brabant)
+     * @param asset - The asset that corresponds to this Election.
      */
-    public Election(String kind, String place) {
+    public Election(String kind, String place, Asset asset) {
         this.kind = kind;
         this.place = place;
-    }
-
-    /**
-     * Constructor for parcel
-     * @param in - The parcel containing the data for the election object
-     */
-    public Election(Parcel in){
-        String[] data = new String[2];
-
-        in.readStringArray(data);
-        // the order needs to be the same as in writeToParcel() method
-        this.kind = data[0];
-        this.place = data[1];
+        this.asset = asset;
     }
 
     /**
@@ -47,34 +36,8 @@ public class Election implements Parcelable{
     }
 
     /**
-     * Must be overridden, can be ignored.
+     * Getter function for the asset attribute of Election object
+     * @return asset - An Asset object, the token on the blockchain
      */
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    /**
-     * Write the data of the election object to the parcel
-     * @param dest
-     * @param flags
-     */
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[] {this.kind,
-                this.place});
-    }
-
-    /**
-     * Used to regenerate the election object.
-     */
-    public static final Parcelable.Creator<Election> CREATOR = new Parcelable.Creator<Election>() {
-        public Election createFromParcel(Parcel in) {
-            return new Election(in);
-        }
-
-        public Election[] newArray(int size) {
-            return new Election[size];
-        }
-    };
+    public Asset getAsset() { return asset; }
 }

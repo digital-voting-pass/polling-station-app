@@ -12,12 +12,14 @@ import android.view.View;
 
 import com.digitalvotingpass.electionchoice.Election;
 
+import org.bitcoinj.core.Asset;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -36,7 +38,6 @@ import static org.hamcrest.Matchers.allOf;
 @RunWith(AndroidJUnit4.class)
 public class TestMainActivity {
 
-
     /**
      * Start up the main activity for each test.
      */
@@ -48,8 +49,6 @@ public class TestMainActivity {
             Context targetContext = InstrumentationRegistry.getInstrumentation()
                     .getTargetContext();
             Intent result = new Intent(targetContext, MainActivity.class);
-            Election election = new Election("Election", "election");
-            result.putExtra("election", election);
             return result;
         }
 

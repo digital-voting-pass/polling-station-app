@@ -15,10 +15,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.utilities.Util;
 import com.google.gson.Gson;
+
+import org.bitcoinj.core.Asset;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,12 +45,12 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
 
         electionListView = (ListView) findViewById(R.id.election_list);
 
-        // create a election array with all the elections and add them to the list
-        // TODO: handle actual election choice input data
+        // create an election array by getting all the assets available on the blockchain and add them to the list
         ArrayList<Election> electionChoices = new ArrayList<>();
-        electionChoices.add(new Election("Gemeenteraadsverkiezing", "Delft"));
-        electionChoices.add(new Election("Gemeenteraadsverkiezing", "Rotterdam"));
-        electionChoices.add(new Election("Provinciale Statenverkiezing", "Zuid-Holland"));
+        List<Asset> assetList = BlockChain.getInstance().getAssets();
+        for(Asset a : assetList) {
+            electionChoices.add(new Election("", a.getName(), a));
+        }
 
         electionsAdapter = new ElectionsAdapter(this, electionChoices);
         electionListView.setAdapter(electionsAdapter);
