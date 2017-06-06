@@ -26,7 +26,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
     public static final int REQUEST_CODE_STORAGE = 15;
     private int DELAY_INIT_TEXT_UPDATES = 800;
 
-    private TextView downloadPogressText;
+    private TextView downloadProgressText;
     private TextView currentTask;
     private ProgressBar downloadProgressBar;
     private Activity thisActivity;
@@ -70,7 +70,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         setContentView(R.layout.activity_splash_screen);
         thisActivity = this;
 
-        downloadPogressText = (TextView) findViewById(R.id.download_progress_text);
+        downloadProgressText = (TextView) findViewById(R.id.download_progress_text);
         currentTask = (TextView) findViewById(R.id.progress_current_task);
         downloadProgressBar = (ProgressBar) findViewById(R.id.download_progress_bar);
 
@@ -112,7 +112,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
             @Override
             public void run() {
                 currentTask.setText(R.string.downloading_text);
-                downloadPogressText.setText(percentFormatter.format(0) + "%");
+                downloadProgressText.setText(percentFormatter.format(0) + "%");
             }
         });
     }
@@ -150,7 +150,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
             @Override
             public void run() {
                 currentTask.setText(R.string.downloading_text);
-                downloadPogressText.setText(percentFormatter.format(pct) + "%");
+                downloadProgressText.setText(percentFormatter.format(pct) + "%");
                 downloadProgressBar.setProgress((int)pct);
             }
         });

@@ -51,6 +51,7 @@
     <string name="authorization_failed">Authorization failed, do not hand out voting ballot.</string>
     <string name="authorization_succesful">Authorization succesful, hand out voting ballot.</string>
     <string name="authorization_wait">Waiting for authorization.</string>
+    <string name="address_not_found">This document is not registered for digital voting.</string>
 
     <string name="has_right">%s has right to:</string>
     <string name="voting_pass">Voting pass</string>
