@@ -10,18 +10,25 @@ import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Asset;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerAddress;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionInput;
+import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MultiChainParams;
 import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.utils.BriefLogFormatter;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Date;
+import java.util.Set;
 
 public class BlockChain {
     public static final String PEER_IP = "188.226.149.56";
@@ -129,4 +136,52 @@ public class BlockChain {
         return false;
     }
 
+    public Set<com.digitalvotingpass.transactionhistory.Transaction> getTransactions(PublicKey pubKey, Asset assetFilter) {
+        Set<com.digitalvotingpass.transactionhistory.Transaction> result = new android.support.v4.util.ArraySet<>();
+        Address address = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
+        String myAddress = address.toString();
+        Set<Transaction> ts = kit.wallet().getTransactions(true);
+        for (Transaction t:ts) {
+            for(TransactionInput in : t.getInputs()){
+//                try {
+//                System.out.println(in.getFromAddress());}
+//                catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+            }
+            if (!t.isCoinBase())
+            for (TransactionOutput o : t.getOutputs()) {
+                boolean sentToAddr = o.getScriptPubKey().isSentToAddress();
+                boolean isReturn = o.getScriptPubKey().isOpReturn();
+                if (sentToAddr) {
+                    if (!isReturn) {
+                        //ScriptPubKey contains
+                        byte[] data = o.getScriptPubKey().getChunks().get(2).data;
+                        int amount = 0;
+                        if (data != null) {
+                            byte[] metaData = o.getScriptPubKey().getChunks().get(5).data;
+                            byte[] identifier = Arrays.copyOfRange(metaData, 0, 4);
+                            if(Arrays.equals(identifier, (new BigInteger("73706b71", 16)).toByteArray())) {
+                                byte[] asset = Arrays.copyOfRange(metaData, 4, 20);
+                                if(Arrays.equals(asset, assetFilter.getId())) {
+                                    byte[] quantity = Arrays.copyOfRange(metaData, 20, 28);
+                                    amount = ByteBuffer.wrap(quantity).order(ByteOrder.LITTLE_ENDIAN).getInt();
+                                    Address toAddress = o.getScriptPubKey().getToAddress(this.params);
+                                    if (toAddress.toString().equals(myAddress)) {
+//                                        Address fromAddress = t.getInputs().get(0).getScriptSig().getToAddress(this.params);
+//                                        Address ab = new Address(params, data);
+                                        Date date = t.getUpdateTime();
+                                        com.digitalvotingpass.transactionhistory.Transaction newTransaction =
+                                                new com.digitalvotingpass.transactionhistory.Transaction("Received " + amount, date, "From " + "fromAddress");
+                                        result.add(newTransaction);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
 }

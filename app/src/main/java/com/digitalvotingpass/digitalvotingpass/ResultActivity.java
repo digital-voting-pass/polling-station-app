@@ -22,7 +22,6 @@ import com.google.gson.Gson;
 import net.sf.scuba.data.Gender;
 
 import org.bitcoinj.core.Asset;
-import org.bitcoinj.core.Block;
 
 import java.security.PublicKey;
 
@@ -54,14 +53,12 @@ public class ResultActivity extends AppCompatActivity {
         Gson gson = new Gson();
         String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
         mcAsset = gson.fromJson(json, Election.class).getAsset();
-
         pubKey = (PublicKey) extras.get("pubKey");
 
         setContentView(R.layout.activity_result);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
         Util.setupAppBar(appBar, this);
-
         textAuthorization = (TextView) findViewById(R.id.authorization);
         textVoterName = (TextView) findViewById(R.id.voter_name);
         textVotingPassAmount = (TextView) findViewById(R.id.voting_pass_amount);
@@ -73,6 +70,7 @@ public class ResultActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(thisActivity, TransactionHistoryActivity.class);
+                intent.putExtra("pubKey", pubKey);
                 startActivity(intent);
             }
         });
