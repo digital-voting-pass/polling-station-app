@@ -1,11 +1,13 @@
 package com.digitalvotingpass.utilities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
+import com.digitalvotingpass.digitalvotingpass.R;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.File;
@@ -13,6 +15,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Util {
 
@@ -114,5 +118,15 @@ public class Util {
             return new String(hexChars);
         }
         return "";
+    }
+
+    public static Map<String, String> getKeyValueFromStringArray(Context ctx) {
+        String[] array = ctx.getResources().getStringArray(R.array.address_array);
+        Map<String, String> result = new HashMap<>();
+        for (String str : array) {
+            String[] splittedItem = str.split("\\|");
+            result.put(splittedItem[0], splittedItem[1]);
+        }
+        return result;
     }
 }

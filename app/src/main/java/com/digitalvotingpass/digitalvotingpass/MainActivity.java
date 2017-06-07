@@ -12,13 +12,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.camera.CameraActivity;
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
 import com.digitalvotingpass.passportconnection.PassportConActivity;
+import com.digitalvotingpass.transactionhistory.TransactionHistoryActivity;
 import com.digitalvotingpass.utilities.Util;
 
 import com.google.gson.Gson;
+
+import org.bitcoinj.core.Asset;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         manualInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(thisActivity, ManualInputActivity.class);
+                Intent intent = new Intent(thisActivity, TransactionHistoryActivity.class);
                 // send the docData to the manualinput in case a user wants to edit the existing docdata
                 intent.putExtra("docData", documentData);
                 startActivityForResult(intent, GET_DOC_INFO);

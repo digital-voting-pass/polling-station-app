@@ -100,33 +100,38 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
      */
     public ArrayList<Election> loadElections() {
         ArrayList<Election> electionChoices = new ArrayList<>();
-        List<Asset> assetList = BlockChain.getInstance().getAssets();
-        for(Asset a : assetList) {
-            String name = a.getName();
-            String prefix = name.substring(0,1);
-            String kind;
-            switch(prefix) {
-                case "T":
-                    kind = getString(R.string.tweedekamer);
-                    name = name.substring(2);
-                    break;
-                case "P":
-                    kind = getString(R.string.provinciaal);
-                    name = name.substring(2);
-                    break;
-                case "G":
-                    kind = getString(R.string.gemeente);
-                    name = name.substring(2);
-                    break;
-                case "W":
-                    kind = getString(R.string.waterschap);
-                    name = name.substring(2);
-                    break;
-                default:
-                    kind = "";
-                    break;
+        List<Asset> assetList = null;
+        try {
+            assetList = BlockChain.getInstance(null).getAssets();
+            for(Asset a : assetList) {
+                String name = a.getName();
+                String prefix = name.substring(0,1);
+                String kind;
+                switch(prefix) {
+                    case "T":
+                        kind = getString(R.string.tweedekamer);
+                        name = name.substring(2);
+                        break;
+                    case "P":
+                        kind = getString(R.string.provinciaal);
+                        name = name.substring(2);
+                        break;
+                    case "G":
+                        kind = getString(R.string.gemeente);
+                        name = name.substring(2);
+                        break;
+                    case "W":
+                        kind = getString(R.string.waterschap);
+                        name = name.substring(2);
+                        break;
+                    default:
+                        kind = "";
+                        break;
+                }
+                electionChoices.add(new Election(kind, name, a));
             }
-            electionChoices.add(new Election(kind, name, a));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return electionChoices;
     }

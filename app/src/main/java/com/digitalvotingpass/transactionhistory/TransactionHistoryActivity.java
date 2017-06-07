@@ -17,6 +17,8 @@ import org.bitcoinj.core.Asset;
 
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 public class TransactionHistoryActivity extends AppCompatActivity {
@@ -46,12 +48,15 @@ public class TransactionHistoryActivity extends AppCompatActivity {
         String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
         Asset mcAsset = gson.fromJson(json, Election.class).getAsset();
 
-       Set<Transaction> transactions = BlockChain.getInstance().getTransactions(pubKey, mcAsset);
-
-//        Transaction newTransaction = new Transaction("Received voting pass", new Date(), "some details about the transaction");
-//        Transaction newTransaction2 = new Transaction("Cast vote", new Date(), "some details about the transaction");
-        for (Transaction t: transactions) {
-            adapter.add(t);
+        List<Transaction> transactions = null;
+        try {
+            transactions = BlockChain.getInstance(null).getTransactions(pubKey, mcAsset);
+            Collections.sort(transactions);
+            for (Transaction t: transactions) {
+                adapter.add(t);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

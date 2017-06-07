@@ -76,6 +76,10 @@
     <string name="shared_preferences_key_election">com.digitalvotingpass.ELECTION_OBJECT_KEY</string>
     <string name="shared_preferences_file">com.digitalvotingpass.shared</string>
 
+    <string-array name="address_array">
+        <item>1GoqgbPZUV2yuPZXohtAvB2NZbjcew8RmTSVKj|Government</item>
+    </string-array>
+
     <string-array name="months_array">
         <item>January</item>
         <item>February</item>

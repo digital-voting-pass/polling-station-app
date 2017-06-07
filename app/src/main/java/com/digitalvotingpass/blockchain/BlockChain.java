@@ -1,16 +1,18 @@
 package com.digitalvotingpass.blockchain;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
+import com.digitalvotingpass.transactionhistory.Transaction;
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
+import com.digitalvotingpass.utilities.Util;
 import com.google.common.util.concurrent.Service;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Asset;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerAddress;
-import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.kits.WalletAppKit;
@@ -28,14 +30,19 @@ import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class BlockChain {
+    // Should this be a string resource?
+    public static final String GOVERNMENT_ADDRESS = "";
     public static final String PEER_IP = "188.226.149.56";
     private static BlockChain instance;
     private WalletAppKit kit;
     private BlockchainCallBackListener listener;
     private boolean initialized = false;
+    private Context context;
 
     private InetAddress peeraddr;
     private long addressChecksum = 0xcc350cafL;
@@ -49,7 +56,8 @@ public class BlockChain {
             0xf5dec1feL
     );
 
-    private BlockChain() {
+    private BlockChain(Context ctx) {
+        this.context = ctx;
         try {
             peeraddr = InetAddress.getByName(PEER_IP);
         } catch (UnknownHostException e) {
@@ -57,9 +65,10 @@ public class BlockChain {
         }
     }
 
-    public static synchronized BlockChain getInstance() {
+    public static synchronized BlockChain getInstance(Context ctx) throws Exception {
         if (instance == null) {
-            instance = new BlockChain();
+            if (ctx == null) throw new Exception("Context cannot be null on first call");
+            instance = new BlockChain(ctx);
         }
         return instance;
     }
@@ -136,29 +145,29 @@ public class BlockChain {
         return false;
     }
 
-    public Set<com.digitalvotingpass.transactionhistory.Transaction> getTransactions(PublicKey pubKey, Asset assetFilter) {
-        Set<com.digitalvotingpass.transactionhistory.Transaction> result = new android.support.v4.util.ArraySet<>();
-        Address address = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
-        String myAddress = address.toString();
-        Set<Transaction> ts = kit.wallet().getTransactions(true);
-        for (Transaction t:ts) {
-            for(TransactionInput in : t.getInputs()){
-//                try {
-//                System.out.println(in.getFromAddress());}
-//                catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-            }
-            if (!t.isCoinBase())
-            for (TransactionOutput o : t.getOutputs()) {
-                boolean sentToAddr = o.getScriptPubKey().isSentToAddress();
-                boolean isReturn = o.getScriptPubKey().isOpReturn();
-                if (sentToAddr) {
-                    if (!isReturn) {
-                        //ScriptPubKey contains
-                        byte[] data = o.getScriptPubKey().getChunks().get(2).data;
-                        int amount = 0;
-                        if (data != null) {
+    /**
+     *
+     * @param pubKey
+     * @param assetFilter
+     * @return
+     */
+    public List<Transaction> getTransactions(PublicKey pubKey, Asset assetFilter) {
+        List<Transaction> result = new ArrayList<>();
+//        Address address = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
+//        String myAddress = address.toString();
+        String myAddress =  "1HLv3p2ih3KrLJXoPzsGo9AWtvNbaTBN23Tdgd";
+        Set<org.bitcoinj.core.Transaction> ts = kit.wallet().getTransactions(true);
+        for (org.bitcoinj.core.Transaction t:ts) {
+            boolean checkedInputs = false;
+            if (!t.isCoinBase()){
+                for (TransactionOutput o : t.getOutputs()) {
+                    boolean sentToAddr = o.getScriptPubKey().isSentToAddress();
+                    boolean isReturn = o.getScriptPubKey().isOpReturn();
+                    if (sentToAddr) {
+                        if (!isReturn) {
+                            //ScriptPubKey contains
+                            byte[] data = o.getScriptPubKey().getChunks().get(2).data;
+                            int amount = 0;
                             byte[] metaData = o.getScriptPubKey().getChunks().get(5).data;
                             byte[] identifier = Arrays.copyOfRange(metaData, 0, 4);
                             if(Arrays.equals(identifier, (new BigInteger("73706b71", 16)).toByteArray())) {
@@ -167,12 +176,29 @@ public class BlockChain {
                                     byte[] quantity = Arrays.copyOfRange(metaData, 20, 28);
                                     amount = ByteBuffer.wrap(quantity).order(ByteOrder.LITTLE_ENDIAN).getInt();
                                     Address toAddress = o.getScriptPubKey().getToAddress(this.params);
+
+                                    if (!checkedInputs)
+                                        for (TransactionInput in : t.getInputs()) {
+                                            Address fromAddress = in.getScriptSig().getFromAddress(params);
+                                            if (myAddress.equals(fromAddress.toString())) {
+                                                Date date = t.getUpdateTime();
+                                                com.digitalvotingpass.transactionhistory.Transaction newTransaction =
+                                                        new com.digitalvotingpass.transactionhistory.Transaction("Sent " + amount, date, "To " + translateAddress(toAddress.toString()));
+                                                result.add(newTransaction);
+                                            }
+                                            checkedInputs = true;
+                                        }
+
                                     if (toAddress.toString().equals(myAddress)) {
-//                                        Address fromAddress = t.getInputs().get(0).getScriptSig().getToAddress(this.params);
-//                                        Address ab = new Address(params, data);
+                                        if(t.getInputs().size() != 1) Log.e("BlockChain", "More than 1 inputs in transaction!");
+
+                                        // Method is deprecated because it is generally considered bad to use the from address of a transaction.
+                                        // This is because a transaction can have multiple inputs and the sender may not be in control of the given address (eg. exchange).
+                                        // This is not an issue for us since each transaction has 1 input only.
+                                        Address fromAddress = t.getInput(0).getScriptSig().getFromAddress(params);
                                         Date date = t.getUpdateTime();
-                                        com.digitalvotingpass.transactionhistory.Transaction newTransaction =
-                                                new com.digitalvotingpass.transactionhistory.Transaction("Received " + amount, date, "From " + "fromAddress");
+                                        Transaction newTransaction =
+                                                new Transaction("Received " + amount, date, "From " + translateAddress(fromAddress.toString()));
                                         result.add(newTransaction);
                                     }
                                 }
@@ -183,5 +209,11 @@ public class BlockChain {
             }
         }
         return result;
+    }
+
+    public String translateAddress(String address) {
+        Map<String, String> addresses = Util.getKeyValueFromStringArray(context);
+        if (addresses.containsKey(address)) return addresses.get(address);
+        else return address;
     }
 }

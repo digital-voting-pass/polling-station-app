@@ -123,21 +123,25 @@ public class ResultActivity extends AppCompatActivity {
         Voter voter = (Voter) extras.get("voter");
         String preamble = createPreamble(voter);
         int votingPasses;
-        votingPasses = BlockChain.getInstance().getVotingPassAmount(pubKey, mcAsset);
-        if(votingPasses == 0) {
-            setAuthorizationStatus(FAILED);
-        } else {
-            setAuthorizationStatus(SUCCES);
-        }
+        try {
+            votingPasses = BlockChain.getInstance(null).getVotingPassAmount(pubKey, mcAsset);
+            if(votingPasses == 0) {
+                setAuthorizationStatus(FAILED);
+            } else {
+                setAuthorizationStatus(SUCCES);
+            }
 
-        textVoterName.setText(getString(R.string.has_right, preamble));
-        // display singular or plural form of voting passes based on amount
-        if(votingPasses == 1) {
-            textVotingPasses.setText(R.string.voting_pass);
-        } else {
-            textVotingPasses.setText(R.string.voting_passes);
+            textVoterName.setText(getString(R.string.has_right, preamble));
+            // display singular or plural form of voting passes based on amount
+            if(votingPasses == 1) {
+                textVotingPasses.setText(R.string.voting_pass);
+            } else {
+                textVotingPasses.setText(R.string.voting_passes);
+            }
+            textVotingPassAmount.setText(Integer.toString(votingPasses));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        textVotingPassAmount.setText(Integer.toString(votingPasses));
     }
 
     /**
