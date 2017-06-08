@@ -40,4 +40,41 @@ public class Election {
      * @return asset - An Asset object, the token on the blockchain
      */
     public Asset getAsset() { return asset; }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Election) {
+            Election that = (Election) obj;
+            if(!this.getPlace().equals(that.getPlace()) ||
+                    !this.getKind().equals(that.getKind()) ||
+                    !this.getAsset().getName().equals(that.getAsset().getName())) {
+                return false;
+            } else {
+                return true;
+            }
+        } else{
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + place.hashCode();
+        result = 31 * result + kind.hashCode();
+        result = 31 * result + asset.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        String res = "<Election: ";
+        res += "Kind: \'" + this.kind + "\' ";
+        res += "Place: \'" + this.place + "\' ";
+        res += "Asset: [name: " + asset.getName() + "] ";
+        res += ">";
+        return res;
+    }
+
+
 }

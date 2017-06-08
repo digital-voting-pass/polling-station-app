@@ -22,7 +22,6 @@ import com.google.gson.Gson;
 import net.sf.scuba.data.Gender;
 
 import org.bitcoinj.core.Asset;
-import org.bitcoinj.core.Block;
 
 import java.security.PublicKey;
 
@@ -125,7 +124,11 @@ public class ResultActivity extends AppCompatActivity {
         Voter voter = (Voter) extras.get("voter");
         String preamble = createPreamble(voter);
         int votingPasses;
-        votingPasses = BlockChain.getInstance().getVotingPassAmount(pubKey, mcAsset);
+        if(pubKey != null && mcAsset != null) {
+            votingPasses = BlockChain.getInstance().getVotingPassAmount(pubKey, mcAsset);
+        } else {
+            votingPasses = 0;
+        }
         if(votingPasses == 0) {
             setAuthorizationStatus(FAILED);
         } else {

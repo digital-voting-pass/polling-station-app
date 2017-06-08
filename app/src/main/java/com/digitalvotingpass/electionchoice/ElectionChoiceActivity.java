@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import org.bitcoinj.core.Asset;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ElectionChoiceActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
     private ListView electionListView;
@@ -45,7 +44,7 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
 
         electionListView = (ListView) findViewById(R.id.election_list);
 
-        electionsAdapter = new ElectionsAdapter(this, loadElections());
+        electionsAdapter = new ElectionsAdapter(this, loadElections(BlockChain.getInstance().getAssets()));
         electionListView.setAdapter(electionsAdapter);
 
         electionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -96,11 +95,11 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
      * Asset name must be of the format "K_Place"
      *
      * Sets the place field of an Election object based on the asset name
+     * @Param assetList - a list of asset from which Election objects can be created
      * @return electionChoices - a list of current elections that can be chosen from
      */
-    public ArrayList<Election> loadElections() {
+    public ArrayList<Election> loadElections(ArrayList<Asset> assetList) {
         ArrayList<Election> electionChoices = new ArrayList<>();
-        List<Asset> assetList = BlockChain.getInstance().getAssets();
         for(Asset a : assetList) {
             String name = a.getName();
             String prefix = name.substring(0,1);

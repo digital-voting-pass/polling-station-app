@@ -21,7 +21,6 @@ import java.net.UnknownHostException;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class BlockChain {
     public static final String PEER_IP = "188.226.149.56";

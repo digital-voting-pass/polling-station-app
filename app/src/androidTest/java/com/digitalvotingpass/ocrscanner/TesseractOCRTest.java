@@ -8,14 +8,16 @@ import android.support.test.rule.ActivityTestRule;
 import android.util.Log;
 
 import com.digitalvotingpass.camera.Camera2BasicFragment;
-import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
+import com.digitalvotingpass.digitalvotingpass.ManualInputActivity;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class TesseractOCRTest {
     private TesseractOCR tesseractOCR;
@@ -41,12 +43,10 @@ public class TesseractOCRTest {
 
     /**
      * Start an activity to be able to access the assets. Needed for loading the traineddata to the
-     * emulator. ElectionChoice is one of the simplest activity in the app.
+     * emulator. ManualInputActivity is one of the simplest activities in the app.
      */
     @Rule
-    public ActivityTestRule<ElectionChoiceActivity> activityRule
-            = new ActivityTestRule<>(
-            ElectionChoiceActivity.class);
+    public ActivityTestRule<ManualInputActivity> activityRule = new ActivityTestRule<>(ManualInputActivity.class);
 
     @Before
     public void init() throws Exception {
