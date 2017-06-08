@@ -35,8 +35,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class BlockChain {
-    // Should this be a string resource?
-    public static final String GOVERNMENT_ADDRESS = "";
     public static final String PEER_IP = "188.226.149.56";
     private static BlockChain instance;
     private WalletAppKit kit;
@@ -109,12 +107,6 @@ public class BlockChain {
         }
     }
 
-    public Service.State state() {
-        if (kit == null)
-            return null;
-        return kit.state();
-    }
-
     public void disconnect() {
         kit.stopAsync();
     }
@@ -146,10 +138,10 @@ public class BlockChain {
     }
 
     /**
-     *
-     * @param pubKey
-     * @param assetFilter
-     * @return
+     * Load transactions that involve the given public key, either incomming or outgoing.
+     * @param pubKey PublicKey comming from epassport
+     * @param assetFilter Asset for which transactions needs to be checked.
+     * @return List containing interesting transactions.
      */
     public List<Transaction> getTransactions(PublicKey pubKey, Asset assetFilter) {
         List<Transaction> result = new ArrayList<>();
@@ -158,62 +150,66 @@ public class BlockChain {
         String myAddress =  "1HLv3p2ih3KrLJXoPzsGo9AWtvNbaTBN23Tdgd";
         Set<org.bitcoinj.core.Transaction> ts = kit.wallet().getTransactions(true);
         for (org.bitcoinj.core.Transaction t:ts) {
-            boolean checkedInputs = false;
             if (!t.isCoinBase()){
+                boolean checkedInputs = false;
                 for (TransactionOutput o : t.getOutputs()) {
                     boolean sentToAddr = o.getScriptPubKey().isSentToAddress();
                     boolean isReturn = o.getScriptPubKey().isOpReturn();
-                    if (sentToAddr) {
-                        if (!isReturn) {
-                            //ScriptPubKey contains
-                            byte[] data = o.getScriptPubKey().getChunks().get(2).data;
-                            int amount = 0;
-                            byte[] metaData = o.getScriptPubKey().getChunks().get(5).data;
-                            byte[] identifier = Arrays.copyOfRange(metaData, 0, 4);
-                            if(Arrays.equals(identifier, (new BigInteger("73706b71", 16)).toByteArray())) {
-                                byte[] asset = Arrays.copyOfRange(metaData, 4, 20);
-                                if(Arrays.equals(asset, assetFilter.getId())) {
-                                    byte[] quantity = Arrays.copyOfRange(metaData, 20, 28);
-                                    amount = ByteBuffer.wrap(quantity).order(ByteOrder.LITTLE_ENDIAN).getInt();
-                                    Address toAddress = o.getScriptPubKey().getToAddress(this.params);
+                    if (sentToAddr && !isReturn) {
+                        byte[] metaData = o.getScriptPubKey().getChunks().get(5).data;
+                        byte[] identifier = Arrays.copyOfRange(metaData, 0, 4);
+                        byte[] asset = Arrays.copyOfRange(metaData, 4, 20);
+                        if(Arrays.equals(identifier, (new BigInteger("73706b71", 16)).toByteArray())
+                                && Arrays.equals(asset, assetFilter.getId())) {
+                            // Transaction is correct asset
+                            byte[] quantity = Arrays.copyOfRange(metaData, 20, 28);
+                            int amount = ByteBuffer.wrap(quantity).order(ByteOrder.LITTLE_ENDIAN).getInt();
+                            Address toAddress = o.getScriptPubKey().getToAddress(this.params);
 
-                                    if (!checkedInputs)
-                                        for (TransactionInput in : t.getInputs()) {
-                                            Address fromAddress = in.getScriptSig().getFromAddress(params);
-                                            if (myAddress.equals(fromAddress.toString())) {
-                                                Date date = t.getUpdateTime();
-                                                com.digitalvotingpass.transactionhistory.Transaction newTransaction =
-                                                        new com.digitalvotingpass.transactionhistory.Transaction("Sent " + amount, date, "To " + translateAddress(toAddress.toString()));
-                                                result.add(newTransaction);
-                                            }
-                                            checkedInputs = true;
-                                        }
-
-                                    if (toAddress.toString().equals(myAddress)) {
-                                        if(t.getInputs().size() != 1) Log.e("BlockChain", "More than 1 inputs in transaction!");
-
-                                        // Method is deprecated because it is generally considered bad to use the from address of a transaction.
-                                        // This is because a transaction can have multiple inputs and the sender may not be in control of the given address (eg. exchange).
-                                        // This is not an issue for us since each transaction has 1 input only.
-                                        Address fromAddress = t.getInput(0).getScriptSig().getFromAddress(params);
+                            // Check inputs of transaction to see if we sent it.
+                            // Only when we know the transaction is actually the correct asset
+                            if (!checkedInputs)
+                                for (TransactionInput in : t.getInputs()) {
+                                    Address fromAddress = in.getScriptSig().getFromAddress(params);
+                                    if (myAddress.equals(fromAddress.toString())) {
                                         Date date = t.getUpdateTime();
-                                        Transaction newTransaction =
-                                                new Transaction("Received " + amount, date, "From " + translateAddress(fromAddress.toString()));
+                                        com.digitalvotingpass.transactionhistory.Transaction newTransaction =
+                                                new com.digitalvotingpass.transactionhistory.Transaction("Sent " + amount, date, "To " + translateAddress(toAddress.toString()));
                                         result.add(newTransaction);
                                     }
+                                    checkedInputs = true;
                                 }
+
+                            if (toAddress.toString().equals(myAddress)) {
+                                if(t.getInputs().size() != 1) Log.e("BlockChain", "More than 1 inputs in transaction!");
+
+                                // Method is deprecated because it is generally considered bad to use the from address of a transaction.
+                                // This is because a transaction can have multiple inputs and the sender may not be in control of the given address (eg. exchange).
+                                // This is not an issue for us since each transaction has 1 input only.
+                                Address fromAddress = t.getInput(0).getScriptSig().getFromAddress(params);
+                                Date date = t.getUpdateTime();
+                                Transaction newTransaction =
+                                        new Transaction("Received " + amount, date, "From " + translateAddress(fromAddress.toString()));
+                                result.add(newTransaction);
                             }
                         }
                     }
                 }
             }
         }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return result;
     }
 
     public String translateAddress(String address) {
         Map<String, String> addresses = Util.getKeyValueFromStringArray(context);
-        if (addresses.containsKey(address)) return addresses.get(address);
-        else return address;
+        if (addresses.containsKey(address))
+            return addresses.get(address);
+        else
+            return address;
     }
 }

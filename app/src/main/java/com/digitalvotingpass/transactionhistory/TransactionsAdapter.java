@@ -9,14 +9,14 @@ import android.widget.TextView;
 
 import com.digitalvotingpass.digitalvotingpass.R;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by wkmeijer on 26-5-17.
  */
 
 public class TransactionsAdapter extends ArrayAdapter<Transaction> {
-    public TransactionsAdapter(Context context, ArrayList<Transaction> transactions) {
+    public TransactionsAdapter(Context context, List<Transaction> transactions) {
         super(context, 0, transactions);
     }
 
