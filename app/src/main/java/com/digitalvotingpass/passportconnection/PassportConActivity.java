@@ -27,7 +27,7 @@ import java.security.Security;
 
 public class PassportConActivity extends AppCompatActivity {
     static {
-        Security.addProvider(new BouncyCastleProvider());
+        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 0);
     }
     // Adapter for NFC connection
     private NfcAdapter mNfcAdapter;

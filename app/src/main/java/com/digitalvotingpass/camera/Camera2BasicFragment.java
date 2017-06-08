@@ -941,7 +941,6 @@ public class Camera2BasicFragment extends Fragment
         int startY = (int) scanSegment.getY();
         int width = (int) (scanSegment.getWidth());
         int length = (int) (scanSegment.getHeight());
-        return Bitmap.createBitmap(bitmap, startX, startY, width > bitmap.getWidth() ? bitmap.getWidth() : width, length);
-        //TODO fix the need for inline if, if the aspect ratio causes a vertical bar it will crash otherwise.
+        return Bitmap.createBitmap(bitmap, startX, startY, width, length);
     }
 }
