@@ -22,7 +22,6 @@ public class TransactionsAdapter extends ArrayAdapter<Transaction> {
 
     /**
      * Handle the conversion from the transaction object to the list item textviews.
-     * TODO: handle actual transaction data
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {

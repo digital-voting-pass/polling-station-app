@@ -145,10 +145,9 @@ public class BlockChain {
      */
     public List<Transaction> getTransactions(PublicKey pubKey, Asset assetFilter) {
         List<Transaction> result = new ArrayList<>();
-//        Address address = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
-//        String myAddress = address.toString();
-        String myAddress =  "1HLv3p2ih3KrLJXoPzsGo9AWtvNbaTBN23Tdgd";
-        Set<org.bitcoinj.core.Transaction> ts = kit.wallet().getTransactions(true);
+        Address address = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
+        String myAddress = address.toString();
+        Set<org.bitcoinj.core.Transaction> ts = kit.wallet().getTransactions(false);
         for (org.bitcoinj.core.Transaction t:ts) {
             if (!t.isCoinBase()){
                 boolean checkedInputs = false;
@@ -197,14 +196,15 @@ public class BlockChain {
                 }
             }
         }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return result;
     }
 
+    /**
+     * Translate a MultiChain address to a meaningful String value if such a value is defined for
+     * that address in strings.xml
+     * @param address String value of MultiChain address
+     * @return String containing defined mapped value or {@code address} if no mapping was found.
+     */
     public String translateAddress(String address) {
         Map<String, String> addresses = Util.getKeyValueFromStringArray(context);
         if (addresses.containsKey(address))
