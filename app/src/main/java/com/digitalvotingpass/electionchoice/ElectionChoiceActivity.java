@@ -87,12 +87,12 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
     /**
      * Creates an election array by getting all the assets available on the blockchain and add them to the list.
      * Sets the kind field of an Election object based on the prefix found in the asset name
-     * T = R.string.tweedekamer
-     * P = R.string.provinciaal
-     * G = R.string.gemeente
-     * W = R.string.waterschap
+     * T_ = R.string.tweedekamer
+     * P_ = R.string.provinciaal
+     * G_ = R.string.gemeente
+     * W_ = R.string.waterschap
      *
-     * Asset name must be of the format "K_Place"
+     * Asset name must be of the format "kXPlace"
      *
      * Sets the place field of an Election object based on the asset name
      * @Param assetList - a list of asset from which Election objects can be created
@@ -102,22 +102,22 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
         ArrayList<Election> electionChoices = new ArrayList<>();
         for(Asset a : assetList) {
             String name = a.getName();
-            String prefix = name.substring(0,1);
+            String prefix = name.substring(0,2);
             String kind;
             switch(prefix) {
-                case "T":
+                case "T_":
                     kind = getString(R.string.tweedekamer);
                     name = name.substring(2);
                     break;
-                case "P":
+                case "P_":
                     kind = getString(R.string.provinciaal);
                     name = name.substring(2);
                     break;
-                case "G":
+                case "G_":
                     kind = getString(R.string.gemeente);
                     name = name.substring(2);
                     break;
-                case "W":
+                case "W_":
                     kind = getString(R.string.waterschap);
                     name = name.substring(2);
                     break;
