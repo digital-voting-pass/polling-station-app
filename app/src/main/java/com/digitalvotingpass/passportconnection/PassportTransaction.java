@@ -1,7 +1,9 @@
 package com.digitalvotingpass.passportconnection;
 
 import com.google.common.base.Preconditions;
+import com.google.common.math.BigIntegerMath;
 
+import org.bitcoinj.core.Address;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.ScriptException;
 import org.bitcoinj.core.Sha256Hash;
@@ -14,12 +16,17 @@ import org.bitcoinj.crypto.TransactionMultiSignature;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
  * Created by daan on 6-6-17.
  */
 public class PassportTransaction extends Transaction {
+
+    private Address destination;
+    private TransactionOutput utxo;
 
     /**
      * Class overwrites some signing functions
@@ -28,6 +35,71 @@ public class PassportTransaction extends Transaction {
      */
     public PassportTransaction(NetworkParameters params) {
         super(params);
+    }
+
+    /**
+     * Set the address of the public key which can spend this output.
+     *
+     * @param destination
+     */
+    public void setDestinationAddress(Address destination) {
+        this.destination = destination;
+    }
+
+    /**
+     * Set the UTXO we would like to spend.
+     *
+     * @param utxo
+     */
+    public void setUTXO(TransactionOutput utxo) {
+        this.utxo = utxo;
+    }
+
+    /**
+     * Creates a byte array which contains all the element for a valid transaction.
+     * Follows the steps in this answer: https://bitcoin.stackexchange.com/a/5241
+     *
+     * @return
+     */
+    public byte[] buildRawTransaction() {
+
+        // Version
+        byte[] step1 = new BigInteger("01000000", 16).toByteArray();
+
+        // Number of outputs
+        byte[] step2 = new BigInteger("01", 16).toByteArray();
+
+        // Transaction hash
+        byte[] step3 = utxo.getParentTransactionHash().getBytes();
+
+        // Output index
+        byte[] step4 = ByteBuffer.allocate(4).putInt(Integer.reverseBytes(utxo.getIndex())).array();
+
+        // Length of scriptsig (scriptpubkey)
+        byte   step5 = (byte) (utxo.getScriptBytes().length & 0xFF);
+
+        // Scriptpubkey of output we want to redeem
+        byte[] step6 = utxo.getScriptBytes();
+
+        // Unused sequence
+        byte[] step7 = new BigInteger("FFFFFFFF", 16).toByteArray();
+
+        // Number of outputs in transaction
+        byte   step8 = 0x01;
+
+        // Spend amount
+        byte[] step9 = new BigInteger("0000000000000000", 16).toByteArray();
+
+        // Redeem script (copies output and replaces address)
+        byte[] step10 = step6
+        System.arraycopy(this.destination.getHash160(), 0, step10, 3, 20);
+
+        // Lock time
+        byte[] step11 = new BigInteger("00000000", 16).toByteArray();
+
+        // Hash code type
+        byte[] step12 = new BigInteger("01000000", 16).toByteArray();
+        
     }
 
     /**
