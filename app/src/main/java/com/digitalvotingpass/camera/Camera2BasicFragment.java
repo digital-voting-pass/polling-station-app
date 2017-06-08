@@ -39,6 +39,7 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.params.MeteringRectangle;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -758,9 +759,13 @@ public class Camera2BasicFragment extends Fragment
                             // When the session is ready, we start displaying the preview.
                             mCaptureSession = cameraCaptureSession;
                             try {
+                                MeteringRectangle meteringRectangle=new MeteringRectangle(getScanRect(),
+                                        MeteringRectangle.METERING_WEIGHT_MAX);
+                                MeteringRectangle[] meteringRectangleArr={meteringRectangle};
+
                                 // Auto focus should be continuous for camera preview.
-                                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                                        CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS,
+                                        meteringRectangleArr);
                                 // Flash is automatically enabled when necessary.
                                 setAutoFlash(mPreviewRequestBuilder);
 
@@ -784,6 +789,18 @@ public class Camera2BasicFragment extends Fragment
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Get the scan rectangle.
+     * @return The rectangle.
+     */
+    private Rect getScanRect() {
+        int startX = (int) scanSegment.getX();
+        int startY = (int) scanSegment.getY();
+        int width = scanSegment.getWidth();
+        int length = scanSegment.getHeight();
+        return new Rect(startX, startY, startX + width, startY+length);
     }
 
     /**
@@ -817,11 +834,7 @@ public class Camera2BasicFragment extends Fragment
             matrix.postRotate(180, centerX, centerY);
         }
         mTextureView.setTransform(matrix);
-        int startX = (int) scanSegment.getX();
-        int startY = (int) scanSegment.getY();
-        int width = (scanSegment.getWidth());
-        int length = (scanSegment.getHeight());
-        overlay.setRect(new Rect(startX, startY, startX + width, startY+length));
+        overlay.setRect(getScanRect());
     }
 
     private void setAutoFlash(CaptureRequest.Builder requestBuilder) {
