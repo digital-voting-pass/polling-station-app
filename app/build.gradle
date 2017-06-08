@@ -32,6 +32,7 @@ dependencies {
         exclude module: 'recyclerview-v7'
     }
     androidTestCompile 'org.mockito:mockito-android:2.7.22'
+    testCompile 'org.mockito:mockito-android:2.7.22'
     androidTestCompile ('com.android.support.test.espresso:espresso-intents:2.2.2') {
         exclude module: 'support-annotations'
     }
@@ -56,4 +57,6 @@ dependencies {
     compile group: 'ch.qos.logback', name:'logback-core', version: '1.0.9'
 
     compile project(':bitcoinj-core')
+
+    testCompile 'com.google.guava:guava:22.0'
 }
