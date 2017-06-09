@@ -66,21 +66,11 @@ public class BlockChain {
         if (!initialized) {
             BriefLogFormatter.init();
             String filePrefix = "voting-wallet";
-
             File walletFile = new File(Environment.getExternalStorageDirectory() + "/DigitalVotingPass");
             if (!walletFile.exists()) {
-                if (!walletFile.mkdirs()) { //getParent because otherwise it creates a folder with that filename, we just need the dirs
-                    Log.e("BlockChain", "Cannot create path!");
-                }
+                walletFile.mkdirs();
             }
-            // Start up a basic app using a class that automates some boilerplate.
             kit = new WalletAppKit(params, walletFile, filePrefix);
-
-            if (params == RegTestParams.get()) {
-                // Regression test mode is designed for testing and development only, so there's no public network for it.
-                // If you pick this mode, you're expected to be running a local "bitcoind -regtest" instance.
-                kit.connectToLocalHost();
-            }
 
             if (listener != null)
                 kit = kit.setDownloadListener(new ProgressTracker(listener));
