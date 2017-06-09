@@ -25,11 +25,11 @@
 
     <!-- OCR Scanning -->
     <string name="ocr_switch_to_manual">Manual Input</string>
-    <string name="ocr_camera_permission_explanation">This app needs camera permission.</string>
+    <string name="ocr_camera_permission_explanation">Please provide camera permissions in order to scan a document.</string>
     <string name="ocr_camera_error">This device doesn\'t support Camera2 API.</string>
-    <string name="ocr_storage_permission_explanation">This App needs storage permissions in order to use OCR.</string>
     <string name="ocr_help_text">Scan the text at the bottom of the passport or on the backside of the ID card.</string>
-    
+    <string name="storage_permission_explanation">Please provide storage permissions in order to save the blockchain.</string>
+
     <!--NFC Scanning-->
     <string name="nfc_not_supported_error">This device doesn\'t support NFC.</string>
     <string name="nfc_disabled_error">NFC is disabled, please enable NFC and hold your ID to the back of the phone to start scanning.</string>
@@ -51,6 +51,7 @@
     <string name="authorization_failed">Authorization failed, do not hand out voting ballot.</string>
     <string name="authorization_succesful">Authorization succesful, hand out voting ballot.</string>
     <string name="authorization_wait">Waiting for authorization.</string>
+    <string name="address_not_found">This document is not registered for digital voting.</string>
 
     <string name="has_right">%s has right to:</string>
     <string name="voting_pass">Voting pass</string>
@@ -59,6 +60,11 @@
     <string name="search">Search</string>
     <string name="election_choice">Choose election</string>
     <string name="election">election</string>
+    <string name="tweedekamer">Parliament election</string>
+    <string name="provinciaal">Provincial election</string>
+    <string name="gemeente">Municipal election</string>
+    <string name="waterschap">Water board election</string>
+
     <string name="downloading_text">Downloading...</string>
     <string name="initializing_text">Initializing...</string>
 
