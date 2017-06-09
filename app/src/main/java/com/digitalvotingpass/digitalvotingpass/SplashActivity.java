@@ -4,8 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -17,8 +17,10 @@ import android.widget.TextView;
 import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.blockchain.BlockchainCallBackListener;
 import com.digitalvotingpass.camera.Camera2BasicFragment;
+import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
 import com.digitalvotingpass.utilities.ErrorDialog;
+import com.google.gson.Gson;
 
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -27,7 +29,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
     public static final int REQUEST_CODE_STORAGE = 15;
     private int DELAY_INIT_TEXT_UPDATES = 800;
 
-    private TextView downloadPogressText;
+    private TextView downloadProgressText;
     private TextView currentTask;
     private ProgressBar downloadProgressBar;
     private Activity thisActivity;
@@ -71,7 +73,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         setContentView(R.layout.activity_splash_screen);
         thisActivity = this;
 
-        downloadPogressText = (TextView) findViewById(R.id.download_progress_text);
+        downloadProgressText = (TextView) findViewById(R.id.download_progress_text);
         currentTask = (TextView) findViewById(R.id.progress_current_task);
         downloadProgressBar = (ProgressBar) findViewById(R.id.download_progress_bar);
 
@@ -113,11 +115,15 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
             @Override
             public void run() {
                 currentTask.setText(R.string.downloading_text);
-                downloadPogressText.setText(percentFormatter.format(0) + "%");
+                downloadProgressText.setText(percentFormatter.format(0) + "%");
             }
         });
     }
 
+    /** When download is complete, go to the next activity
+     *  Create an Intent that will start either the Election choice or the mainactivity
+     *  based on whether or not an election was already selected and still exists on the blockchain.
+     */
     @Override
     public void onDownloadComplete() {
         // Create an Intent that will start either the Election choice or the mainactivity
@@ -125,10 +131,18 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
         String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "not found");
         Intent intent;
-        if(json.equals("not found")) {
+
+        // Check if the election exists in sharedpreferences and in the blockchain
+        if(json.equals("not found")){
             intent = new Intent(SplashActivity.this, ElectionChoiceActivity.class);
         } else {
-            intent = new Intent(SplashActivity.this, MainActivity.class);
+            Gson gson = new Gson();
+            Election election = gson.fromJson(json, Election.class);
+            if(!BlockChain.getInstance().assetExists(election.getAsset())){
+                intent = new Intent(SplashActivity.this, ElectionChoiceActivity.class);
+            } else {
+                intent = new Intent(SplashActivity.this, MainActivity.class);
+            }
         }
         thisActivity.startActivity(intent);
         thisActivity.finish();
@@ -151,7 +165,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
             @Override
             public void run() {
                 currentTask.setText(R.string.downloading_text);
-                downloadPogressText.setText(percentFormatter.format(pct) + "%");
+                downloadProgressText.setText(percentFormatter.format(pct) + "%");
                 downloadProgressBar.setProgress((int)pct);
             }
         });

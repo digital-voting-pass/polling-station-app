@@ -17,7 +17,6 @@ import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
 import com.digitalvotingpass.passportconnection.PassportConActivity;
 import com.digitalvotingpass.utilities.Util;
-
 import com.google.gson.Gson;
 
 

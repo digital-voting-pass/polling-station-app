@@ -15,13 +15,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.utilities.Util;
 import com.google.gson.Gson;
 
+import org.bitcoinj.core.Asset;
+
 import java.util.ArrayList;
-import java.util.List;
 
 public class ElectionChoiceActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
     private ListView electionListView;
@@ -42,14 +44,7 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
 
         electionListView = (ListView) findViewById(R.id.election_list);
 
-        // create a election array with all the elections and add them to the list
-        // TODO: handle actual election choice input data
-        ArrayList<Election> electionChoices = new ArrayList<>();
-        electionChoices.add(new Election("Gemeenteraadsverkiezing", "Delft"));
-        electionChoices.add(new Election("Gemeenteraadsverkiezing", "Rotterdam"));
-        electionChoices.add(new Election("Provinciale Statenverkiezing", "Zuid-Holland"));
-
-        electionsAdapter = new ElectionsAdapter(this, electionChoices);
+        electionsAdapter = new ElectionsAdapter(this, loadElections(BlockChain.getInstance().getAssets()));
         electionListView.setAdapter(electionsAdapter);
 
         electionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -87,6 +82,52 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
         String json = gson.toJson(election);
         prefsEditor.putString(getString(R.string.shared_preferences_key_election), json);
         prefsEditor.commit();
+    }
+
+    /**
+     * Creates an election array by getting all the assets available on the blockchain and add them to the list.
+     * Sets the kind field of an Election object based on the prefix found in the asset name
+     * T_ = R.string.tweedekamer
+     * P_ = R.string.provinciaal
+     * G_ = R.string.gemeente
+     * W_ = R.string.waterschap
+     *
+     * Asset name must be of the format "kXPlace"
+     *
+     * Sets the place field of an Election object based on the asset name
+     * @Param assetList - a list of asset from which Election objects can be created
+     * @return electionChoices - a list of current elections that can be chosen from
+     */
+    public ArrayList<Election> loadElections(ArrayList<Asset> assetList) {
+        ArrayList<Election> electionChoices = new ArrayList<>();
+        for(Asset a : assetList) {
+            String name = a.getName();
+            String prefix = name.substring(0,2);
+            String kind;
+            switch(prefix) {
+                case "T_":
+                    kind = getString(R.string.tweedekamer);
+                    name = name.substring(2);
+                    break;
+                case "P_":
+                    kind = getString(R.string.provinciaal);
+                    name = name.substring(2);
+                    break;
+                case "G_":
+                    kind = getString(R.string.gemeente);
+                    name = name.substring(2);
+                    break;
+                case "W_":
+                    kind = getString(R.string.waterschap);
+                    name = name.substring(2);
+                    break;
+                default:
+                    kind = "";
+                    break;
+            }
+            electionChoices.add(new Election(kind, name, a));
+        }
+        return electionChoices;
     }
 
     /**

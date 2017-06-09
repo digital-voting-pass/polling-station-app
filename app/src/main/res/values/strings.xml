@@ -51,6 +51,7 @@
     <string name="authorization_failed">Authorization failed, do not hand out voting ballot.</string>
     <string name="authorization_succesful">Authorization succesful, hand out voting ballot.</string>
     <string name="authorization_wait">Waiting for authorization.</string>
+    <string name="address_not_found">This document is not registered for digital voting.</string>
 
     <string name="has_right">%s has right to:</string>
     <string name="voting_pass">Voting pass</string>
@@ -59,6 +60,11 @@
     <string name="search">Search</string>
     <string name="election_choice">Choose election</string>
     <string name="election">election</string>
+    <string name="tweedekamer">Parliament election</string>
+    <string name="provinciaal">Provincial election</string>
+    <string name="gemeente">Municipal election</string>
+    <string name="waterschap">Water board election</string>
+
     <string name="downloading_text">Downloading...</string>
     <string name="initializing_text">Initializing...</string>
 

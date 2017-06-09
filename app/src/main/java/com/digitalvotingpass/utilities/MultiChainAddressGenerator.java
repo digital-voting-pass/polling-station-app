@@ -72,13 +72,17 @@ public class MultiChainAddressGenerator {
     }
 
     /**
-     * UNTESTED, should work
+     * TESTED, works
      * Takes a java.security.PublicKey and returns a valid MultiChain address.
      * Uses the {@link #getPublicAddress(String[], String, byte[]) getPublicAddress method to generate the address.
+     * Gets the last 81 bytes of encoded pubKey (this is the actual Public Key)
      * @param pubKey java.security.PublicKey containing the public key
      * @return String representing the corresponding address.
      */
     public static String getPublicAddress(String[] version, String addressChecksum, PublicKey pubKey) {
-        return getPublicAddress(version, addressChecksum, pubKey.getEncoded());
+        byte[] pubKeyBytes = new byte[81];
+        byte[] src = pubKey.getEncoded();
+        System.arraycopy(src, src.length-81, pubKeyBytes, 0, 81);
+        return getPublicAddress(version, addressChecksum, pubKeyBytes);
     }
 }
