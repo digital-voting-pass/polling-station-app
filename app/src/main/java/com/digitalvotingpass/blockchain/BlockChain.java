@@ -2,7 +2,6 @@ package com.digitalvotingpass.blockchain;
 
 import android.os.Environment;
 
-
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
 import com.digitalvotingpass.utilities.Util;
 import com.google.common.util.concurrent.Service;
