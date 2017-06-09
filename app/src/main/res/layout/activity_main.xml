@@ -28,7 +28,6 @@
             android:id="@+id/start_ocr"
             android:layout_height="@dimen/large_button"
             android:layout_width="@dimen/large_button"
-            android:layout_marginTop="30dp"
             android:padding="24dp"
             android:background="@drawable/blue_button"
             android:drawableTop="@drawable/scan_passport_icon"
