@@ -21,7 +21,6 @@ import java.net.UnknownHostException;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class BlockChain {
     public static final String PEER_IP = "188.226.149.56";
@@ -100,10 +99,12 @@ public class BlockChain {
      * @return - The amount of voting tokens available
      */
     public int getVotingPassAmount(PublicKey pubKey, Asset mcAsset) {
-        Log.e(this.toString(), "total assets: " + kit.wallet().getAvailableAssets().size());
-        Address mcAddress = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
-        Log.e(this.toString(), "asset 0: " + kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance());
-        return (int) kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance();
+        if(pubKey != null && mcAsset != null) {
+            Address mcAddress = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
+            return (int) kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance();
+        } else {
+            return 0;
+        }
     }
 
     public ArrayList<Asset> getAssets() {

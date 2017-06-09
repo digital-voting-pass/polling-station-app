@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import org.bitcoinj.core.Asset;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ElectionChoiceActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
     private ListView electionListView;
@@ -45,7 +44,7 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
 
         electionListView = (ListView) findViewById(R.id.election_list);
 
-        electionsAdapter = new ElectionsAdapter(this, loadElections());
+        electionsAdapter = new ElectionsAdapter(this, loadElections(BlockChain.getInstance().getAssets()));
         electionListView.setAdapter(electionsAdapter);
 
         electionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -88,37 +87,37 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
     /**
      * Creates an election array by getting all the assets available on the blockchain and add them to the list.
      * Sets the kind field of an Election object based on the prefix found in the asset name
-     * T = R.string.tweedekamer
-     * P = R.string.provinciaal
-     * G = R.string.gemeente
-     * W = R.string.waterschap
+     * T_ = R.string.tweedekamer
+     * P_ = R.string.provinciaal
+     * G_ = R.string.gemeente
+     * W_ = R.string.waterschap
      *
-     * Asset name must be of the format "K_Place"
+     * Asset name must be of the format "kXPlace"
      *
      * Sets the place field of an Election object based on the asset name
+     * @Param assetList - a list of asset from which Election objects can be created
      * @return electionChoices - a list of current elections that can be chosen from
      */
-    public ArrayList<Election> loadElections() {
+    public ArrayList<Election> loadElections(ArrayList<Asset> assetList) {
         ArrayList<Election> electionChoices = new ArrayList<>();
-        List<Asset> assetList = BlockChain.getInstance().getAssets();
         for(Asset a : assetList) {
             String name = a.getName();
-            String prefix = name.substring(0,1);
+            String prefix = name.substring(0,2);
             String kind;
             switch(prefix) {
-                case "T":
+                case "T_":
                     kind = getString(R.string.tweedekamer);
                     name = name.substring(2);
                     break;
-                case "P":
+                case "P_":
                     kind = getString(R.string.provinciaal);
                     name = name.substring(2);
                     break;
-                case "G":
+                case "G_":
                     kind = getString(R.string.gemeente);
                     name = name.substring(2);
                     break;
-                case "W":
+                case "W_":
                     kind = getString(R.string.waterschap);
                     name = name.substring(2);
                     break;
