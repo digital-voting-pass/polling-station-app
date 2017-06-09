@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -46,7 +47,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
                 requestStoragePermissions();
                 return;
             }
-            blockChain.setCallBackListener((BlockchainCallBackListener) thisActivity);
+            blockChain.addListener((BlockchainCallBackListener) thisActivity);
             blockChain.startDownload();
         }
     };
@@ -147,8 +148,9 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
 
     @Override
     protected void onDestroy() {
+        //remove this listener
+        blockChain.removeListener(this);
         super.onDestroy();
-        blockChain.setCallBackListener(null);
     }
 
     @Override
