@@ -6,9 +6,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,17 +58,8 @@ public class PassportConActivity extends AppCompatActivity {
         progressView = (ImageView) findViewById(R.id.progress_view);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (mNfcAdapter == null) {
-            // Stop here, we definitely need NFC
-            Toast.makeText(this, R.string.nfc_not_supported_error, Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-        if (!mNfcAdapter.isEnabled()) {
-            notice.setText(R.string.nfc_disabled_error);
-        } else {
-            notice.setText(R.string.nfc_enabled);
-        }
+        checkNFCStatus();
+        notice.setText(R.string.nfc_enabled);
     }
 
     /**
@@ -77,6 +72,7 @@ public class PassportConActivity extends AppCompatActivity {
         super.onResume();
         // It's important, that the activity is in the foreground (resumed). Otherwise an IllegalStateException is thrown.
         setupForegroundDispatch(this, mNfcAdapter);
+        checkNFCStatus();
     }
 
     @Override
@@ -193,6 +189,36 @@ public class PassportConActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this,    R.string.NFC_error, Toast.LENGTH_LONG).show();
             progressView.setImageResource(R.drawable.nfc_icon_empty);
+        }
+    }
+
+    /**
+     * Check if NFC is enabled and display error message when it is not.
+     * This method should be called each time the activity is resumed, because people could change their
+     * settings while the app is open.
+     */
+    public void checkNFCStatus() {
+        if (mNfcAdapter == null) {
+            // Stop here, we definitely need NFC
+            Toast.makeText(this, R.string.nfc_not_supported_error, Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        // Display a notice that NFC is disabled and provide user with option to turn on NFC
+        if (!mNfcAdapter.isEnabled()) {
+            final PassportConActivity thisActivity = this;
+            // Add listener for action in snackbar
+            View.OnClickListener nfcSnackbarListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    thisActivity.startActivity(new Intent(Settings.ACTION_NFC_SETTINGS));
+                }
+            };
+
+            Snackbar nfcDisabledSnackbar = Snackbar.make(findViewById(R.id.coordinator_layout),
+                    R.string.nfc_disabled_error_snackbar, Snackbar.LENGTH_INDEFINITE);
+            nfcDisabledSnackbar.setAction(R.string.nfc_disabled_snackbar_action, nfcSnackbarListener);
+            nfcDisabledSnackbar.show();
         }
     }
 }
