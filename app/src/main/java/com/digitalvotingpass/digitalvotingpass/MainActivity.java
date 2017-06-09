@@ -92,21 +92,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Called when the user taps the "Start Reading ID" button
-     */
-    public void startReading(View view) {
-        if(!documentData.isValid()) {
-            Toast.makeText(this,R.string.scan_doc_details, Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(this, CameraActivity.class);
-            startActivityForResult(intent, GET_DOC_INFO);
-        } else {
-            Intent intent = new Intent(this, PassportConActivity.class);
-            intent.putExtra("docData", documentData);
-            startActivity(intent);
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
