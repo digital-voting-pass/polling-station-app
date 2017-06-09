@@ -1,8 +1,11 @@
 package com.digitalvotingpass.utilities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
@@ -117,5 +120,12 @@ public class Util {
             return new String(hexChars);
         }
         return "";
+    }
+
+    public static boolean isOnline(Context ctx) {
+        ConnectivityManager cm =
+                (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }

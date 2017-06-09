@@ -8,16 +8,20 @@ import android.content.pm.PackageManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.blockchain.BlockchainCallBackListener;
 import com.digitalvotingpass.camera.Camera2BasicFragment;
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
+import com.digitalvotingpass.utilities.Util;
 
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -75,11 +79,22 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         downloadProgressBar = (ProgressBar) findViewById(R.id.download_progress_bar);
 
         if (savedInstanceState == null) {
+            HandlerThread thread = new HandlerThread("BlockChainThread");
+            thread.start();
             blockChain = BlockChain.getInstance();
-            handler = new Handler();
+            handler = new Handler(thread.getLooper());
             initTextHandler = new Handler();
             initTextHandler.post(initTextUpdater);
             handler.post(startBlockChain);
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (!Util.isOnline(getApplicationContext())) {
+            Toast.makeText(getApplicationContext(), "GAYYYYYY", Toast.LENGTH_LONG).show();
+
         }
     }
 
