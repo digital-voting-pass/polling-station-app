@@ -39,7 +39,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
                 Asset mcAsset = gson.fromJson(json, Election.class).getAsset();
 
                 final List<TransactionHistoryItem> transactions = BlockChain.getInstance(null).getMyTransactions(pubKey, mcAsset);
-                Collections.sort(transactions);
+                Collections.sort(transactions); //sort transactions desc on date
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -73,7 +73,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
         adapter = new TransactionsAdapter(this, transactionHistory);
         transactionList.setAdapter(adapter);
 
-        // Load transactions in seperate thread since this can take a while.
+        // Load transactions in separate thread since this can take a while.
         HandlerThread thread = new HandlerThread("transactions");
         thread.start();
         new Handler(thread.getLooper()).post(loadTransactions);
