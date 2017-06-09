@@ -122,9 +122,11 @@ public class BlockChain {
     }
 
     public boolean assetExists(Asset asset) {
-        for(Asset a : getAssets()) {
-            if(a.getName().equals(asset.getName())){
-                return true;
+        if(asset != null) {
+            for (Asset a : getAssets()) {
+                if (a.getName().equals(asset.getName())) {
+                    return true;
+                }
             }
         }
         return false;
