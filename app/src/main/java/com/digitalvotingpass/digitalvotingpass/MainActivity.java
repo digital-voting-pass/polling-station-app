@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         // Check if we got documentdata and set the documentData attribute
         if(requestCode == GET_DOC_INFO && resultCode == RESULT_OK) {
-            documentData = (DocumentData) data.getExtras().get("result");
+            documentData = (DocumentData) data.getExtras().get("docData");
         }
         // reload the election choice from sharedpreferences
         if(requestCode == CHOOSE_ELECTION && resultCode == RESULT_OK) {

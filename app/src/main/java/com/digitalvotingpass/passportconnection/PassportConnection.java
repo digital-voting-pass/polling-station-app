@@ -8,6 +8,7 @@ import com.digitalvotingpass.digitalvotingpass.Voter;
 import com.digitalvotingpass.utilities.Util;
 
 import net.sf.scuba.smartcards.CardService;
+import net.sf.scuba.smartcards.CardServiceException;
 
 import org.jmrtd.BACKeySpec;
 import org.jmrtd.PassportService;
@@ -17,6 +18,7 @@ import org.jmrtd.lds.LDSFileUtil;
 import org.jmrtd.lds.MRZInfo;
 
 import java.io.InputStream;
+import java.security.InvalidParameterException;
 import java.security.PublicKey;
 
 public class PassportConnection {
@@ -27,7 +29,7 @@ public class PassportConnection {
      * @param tag - NFC tag that started this activity (ID NFC tag)
      * @return PassportService - passportservice that has an open connection with the ID
      */
-    public PassportService openConnection(Tag tag, final DocumentData docData) {
+    public PassportService openConnection(Tag tag, final DocumentData docData) throws CardServiceException {
         PassportService ps = null;
         try {
             IsoDep nfc = IsoDep.get(tag);
@@ -52,11 +54,14 @@ public class PassportConnection {
 
             ps.doBAC(bacKey);
             return ps;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            ps.close();
+        } catch (CardServiceException ex) {
+            try {
+                ps.close();
+            } catch (Exception ex2) {
+                ex2.printStackTrace();
+            }
+            throw ex;
         }
-        return null;
     }
 
     /**

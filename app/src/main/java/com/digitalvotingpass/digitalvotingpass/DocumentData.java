@@ -81,8 +81,8 @@ public class DocumentData implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeStringArray(new String[] {getDocumentNumber(),
-                getDateOfBirth(),
-                getExpiryDate()
+                getExpiryDate(),
+                getDateOfBirth()
         });
     }
 

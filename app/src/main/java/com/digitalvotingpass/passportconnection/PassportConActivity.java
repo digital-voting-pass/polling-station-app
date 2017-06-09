@@ -12,20 +12,26 @@ import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.digitalvotingpass.digitalvotingpass.DocumentData;
+import com.digitalvotingpass.digitalvotingpass.MainActivity;
+import com.digitalvotingpass.digitalvotingpass.ManualInputActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.digitalvotingpass.ResultActivity;
 import com.digitalvotingpass.digitalvotingpass.Voter;
 import com.digitalvotingpass.utilities.Util;
 
+import net.sf.scuba.smartcards.CardServiceException;
+
 import org.jmrtd.PassportService;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
+import java.security.InvalidParameterException;
 import java.security.PublicKey;
 import java.security.Security;
 
@@ -37,6 +43,7 @@ public class PassportConActivity extends AppCompatActivity {
     private NfcAdapter mNfcAdapter;
     private DocumentData documentData;
     private ImageView progressView;
+    private PassportConActivity thisActivity;
 
     /**
      * This activity usually be loaded from the starting screen of the app.
@@ -49,6 +56,7 @@ public class PassportConActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         documentData = (DocumentData) extras.get("docData");
+        thisActivity = this;
 
         setContentView(R.layout.activity_passport_con);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
@@ -141,32 +149,56 @@ public class PassportConActivity extends AppCompatActivity {
 
         // Open a connection with the ID, return a PassportService object which holds the open connection
         PassportConnection pcon= new PassportConnection();
-        PassportService ps = pcon.openConnection(tag, documentData);
+        PassportService ps;
         try {
-            progressView.setImageResource(R.drawable.nfc_icon_2);
+            ps = pcon.openConnection(tag, documentData);
+        } catch(Exception e) {
+            handleConnectionFailed(e);
+            ps = null;
+        }
 
-
-            // Get public key from dg15
-            PublicKey pubKey = pcon.getAAPublicKey(ps);
-            // Get voter information from dg1
-            Voter voter = pcon.getVoter(ps);
-
-            // sign 8 bytes of data
-            byte[] signedData = pcon.signData(ps);
-            progressView.setImageResource(R.drawable.nfc_icon_3);
-
-            // when all data is loaded start ResultActivity
-            startResultActivity(pubKey, signedData, voter);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Toast.makeText(this, R.string.NFC_error, Toast.LENGTH_LONG).show();
-            progressView.setImageResource(R.drawable.nfc_icon_empty);
-        } finally {
+        if(ps != null) {
             try {
-                ps.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+                progressView.setImageResource(R.drawable.nfc_icon_2);
+
+                // Get public key from dg15
+                PublicKey pubKey = pcon.getAAPublicKey(ps);
+
+                // Get voter information from dg1
+                Voter voter = pcon.getVoter(ps);
+
+                progressView.setImageResource(R.drawable.nfc_icon_3);
+
+                // when all data is loaded start ResultActivity
+                startResultActivity(pubKey, voter);
+            } catch (Exception ex) {
+                handleConnectionFailed(ex);
+            } finally {
+                try {
+                    ps.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+        }
+    }
+
+    /**
+     * When the connection fails, the exception gives more information about the error
+      Display error messages to the user accordingly.
+     * @param e - The exception that was raised when the passportconnectoin failed
+     */
+    public void handleConnectionFailed(Exception e) {
+
+        if(e.toString().toLowerCase().contains("authentication failed")){
+            displayCheckInputSnackbar();
+            progressView.setImageResource(R.drawable.nfc_icon_empty);
+        } else if(e.toString().toLowerCase().contains("tag was lost")) {
+            Toast.makeText(this, getString(R.string.NFC_error), Toast.LENGTH_LONG).show();
+            progressView.setImageResource(R.drawable.nfc_icon_empty);
+        } else {
+            Toast.makeText(this, getString(R.string.general_error), Toast.LENGTH_LONG).show();
+            progressView.setImageResource(R.drawable.nfc_icon_empty);
         }
     }
 
@@ -177,17 +209,15 @@ public class PassportConActivity extends AppCompatActivity {
      * @param signedData Signed data.
      * @param voter The voter.
      */
-    public void startResultActivity(PublicKey pubKey, byte[] signedData, Voter voter) {
-        if(pubKey != null && signedData != null) {
-
+    public void startResultActivity(PublicKey pubKey, Voter voter) {
+        if(pubKey != null) {
             Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
             intent.putExtra("voter", voter);
             intent.putExtra("pubKey", pubKey);
-            intent.putExtra("signedData", signedData);
             startActivity(intent);
             finish();
         } else {
-            Toast.makeText(this,    R.string.NFC_error, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "startResultActivity exception", Toast.LENGTH_LONG).show();
             progressView.setImageResource(R.drawable.nfc_icon_empty);
         }
     }
@@ -206,7 +236,6 @@ public class PassportConActivity extends AppCompatActivity {
         }
         // Display a notice that NFC is disabled and provide user with option to turn on NFC
         if (!mNfcAdapter.isEnabled()) {
-            final PassportConActivity thisActivity = this;
             // Add listener for action in snackbar
             View.OnClickListener nfcSnackbarListener = new View.OnClickListener() {
                 @Override
@@ -219,6 +248,41 @@ public class PassportConActivity extends AppCompatActivity {
                     R.string.nfc_disabled_error_snackbar, Snackbar.LENGTH_INDEFINITE);
             nfcDisabledSnackbar.setAction(R.string.nfc_disabled_snackbar_action, nfcSnackbarListener);
             nfcDisabledSnackbar.show();
+        }
+    }
+
+    /**
+     * This method displays a snackbar which has an action that starts the manual input activity.
+     * It is meant to be displayed when the BAC-key is wrong.
+     */
+    public void displayCheckInputSnackbar() {
+        // Add listener for action in snackbar
+        View.OnClickListener inputSnackbarListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(thisActivity, ManualInputActivity.class);
+                intent.putExtra("docData", documentData);
+                startActivityForResult(intent, MainActivity.GET_DOC_INFO);
+            }
+        };
+
+        Snackbar inputSnackbar = Snackbar.make(findViewById(R.id.coordinator_layout),
+                R.string.wrong_document_details, Snackbar.LENGTH_INDEFINITE);
+        inputSnackbar.setAction(R.string.check_input, inputSnackbarListener);
+        inputSnackbar.show();
+    }
+
+    /**
+     * Update the documentdata in this activity and in the main activity.
+     * @param requestCode requestCode
+     * @param resultCode resultCode
+     * @param data The data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == MainActivity.GET_DOC_INFO && resultCode == RESULT_OK) {
+            documentData = (DocumentData) data.getExtras().get("docData");
         }
     }
 }

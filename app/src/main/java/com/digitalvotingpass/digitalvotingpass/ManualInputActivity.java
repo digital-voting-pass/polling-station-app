@@ -59,7 +59,7 @@ public class ManualInputActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(verifyInput()) {
                     Intent returnIntent = new Intent();
-                    returnIntent.putExtra("result", getData());
+                    returnIntent.putExtra("docData", getData());
                     setResult(Activity.RESULT_OK, returnIntent);
                     finish();
                 }
