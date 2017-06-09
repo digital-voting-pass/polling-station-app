@@ -22,7 +22,7 @@
     <color name="govTextBlue">#01689b</color>
     <color name="govLightGray">#f3f3f3</color>
 
-    <color name="redFailed">#d52b1e</color>
+    <color name="redFailed">#ab251b</color>
     <color name="orangeWait">#b08800</color>
     <color name="greenSucces">#328a3b</color>
 </resources>

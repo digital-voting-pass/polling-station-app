@@ -113,6 +113,9 @@ public class MainActivity extends AppCompatActivity {
         // Check if we got documentdata and set the documentData attribute
         if(requestCode == GET_DOC_INFO && resultCode == RESULT_OK) {
             documentData = (DocumentData) data.getExtras().get("result");
+            Intent intent = new Intent(this, PassportConActivity.class);
+            intent.putExtra("docData", documentData);
+            startActivity(intent);
         }
         // reload the election choice from sharedpreferences
         if(requestCode == CHOOSE_ELECTION && resultCode == RESULT_OK) {
