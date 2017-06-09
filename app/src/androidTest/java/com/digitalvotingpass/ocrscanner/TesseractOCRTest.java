@@ -8,14 +8,16 @@ import android.support.test.rule.ActivityTestRule;
 import android.util.Log;
 
 import com.digitalvotingpass.camera.Camera2BasicFragment;
-import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
+import com.digitalvotingpass.digitalvotingpass.ManualInputActivity;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class TesseractOCRTest {
     private TesseractOCR tesseractOCR;
@@ -41,12 +43,10 @@ public class TesseractOCRTest {
 
     /**
      * Start an activity to be able to access the assets. Needed for loading the traineddata to the
-     * emulator. ElectionChoice is one of the simplest activity in the app.
+     * emulator. ManualInputActivity is one of the simplest activities in the app.
      */
     @Rule
-    public ActivityTestRule<ElectionChoiceActivity> activityRule
-            = new ActivityTestRule<>(
-            ElectionChoiceActivity.class);
+    public ActivityTestRule<ManualInputActivity> activityRule = new ActivityTestRule<>(ManualInputActivity.class);
 
     @Before
     public void init() throws Exception {
@@ -57,7 +57,7 @@ public class TesseractOCRTest {
         tesseractOCR.isInitialized = true;
     }
 
-//    @Test
+    @Test
     public void testConstructor() throws Exception {
         assertNotNull(tesseractOCR);
     }
@@ -67,12 +67,12 @@ public class TesseractOCRTest {
         assertNull(tesseractOCR.ocr(null));
     }
 
-//    @Test
+    @Test
     public void testOCRInputSimple() throws Exception {
         assertNotNull(tesseractOCR.ocr(Bitmap.createBitmap(10,10,Bitmap.Config.ARGB_8888)));
     }
 
-//    @Test
+    @Test
     public void testOCRInputPassport1() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(image1));
         assertNotNull(mrzImage);
@@ -81,7 +81,7 @@ public class TesseractOCRTest {
         assertTrue(similarity > MINIMUM_ACCURACY);
     }
 
-//    @Test
+    @Test
     public void testOCRInputPassport2() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(image2));
         assertNotNull(mrzImage);
@@ -90,7 +90,7 @@ public class TesseractOCRTest {
         assertTrue(similarity > MINIMUM_ACCURACY);
     }
 
-//    @Test
+    @Test
     public void testOCRInputId1() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(imageId1));
         assertNotNull(mrzImage);
@@ -99,7 +99,7 @@ public class TesseractOCRTest {
         assertTrue(similarity > MINIMUM_ACCURACY);
     }
 
-//    @Test
+    @Test
     public void testOCRInputId2() throws Exception {
         Bitmap mrzImage = BitmapFactory.decodeStream(InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets().open(imageId2));
         assertNotNull(mrzImage);

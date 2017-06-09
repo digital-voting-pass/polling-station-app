@@ -60,6 +60,11 @@
     <string name="search">Search</string>
     <string name="election_choice">Choose election</string>
     <string name="election">election</string>
+    <string name="tweedekamer">Parliament election</string>
+    <string name="provinciaal">Provincial election</string>
+    <string name="gemeente">Municipal election</string>
+    <string name="waterschap">Water board election</string>
+
     <string name="downloading_text">Downloading...</string>
     <string name="initializing_text">Initializing...</string>
 

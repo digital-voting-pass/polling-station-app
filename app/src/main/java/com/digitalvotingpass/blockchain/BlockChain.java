@@ -25,6 +25,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BlockChain {
@@ -103,14 +104,27 @@ public class BlockChain {
      * @param pubKey - The Public Key read from the ID of the voter
      * @param mcAsset - The asset (election) that is chosen at app start-up.
      * @return - The amount of voting tokens available
-     * @throws NullPointerException - When the address is not found on the blockchain.
      */
     public int getVotingPassAmount(PublicKey pubKey, Asset mcAsset) {
-        Log.e(this.toString(), "total assets: " + kit.wallet().getAvailableAssets().size());
-        Address mcAddress = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
-        mcAsset = kit.wallet().getAvailableAssets().get(0); // TODO: remove this
-        Log.e(this.toString(), "asset 0: " + kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance());
-        return (int) kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance();
+        if(pubKey != null && mcAsset != null) {
+            Address mcAddress = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
+            return (int) kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance();
+        } else {
+            return 0;
+        }
+    }
+
+    public ArrayList<Asset> getAssets() {
+        return kit.wallet().getAvailableAssets();
+    }
+
+    public boolean assetExists(Asset asset) {
+        for(Asset a : getAssets()) {
+            if(a.getName().equals(asset.getName())){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

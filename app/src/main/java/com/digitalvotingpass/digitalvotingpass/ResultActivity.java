@@ -1,6 +1,8 @@
 package com.digitalvotingpass.digitalvotingpass;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,13 +14,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.digitalvotingpass.blockchain.BlockChain;
+import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.transactionhistory.TransactionHistoryActivity;
 import com.digitalvotingpass.utilities.Util;
+import com.google.gson.Gson;
 
 import net.sf.scuba.data.Gender;
 
 import org.bitcoinj.core.Asset;
-import org.bitcoinj.core.Block;
 
 import java.security.PublicKey;
 
@@ -44,6 +47,12 @@ public class ResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         final ResultActivity thisActivity = this;
         Bundle extras = getIntent().getExtras();
+
+        // get election from sharedpreferences
+        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
+        mcAsset = gson.fromJson(json, Election.class).getAsset();
 
         pubKey = (PublicKey) extras.get("pubKey");
 
@@ -114,14 +123,16 @@ public class ResultActivity extends AppCompatActivity {
     public void handleData(Bundle extras) {
         Voter voter = (Voter) extras.get("voter");
         String preamble = createPreamble(voter);
-        int votingPasses, authState;
-        try {
+        int votingPasses;
+        if(pubKey != null && mcAsset != null) {
             votingPasses = BlockChain.getInstance().getVotingPassAmount(pubKey, mcAsset);
-            authState = SUCCES;
-        } catch (NullPointerException e){
-            Toast.makeText(this, getString(R.string.address_not_found), Toast.LENGTH_LONG).show();
+        } else {
             votingPasses = 0;
-            authState = FAILED;
+        }
+        if(votingPasses == 0) {
+            setAuthorizationStatus(FAILED);
+        } else {
+            setAuthorizationStatus(SUCCES);
         }
 
         textVoterName.setText(getString(R.string.has_right, preamble));
@@ -132,7 +143,6 @@ public class ResultActivity extends AppCompatActivity {
             textVotingPasses.setText(R.string.voting_passes);
         }
         textVotingPassAmount.setText(Integer.toString(votingPasses));
-        setAuthorizationStatus(authState);
     }
 
     /**
