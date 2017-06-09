@@ -149,7 +149,7 @@ public class BlockChain {
         ArrayList<byte[]> transactions = new ArrayList<byte[]>();
 
         for (TransactionOutput utxo : balance) {
-            transactions.add(getSpendUtxoTransaction(utxo, masterAddress, pcon));
+            transactions.add(utxoToSignedTransaction(utxo, masterAddress, pcon));
         }
         return transactions;
     }
@@ -160,7 +160,7 @@ public class BlockChain {
      * @param destination
      * @param pcon
      */
-    public byte[] getSpendUtxoTransaction(TransactionOutput utxo, Address destination, PassportConnection pcon) {
+    public byte[] utxoToSignedTransaction(TransactionOutput utxo, Address destination, PassportConnection pcon) {
         return new PassportTransactionFormatter(utxo, destination)
                 .buildAndSign(pcon);
     }

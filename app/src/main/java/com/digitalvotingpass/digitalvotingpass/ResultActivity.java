@@ -329,8 +329,6 @@ public class ResultActivity extends AppCompatActivity {
      */
     public void confirmVote() {
         this.pendingTransactions = BlockChain.getInstance().broadcastTransactions(signedTransactions);
-        Toast.makeText(this, "Broadcasting transactions" +
-                "", Toast.LENGTH_LONG).show();
         setAuthorizationStatus(this.WAITING);
         butProceed.setText(R.string.waiting_confirmation);
         attachTransactionListeners();

@@ -51,7 +51,6 @@ dependencies {
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile 'com.androidadvance:topsnackbar:1.1.1'
     testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-android:2.7.22'
     testCompile 'org.jmockit:jmockit:1.22'
 
 //  Logging dependencies for bitcoinj
