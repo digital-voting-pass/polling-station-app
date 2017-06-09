@@ -124,7 +124,11 @@ public class ResultActivity extends AppCompatActivity {
         String preamble = createPreamble(voter);
         int votingPasses;
         try {
+        if(pubKey != null && mcAsset != null) {
             votingPasses = BlockChain.getInstance(null).getVotingPassAmount(pubKey, mcAsset);
+        } else {
+            votingPasses = 0;
+        }
             if(votingPasses == 0) {
                 setAuthorizationStatus(FAILED);
             } else {

@@ -12,17 +12,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.camera.CameraActivity;
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
 import com.digitalvotingpass.passportconnection.PassportConActivity;
-import com.digitalvotingpass.transactionhistory.TransactionHistoryActivity;
 import com.digitalvotingpass.utilities.Util;
-
 import com.google.gson.Gson;
-
-import org.bitcoinj.core.Asset;
 
 
 public class MainActivity extends AppCompatActivity {

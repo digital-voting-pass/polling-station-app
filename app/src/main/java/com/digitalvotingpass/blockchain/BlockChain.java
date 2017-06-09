@@ -7,7 +7,6 @@ import android.util.Log;
 import com.digitalvotingpass.transactionhistory.Transaction;
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
 import com.digitalvotingpass.utilities.Util;
-import com.google.common.util.concurrent.Service;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Asset;
@@ -17,7 +16,6 @@ import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MultiChainParams;
-import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.utils.BriefLogFormatter;
 
 import java.io.File;
@@ -81,7 +79,7 @@ public class BlockChain {
         if (!initialized) {
             BriefLogFormatter.init();
             String filePrefix = "voting-wallet";
-            File walletFile = new File(Environment.getExternalStorageDirectory() + "/DigitalVotingPass");
+            File walletFile = new File(Environment.getExternalStorageDirectory() + "/" + Util.FOLDER_DIGITAL_VOTING_PASS);
             if (!walletFile.exists()) {
                 walletFile.mkdirs();
             }
@@ -108,10 +106,12 @@ public class BlockChain {
      * @return - The amount of voting tokens available
      */
     public int getVotingPassAmount(PublicKey pubKey, Asset mcAsset) {
-        Log.e(this.toString(), "total assets: " + kit.wallet().getAvailableAssets().size());
-        Address mcAddress = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
-        Log.e(this.toString(), "asset 0: " + kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance());
-        return (int) kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance();
+        if(pubKey != null && mcAsset != null) {
+            Address mcAddress = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
+            return (int) kit.wallet().getAssetBalance(mcAsset, mcAddress).getBalance();
+        } else {
+            return 0;
+        }
     }
 
     public ArrayList<Asset> getAssets() {
@@ -119,9 +119,11 @@ public class BlockChain {
     }
 
     public boolean assetExists(Asset asset) {
-        for(Asset a : getAssets()) {
-            if(a.getName().equals(asset.getName())){
-                return true;
+        if(asset != null) {
+            for (Asset a : getAssets()) {
+                if (a.getName().equals(asset.getName())) {
+                    return true;
+                }
             }
         }
         return false;

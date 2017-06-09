@@ -13,10 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.digitalvotingpass.digitalvotingpass.Voter;
 import com.digitalvotingpass.digitalvotingpass.DocumentData;
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.digitalvotingpass.ResultActivity;
+import com.digitalvotingpass.digitalvotingpass.Voter;
 import com.digitalvotingpass.utilities.Util;
 
 import org.jmrtd.PassportService;
