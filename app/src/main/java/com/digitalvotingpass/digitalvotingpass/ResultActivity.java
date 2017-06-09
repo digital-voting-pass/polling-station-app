@@ -1,6 +1,8 @@
 package com.digitalvotingpass.digitalvotingpass;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,10 +13,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.digitalvotingpass.blockchain.BlockChain;
+import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.transactionhistory.TransactionHistoryActivity;
 import com.digitalvotingpass.utilities.Util;
+import com.google.gson.Gson;
 
 import net.sf.scuba.data.Gender;
+
+import org.bitcoinj.core.Asset;
+
+import java.security.PublicKey;
 
 public class ResultActivity extends AppCompatActivity {
     private TextView textAuthorization;
@@ -24,10 +33,13 @@ public class ResultActivity extends AppCompatActivity {
     private Button butTransactionHistory;
     private Button butProceed;
     private MenuItem cancelAction;
+
     private int authorizationState = 1;
     private final int FAILED = 0;
     private final int WAITING = 1;
     private final int SUCCES = 2;
+    private PublicKey pubKey;
+    private Asset mcAsset;
 
 
     @Override
@@ -35,6 +47,14 @@ public class ResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         final ResultActivity thisActivity = this;
         Bundle extras = getIntent().getExtras();
+
+        // get election from sharedpreferences
+        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
+        mcAsset = gson.fromJson(json, Election.class).getAsset();
+
+        pubKey = (PublicKey) extras.get("pubKey");
 
         setContentView(R.layout.activity_result);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
@@ -99,13 +119,21 @@ public class ResultActivity extends AppCompatActivity {
      * Displays all the data gotten from the blockchain and the passport. Transferred in the extras
      * field of the intent.
      *
-     * TODO: handle actual data
      */
     public void handleData(Bundle extras) {
         Voter voter = (Voter) extras.get("voter");
         String preamble = createPreamble(voter);
-        int votingPasses = 1;
-        int authState = SUCCES;
+        int votingPasses;
+        if(pubKey != null && mcAsset != null) {
+            votingPasses = BlockChain.getInstance().getVotingPassAmount(pubKey, mcAsset);
+        } else {
+            votingPasses = 0;
+        }
+        if(votingPasses == 0) {
+            setAuthorizationStatus(FAILED);
+        } else {
+            setAuthorizationStatus(SUCCES);
+        }
 
         textVoterName.setText(getString(R.string.has_right, preamble));
         // display singular or plural form of voting passes based on amount
@@ -115,7 +143,6 @@ public class ResultActivity extends AppCompatActivity {
             textVotingPasses.setText(R.string.voting_passes);
         }
         textVotingPassAmount.setText(Integer.toString(votingPasses));
-        setAuthorizationStatus(authState);
     }
 
     /**
