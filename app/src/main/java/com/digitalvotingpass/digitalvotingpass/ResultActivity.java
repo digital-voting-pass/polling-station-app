@@ -247,7 +247,7 @@ public class ResultActivity extends AppCompatActivity {
      * TODO: implement this method
      */
     public void confirmVote() {
-        Toast.makeText(this, "Transaction sent", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "TransactionHistoryItem sent", Toast.LENGTH_LONG).show();
         butProceed.setText(R.string.proceed_home);
     }
 

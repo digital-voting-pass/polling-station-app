@@ -38,7 +38,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
                 String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
                 Asset mcAsset = gson.fromJson(json, Election.class).getAsset();
 
-                final List<Transaction> transactions = BlockChain.getInstance(null).getTransactions(pubKey, mcAsset);
+                final List<TransactionHistoryItem> transactions = BlockChain.getInstance(null).getMyTransactions(pubKey, mcAsset);
                 Collections.sort(transactions);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -69,7 +69,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
         ListView transactionList = (ListView) findViewById(R.id.transaction_list);
 
         // create a transaction history array with all the transactions and add them to the list
-        ArrayList<Transaction> transactionHistory = new ArrayList<>();
+        ArrayList<TransactionHistoryItem> transactionHistory = new ArrayList<>();
         adapter = new TransactionsAdapter(this, transactionHistory);
         transactionList.setAdapter(adapter);
 

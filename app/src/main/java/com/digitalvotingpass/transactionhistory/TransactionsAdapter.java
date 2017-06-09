@@ -15,9 +15,9 @@ import java.util.List;
  * Created by wkmeijer on 26-5-17.
  */
 
-public class TransactionsAdapter extends ArrayAdapter<Transaction> {
-    public TransactionsAdapter(Context context, List<Transaction> transactions) {
-        super(context, 0, transactions);
+public class TransactionsAdapter extends ArrayAdapter<TransactionHistoryItem> {
+    public TransactionsAdapter(Context context, List<TransactionHistoryItem> transactionHistoryItems) {
+        super(context, 0, transactionHistoryItems);
     }
 
     /**
@@ -26,7 +26,7 @@ public class TransactionsAdapter extends ArrayAdapter<Transaction> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        Transaction transaction = getItem(position);
+        TransactionHistoryItem transactionHistoryItem = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_transaction, parent, false);
@@ -36,9 +36,9 @@ public class TransactionsAdapter extends ArrayAdapter<Transaction> {
         TextView time = (TextView) convertView.findViewById(R.id.time);
         TextView details = (TextView) convertView.findViewById(R.id.details);
         // Populate the data into the template view using the data object
-        title.setText(transaction.title);
-        time.setText(transaction.time.toString());
-        details.setText(transaction.transactionDetails);
+        title.setText(transactionHistoryItem.title);
+        time.setText(transactionHistoryItem.time.toString());
+        details.setText(transactionHistoryItem.transactionDetails);
 
         // Return the completed view to render on screen
         return convertView;

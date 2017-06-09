@@ -75,9 +75,13 @@
 
     <string name="shared_preferences_key_election">com.digitalvotingpass.ELECTION_OBJECT_KEY</string>
     <string name="shared_preferences_file">com.digitalvotingpass.shared</string>
+    <string name="transaction_received_item_format_title">Received %d</string>
+    <string name="transaction_received_item_format_detail">From %s</string>
+    <string name="transaction_sent_item_format_title">Sent %d</string>
+    <string name="transaction_sent_item_format_detail">To %s</string>
 
     <string-array name="address_array">
-        <item>1GoqgbPZUV2yuPZXohtAvB2NZbjcew8RmTSVKj|Government</item>
+        <item>1GoqgbPZUV2yuPZXohtAvB2NZbjcew8Rk93mMn|Government</item>
     </string-array>
 
     <string-array name="months_array">
