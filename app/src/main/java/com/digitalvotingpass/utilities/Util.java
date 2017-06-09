@@ -17,6 +17,9 @@ import java.io.OutputStream;
 public class Util {
 
 
+    public static final String FOLDER_DIGITAL_VOTING_PASS = "DigitalVotingPass";
+
+
     /**
      * Returns the height of the status bar in pixels
      * @param resources Resources object required to get the height attribute.

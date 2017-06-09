@@ -3,6 +3,7 @@ package com.digitalvotingpass.blockchain;
 import android.os.Environment;
 import android.util.Log;
 
+import com.digitalvotingpass.utilities.Util;
 import com.google.common.util.concurrent.Service;
 
 import org.bitcoinj.core.NetworkParameters;
@@ -59,7 +60,7 @@ public class BlockChain {
             );
 
             String filePrefix = "voting-wallet";
-            File walletFile = new File(Environment.getExternalStorageDirectory() + "/DigitalVotingPass");
+            File walletFile = new File(Environment.getExternalStorageDirectory() + "/" + Util.FOLDER_DIGITAL_VOTING_PASS);
             if (!walletFile.exists()) {
                 walletFile.mkdirs();
             }
