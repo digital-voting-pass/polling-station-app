@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,9 +93,10 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (!Util.isOnline(getApplicationContext())) {
-            Toast.makeText(getApplicationContext(), "GAYYYYYY", Toast.LENGTH_LONG).show();
-
+        if (!Util.isOnline(getApplicationContext()) && hasFocus) {
+            initTextHandler.removeCallbacks(initTextUpdater);
+            Toast.makeText(getApplicationContext(), getString(R.string.please_enable_connect_message), Toast.LENGTH_LONG).show();
+            currentTask.setText(getString(R.string.no_connection));
         }
     }
 

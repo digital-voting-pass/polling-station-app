@@ -70,7 +70,8 @@
     <string name="shared_preferences_key_election">com.digitalvotingpass.ELECTION_OBJECT_KEY</string>
     <string name="shared_preferences_file">com.digitalvotingpass.shared</string>
 
-    <string name="no_connection">Please enable network connection</string>
+    <string name="please_enable_connect_message">Please enable network connection</string>
+    <string name="no_connection">No Network</string>
     <string-array name="months_array">
         <item>January</item>
         <item>February</item>
