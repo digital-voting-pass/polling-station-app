@@ -33,7 +33,7 @@ public class TestResultActivity {
     private ResultActivity resultActivity;
     private Voter voter = new Voter("Jannus Wallus", "de Vries", Gender.getInstance(Gender.MALE.toInt()));;
 
-    PublicKey pubKey = null;
+    private PublicKey pubKey = null;
 
     /**
      * Start up the splashactivity so the blockchain is instantiated.
