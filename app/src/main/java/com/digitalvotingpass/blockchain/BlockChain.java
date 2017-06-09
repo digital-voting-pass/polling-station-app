@@ -1,7 +1,6 @@
 package com.digitalvotingpass.blockchain;
 
 import android.os.Environment;
-import android.util.Log;
 
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
 import com.digitalvotingpass.utilities.Util;
@@ -13,7 +12,6 @@ import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerAddress;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MultiChainParams;
-import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.utils.BriefLogFormatter;
 
 import java.io.File;
