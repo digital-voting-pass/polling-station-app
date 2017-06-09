@@ -75,9 +75,9 @@
 
     <string name="shared_preferences_key_election">com.digitalvotingpass.ELECTION_OBJECT_KEY</string>
     <string name="shared_preferences_file">com.digitalvotingpass.shared</string>
-    <string name="transaction_received_item_format_title">Received %d</string>
+    <string name="transaction_received_item_format_title">Received %1$d vote \n%2$s %3$s</string>
     <string name="transaction_received_item_format_detail">From %s</string>
-    <string name="transaction_sent_item_format_title">Sent %d</string>
+    <string name="transaction_sent_item_format_title">Sent %1$d vote \n%2$s %3$s</string>
     <string name="transaction_sent_item_format_detail">To %s</string>
 
     <string-array name="address_array">

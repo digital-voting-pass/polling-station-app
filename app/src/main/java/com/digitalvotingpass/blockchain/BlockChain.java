@@ -5,6 +5,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.transactionhistory.TransactionHistoryItem;
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
 import com.digitalvotingpass.utilities.Util;
@@ -132,12 +133,21 @@ public class BlockChain {
     }
 
     /**
+     * Returns the address corresponding to the pubkey.
+     * @param pubKey
+     * @return Address
+     */
+    public Address getAddress(PublicKey pubKey) {
+        return Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
+    }
+
+    /**
      * Load transactions that involve the given public key, either incomming or outgoing.
      * @param pubKey PublicKey comming from epassport
      * @param assetFilter Asset for which transactions needs to be checked.
      * @return List containing interesting transactions.
      */
-    public List<TransactionHistoryItem> getMyTransactions(PublicKey pubKey, Asset assetFilter) {
+    public List<TransactionHistoryItem> getMyTransactions(PublicKey pubKey, Asset assetFilter, Context context) {
         List<TransactionHistoryItem> result = new ArrayList<>();
         Address address = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
         String myAddress = address.toString();
@@ -155,7 +165,7 @@ public class BlockChain {
                             int amount = ByteBuffer.wrap(quantity).order(ByteOrder.LITTLE_ENDIAN).getInt();
                             Address toAddress = o.getScriptPubKey().getToAddress(this.params);
 
-                            TransactionHistoryItem newItem = TransactionSentByMe(transaction, myAddress, toAddress.toString(), amount);
+                            TransactionHistoryItem newItem = TransactionSentByMe(transaction, myAddress, toAddress.toString(), amount, assetFilter, context);
                             if (newItem != null) result.add(newItem);
 
                             if (toAddress.toString().equals(myAddress)) {
@@ -168,7 +178,10 @@ public class BlockChain {
                                 Date date = transaction.getUpdateTime();
                                 TransactionHistoryItem newTransactionHistoryItem =
                                         new TransactionHistoryItem(
-                                                String.format(context.getString(R.string.transaction_received_item_format_title), amount),
+                                                String.format(context.getString(R.string.transaction_received_item_format_title),
+                                                        amount,
+                                                        Election.parseElection(assetFilter, context).getKind(),
+                                                        Election.parseElection(assetFilter, context).getPlace()),
                                                 date,
                                                 String.format(context.getString(R.string.transaction_received_item_format_detail), translateAddress(fromAddress.toString())));
                                 result.add(newTransactionHistoryItem);
@@ -190,15 +203,18 @@ public class BlockChain {
      * @param amount int
      * @return TransactionHistoryItem or null
      */
-    private TransactionHistoryItem TransactionSentByMe(Transaction transaction, String myAddress, String toAddress, int amount){
+    private TransactionHistoryItem TransactionSentByMe(Transaction transaction, String myAddress, String toAddress, int amount, Asset assetFilter, Context context){
         for (TransactionInput in : transaction.getInputs()) {
             Address fromAddress = in.getScriptSig().getFromAddress(params);
             if (myAddress.equals(fromAddress.toString())) {
                 Date date = transaction.getUpdateTime();
                 return new TransactionHistoryItem(
-                        String.format(context.getString(R.string.transaction_sent_item_format_title), amount),
-                        date,
-                        String.format(context.getString(R.string.transaction_sent_item_format_detail), translateAddress(toAddress)));
+                    String.format(context.getString(R.string.transaction_sent_item_format_title),
+                            amount,
+                            Election.parseElection(assetFilter, context).getKind(),
+                            Election.parseElection(assetFilter, context).getPlace()),
+                    date,
+                    String.format(context.getString(R.string.transaction_sent_item_format_detail), translateAddress(toAddress)));
             }
         }
         return null;
