@@ -21,12 +21,6 @@ class ProgressTracker extends DownloadProgressTracker {
     }
 
     @Override
-    public void await() throws InterruptedException {
-        super.await();
-        Log.e("Waiting", "await");
-    }
-
-    @Override
     protected void startDownload(int blocks) {
         super.startDownload(blocks);
         listener.onInitComplete();

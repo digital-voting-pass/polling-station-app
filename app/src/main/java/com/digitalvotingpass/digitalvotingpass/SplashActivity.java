@@ -80,16 +80,18 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         downloadProgressBar = (ProgressBar) findViewById(R.id.download_progress_bar);
 
         if (savedInstanceState == null) {
-            HandlerThread thread = new HandlerThread("BlockChainThread");
-            thread.start();
             blockChain = BlockChain.getInstance();
-            handler = new Handler(thread.getLooper());
+            handler = new Handler();
             initTextHandler = new Handler();
             initTextHandler.post(initTextUpdater);
             handler.post(startBlockChain);
         }
     }
 
+    /**
+     * When the view is focused, check network state and display an error when network is unavailable.
+     * @param hasFocus
+     */
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
