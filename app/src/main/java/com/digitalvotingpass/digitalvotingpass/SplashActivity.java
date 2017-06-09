@@ -47,7 +47,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
                 requestStoragePermissions();
                 return;
             }
-            blockChain.setCallBackListener((BlockchainCallBackListener) thisActivity);
+            blockChain.addListener((BlockchainCallBackListener) thisActivity);
             blockChain.startDownload();
         }
     };
@@ -150,8 +150,9 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
 
     @Override
     protected void onDestroy() {
+        //remove this listener
+        blockChain.removeListener(this);
         super.onDestroy();
-        blockChain.setCallBackListener(null);
     }
 
     @Override

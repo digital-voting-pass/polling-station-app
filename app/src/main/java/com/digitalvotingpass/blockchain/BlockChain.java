@@ -27,6 +27,7 @@ public class BlockChain {
     private WalletAppKit kit;
     private BlockchainCallBackListener listener;
     private boolean initialized = false;
+    private ProgressTracker progressTracker;
 
     private InetAddress peeraddr;
     private long addressChecksum = 0xcc350cafL;
@@ -43,6 +44,7 @@ public class BlockChain {
     private BlockChain() {
         try {
             peeraddr = InetAddress.getByName(PEER_IP);
+            progressTracker = new ProgressTracker();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -55,10 +57,20 @@ public class BlockChain {
         return instance;
     }
 
-    public void setCallBackListener(BlockchainCallBackListener listener) {
-        this.listener = listener;
-        if (kit != null && listener != null)
-            kit = kit.setDownloadListener(new ProgressTracker(listener));
+    /**
+     * Add a listener.
+     * @param listener The listener.
+     */
+    public void addListener(BlockchainCallBackListener listener) {
+        progressTracker.addListener(listener);
+    }
+
+    /**
+     * Remove a listener.
+     * @param listener a listener.
+     */
+    public void removeListener(BlockchainCallBackListener listener) {
+        progressTracker.removeListener(listener);
     }
 
     public void startDownload() {
@@ -71,8 +83,9 @@ public class BlockChain {
             }
             kit = new WalletAppKit(params, walletFile, filePrefix);
 
-            if (listener != null)
-                kit = kit.setDownloadListener(new ProgressTracker(listener));
+            //set the observer
+            kit.setDownloadListener(progressTracker);
+
             kit.setBlockingStartup(false);
 
             PeerAddress peer = new PeerAddress(params, peeraddr);
