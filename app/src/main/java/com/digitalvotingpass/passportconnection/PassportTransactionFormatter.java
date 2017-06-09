@@ -49,10 +49,10 @@ public class PassportTransactionFormatter {
      * Builds the raw transaction and signes using the passport.
      * @param pcon
      */
-    public PassportTransactionFormatter buildAndSign(PassportConnection pcon) {
+    public byte[] buildAndSign(PassportConnection pcon) {
         byte[][] parts = buildRawTransaction();
         this.data = signRawTransaction(parts, pcon);
-        return this;
+        return this.data;
     }
 
     /**

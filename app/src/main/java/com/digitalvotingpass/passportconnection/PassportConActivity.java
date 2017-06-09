@@ -2,8 +2,10 @@ package com.digitalvotingpass.passportconnection;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -19,14 +21,18 @@ import com.digitalvotingpass.digitalvotingpass.DocumentData;
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.digitalvotingpass.ResultActivity;
 import com.digitalvotingpass.digitalvotingpass.Voter;
+import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.utilities.Util;
+import com.google.gson.Gson;
 
 import org.bitcoinj.core.AssetBalance;
+import org.bitcoinj.core.Transaction;
 import org.jmrtd.PassportService;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.PublicKey;
 import java.security.Security;
+import java.util.ArrayList;
 
 public class PassportConActivity extends AppCompatActivity {
 
@@ -163,12 +169,21 @@ public class PassportConActivity extends AppCompatActivity {
             byte[] signedData = pcon.signData(Util.hexStringToByteArray("0a1b3c4d5e6faabb"));
             progressView.setImageResource(R.drawable.nfc_icon_3);
 
-//            BlockChain bc = BlockChain.getInstance();
-//            AssetBalance balance  = bc.getVotingPassBalance(pubKey);
-//            bc.confirmVotingPass(balance, pcon);
+
+            SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
+            Gson gson = new Gson();
+            String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
+            Election election = gson.fromJson(json, Election.class);
+
+
+
+            BlockChain bc = BlockChain.getInstance();
+            AssetBalance balance = bc.getVotingPassBalance(pubKey, election.getAsset());
+
+            ArrayList<byte[]> signedTransactions = bc.getSpendUtxoTransactions(balance, pcon);
 
             // when all data is loaded start ResultActivity
-            startResultActivity(pubKey, signedData, voter);
+            startResultActivity(pubKey, signedTransactions, voter);
         } catch (Exception ex) {
             ex.printStackTrace();
             Toast.makeText(this, R.string.NFC_error, Toast.LENGTH_LONG).show();
@@ -186,16 +201,16 @@ public class PassportConActivity extends AppCompatActivity {
      * Method to start the ResultActivity once all the data is loaded.
      * Creates new intent with the read data
      * @param pubKey The public key.
-     * @param signedData Signed data.
+     * @param signedTransactions Signed data.
      * @param voter The voter.
      */
-    public void startResultActivity(PublicKey pubKey, byte[] signedData, Voter voter) {
-        if(pubKey != null && signedData != null) {
+    public void startResultActivity(PublicKey pubKey, ArrayList<byte[]> signedTransactions, Voter voter) {
+        if(pubKey != null && signedTransactions != null) {
 
             Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
             intent.putExtra("voter", voter);
             intent.putExtra("pubKey", pubKey);
-            intent.putExtra("signedData", signedData);
+            intent.putExtra("signedTransactions", signedTransactions);
             startActivity(intent);
             finish();
         } else {

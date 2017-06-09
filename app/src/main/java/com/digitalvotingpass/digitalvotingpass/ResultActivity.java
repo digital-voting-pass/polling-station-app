@@ -3,6 +3,7 @@ package com.digitalvotingpass.digitalvotingpass;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -22,8 +23,11 @@ import com.google.gson.Gson;
 import net.sf.scuba.data.Gender;
 
 import org.bitcoinj.core.Asset;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionConfidence;
 
 import java.security.PublicKey;
+import java.util.ArrayList;
 
 public class ResultActivity extends AppCompatActivity {
     private TextView textAuthorization;
@@ -38,8 +42,12 @@ public class ResultActivity extends AppCompatActivity {
     private final int FAILED = 0;
     private final int WAITING = 1;
     private final int SUCCES = 2;
+    private final int CONFIRMED = 3;
+    private int votingPasses;
     private PublicKey pubKey;
     private Asset mcAsset;
+    private ArrayList<byte[]> signedTransactions;
+    private ArrayList<Transaction> pendingTransactions;
 
 
     @Override
@@ -55,6 +63,7 @@ public class ResultActivity extends AppCompatActivity {
         mcAsset = gson.fromJson(json, Election.class).getAsset();
 
         pubKey = (PublicKey) extras.get("pubKey");
+        signedTransactions = (ArrayList<byte[]>) extras.get("signedTransactions");
 
         setContentView(R.layout.activity_result);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
@@ -123,7 +132,6 @@ public class ResultActivity extends AppCompatActivity {
     public void handleData(Bundle extras) {
         Voter voter = (Voter) extras.get("voter");
         String preamble = createPreamble(voter);
-        int votingPasses;
         if(pubKey != null && mcAsset != null) {
             votingPasses = BlockChain.getInstance().getVotingPassAmount(pubKey, mcAsset);
         } else {
@@ -209,6 +217,17 @@ public class ResultActivity extends AppCompatActivity {
                     cancelAction.setVisible(true);
                 }
                 break;
+            case CONFIRMED:
+                Resources res = getResources();
+                String text = res.getQuantityString(R.plurals.authorization_confirmed, votingPasses, votingPasses);
+                textAuthorization.setTextColor(getResources().getColor(R.color.greenSucces));
+                textAuthorization.setText(text);
+                textAuthorization.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.approve,0);
+                butProceed.setText(R.string.proceed_home);
+                if(cancelAction != null) {
+                    cancelAction.setVisible(true);
+                }
+                break;
             default:
                 textAuthorization.setTextColor(getResources().getColor(R.color.orangeWait));
                 textAuthorization.setText(R.string.authorization_wait);
@@ -244,8 +263,47 @@ public class ResultActivity extends AppCompatActivity {
      * TODO: implement this method
      */
     public void confirmVote() {
-        Toast.makeText(this, "Transaction sent", Toast.LENGTH_LONG).show();
-        butProceed.setText(R.string.proceed_home);
+        this.pendingTransactions = BlockChain.getInstance().broadcastTransactions(signedTransactions);
+        Toast.makeText(this, "Broadcasting transactions" +
+                "", Toast.LENGTH_LONG).show();
+        setAuthorizationStatus(this.WAITING);
+        butProceed.setText(R.string.waiting_confirmation);
+        attachTransactionListeners();
+    }
+
+    /**
+     * Sets listeners on the pending transactions to keep an eye on the confirmations.
+     */
+    public void attachTransactionListeners() {
+        for (Transaction pendingTx : this.pendingTransactions) {
+            pendingTx.getConfidence().addEventListener(new TransactionConfidence.Listener() {
+                @Override
+                public void onConfidenceChanged(TransactionConfidence transactionConfidence, ChangeReason changeReason) {
+                    if (checkAllPendingConfirmed()) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setAuthorizationStatus(CONFIRMED);
+                                ((TextView) findViewById(R.id.voting_pass_amount)).setText("0");
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * Checks if every pending transaction has at least one confirmation.s
+     * @return
+     */
+    public boolean checkAllPendingConfirmed() {
+        for (Transaction tx : pendingTransactions) {
+            if (tx.getConfidence().getDepthInBlocks() < 1) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

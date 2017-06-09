@@ -15,6 +15,7 @@ import org.bitcoinj.core.AssetBalance;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerAddress;
 import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionConfidence;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MultiChainParams;
@@ -142,35 +143,51 @@ public class BlockChain {
      * @param balance
      * @param pcon
      */
-    public void confirmVotingPass(AssetBalance balance, PassportConnection pcon) {
+    public ArrayList<byte[]> getSpendUtxoTransactions(AssetBalance balance, PassportConnection pcon) {
+        ArrayList<byte[]> transactions = new ArrayList<byte[]>();
+
         for (TransactionOutput utxo : balance) {
-            this.spendUtxo(utxo, this.masterAddress, pcon);
+            transactions.add(getSpendUtxoTransaction(utxo, masterAddress, pcon));
         }
+        return transactions;
     }
 
     /**
-     * Create a new transaction, signes it with the travel document and broadcasts it to the
-     * network.
+     * Create a new transaction, signes it with the travel document.
      * @param utxo
      * @param destination
      * @param pcon
      */
-    public void spendUtxo(TransactionOutput utxo, Address destination, PassportConnection pcon) {
-
-        Transaction tx = new PassportTransactionFormatter(utxo, destination)
-                .buildAndSign(pcon)
-                .getTransaction(params);
-
-        final Wallet.SendResult result = new Wallet.SendResult();
-        result.tx = tx;
-        result.broadcast = kit.peerGroup().broadcastTransaction(tx);
-        result.broadcastComplete = result.broadcast.future();
-
-        result.broadcastComplete.addListener(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("Asset spent! txid: " + result.tx.getHashAsString());
-            }
-        }, MoreExecutors.directExecutor());
+    public byte[] getSpendUtxoTransaction(TransactionOutput utxo, Address destination, PassportConnection pcon) {
+        return new PassportTransactionFormatter(utxo, destination)
+                .buildAndSign(pcon);
     }
+
+
+    /**
+     * Broadcasts the list of signed transactions.
+     * @param transactions
+     */
+    public ArrayList<Transaction> broadcastTransactions(ArrayList<byte[]> transactionsRaw) {
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        for (byte[] transactionRaw : transactionsRaw) {
+            final Wallet.SendResult result = new Wallet.SendResult();
+            result.tx = new Transaction(params, transactionRaw);
+
+            result.broadcast = kit.peerGroup().broadcastTransaction(result.tx);
+            result.broadcastComplete = result.broadcast.future();
+
+            result.broadcastComplete.addListener(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("Asset spent! txid: " + result.tx.getHashAsString());
+                }
+            }, MoreExecutors.directExecutor());
+
+            transactions.add(result.tx);
+        }
+        return transactions;
+    }
+
+
 }
