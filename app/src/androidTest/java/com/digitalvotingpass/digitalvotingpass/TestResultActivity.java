@@ -7,7 +7,6 @@ import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-
 import net.sf.scuba.data.Gender;
 
 import org.junit.After;

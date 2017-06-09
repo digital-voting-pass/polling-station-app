@@ -1,8 +1,5 @@
 package com.digitalvotingpass.utilities;
 
-import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
-import com.digitalvotingpass.utilities.Util;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

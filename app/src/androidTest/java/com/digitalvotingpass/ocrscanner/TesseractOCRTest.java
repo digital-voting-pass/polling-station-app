@@ -15,7 +15,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class TesseractOCRTest {
     private TesseractOCR tesseractOCR;
