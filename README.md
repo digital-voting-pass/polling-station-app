@@ -6,9 +6,9 @@
 
 Part of a [Delft Unversity of Technology](https://www.tudelft.nl) bachelor's thesis about the digitalization of the voting pass for Dutch elections using **blockchain** and **machine readable travel documents**.
 
-The scope of this project is limited to the [voting pass](https://nl.wikipedia.org/wiki/Stempas) only. After the suffrage is verified, a ballot is handed out and the process continues in a traditional way (by pencil and paper).
+The scope of this project is limited to the [voting pass](https://nl.wikipedia.org/wiki/Stempas) only and forms one step towards the digitalization of the entire voting process. 
 
-This app is used at the polling station. An official uses it to scan a voter's travel document to verify and redeem the suffrage, which is all stored on the blockchain.
+This app is intended for use at the polling station. An official scans a voter's travel document to verify and redeem the suffrage, which process is stored on the blockchain and can be verifed by anyone. After the suffrage is verified, a ballot is handed out and the voting process continues in a traditional way (by pencil and paper). 
 
 [<img src="https://user-images.githubusercontent.com/2787511/27002571-8d902bb8-4de5-11e7-94d5-da48a4209fdc.gif" width="350" />]()
 
@@ -42,7 +42,7 @@ See also the list of [contributors](https://github.com/digital-voting-pass/digit
 This project is licensed under the LGPL License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
-
-* Hat tip to anyone who's code was used
+We would like to give special thanks to:
 * Johan Pouwelse ([synctext](https://github.com/synctext)) for his guidance and blockchain expertise
 * Milvum ([milvum.com](https://www.milvum.com)) for the resources they provided
+* Anyone who's code was used for those great building blocks
