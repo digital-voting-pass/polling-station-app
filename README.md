@@ -32,7 +32,7 @@ This server also hosts a blockchain explorer, which can be accesses here: [http:
 * **Jonathan Raes** - [jonathanraes](https://github.com/jonathanraes)
 * **Rico Tubbing** - [klikooo](https://github.com/klikooo)
 
-See also the list of [contributors](https://github.com/digital-voting-pass/digital-voting-pass-appgit/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/digital-voting-pass/digital-voting-pass-app/contributors) who participated in this project.
 
 ## License
 
