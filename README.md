@@ -21,6 +21,7 @@ Connects to 188.226.149.56, which acts as a node in the digital voting pass bloc
 * [Android studio](https://developer.android.com/studio/index.html) - The IDE used
 * [jMRTD](http://jmrtd.org/) - The library for reading the epassport chip
 * [Tesseract](https://github.com/tesseract-ocr/tesseract) - OCR library for reading the MRZ
+* [Bitcoinj](https://bitcoinj.github.io/) - Blockchain node library
 
 
 ## Authors
