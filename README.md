@@ -30,7 +30,7 @@ Connects to 188.226.149.56, which acts as a node in the digital voting pass bloc
 * **Jonathan Raes** - [jonathanraes](https://github.com/jonathanraes)
 * **Rico Tubbing** - [klikooo](https://github.com/klikooo)
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/digital-voting-pass/digital-voting-pass-appgit/contributors) who participated in this project.
 
 ## License
 
