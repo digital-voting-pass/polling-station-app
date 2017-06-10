@@ -274,7 +274,7 @@ public class ResultActivity extends AppCompatActivity {
                 break;
             case SUCCES:
                 showSnack(
-                    getResources().getText(R.string.authorization_succesful),
+                    getResources().getQuantityString(R.plurals.authorization_succesful, votingPasses),
                     R.color.govLightBlue,
                     R.color.govDarkBlue
                 );
