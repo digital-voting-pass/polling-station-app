@@ -7,7 +7,7 @@
 Part of the TU Delft Bachelor project about the digitalization of the voting pass for Dutch elections using blockchain and machine readable travel documents.
 This app is used at the polling station by scanning a travel document to verify and redeem the suffrage, which is stored on the blockchain.
 
-[<img src="https://user-images.githubusercontent.com/2787511/27002393-5b9e1038-4de1-11e7-936a-2f19dc216d5e.gif" width="250" />]()
+[<img src="https://user-images.githubusercontent.com/2787511/27002393-5b9e1038-4de1-11e7-936a-2f19dc216d5e.gif" width="350" />]()
 
 ## Getting Started
 
