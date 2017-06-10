@@ -1,11 +1,14 @@
-# Digital voting pass app
+# Digital Voting Pass App
 
 [![platform](https://img.shields.io/badge/platform-Android-green.svg)](https://www.android.com)
 [![Build Status](https://travis-ci.org/digital-voting-pass/digital-voting-pass-app.svg?branch=develop)](https://travis-ci.org/digital-voting-pass/digital-voting-pass-app)
 
 
-Part of the TU Delft Bachelor project about the digitalization of the voting pass for Dutch elections using blockchain and machine readable travel documents.
-This app is used at the polling station by scanning a travel document to verify and redeem the suffrage, which is stored on the blockchain.
+Part of a [Delft Unversity of Technology](https://www.tudelft.nl) bachelor's thesis about the digitalization of the voting pass for Dutch elections using **blockchain** and **machine readable travel documents**.
+
+The scope of this project is limited to the [voting pass](https://nl.wikipedia.org/wiki/Stempas) only. After the suffrage is verified, a ballot is handed out and the process continues in a traditional way (by pencil and paper).
+
+This app is used at the polling station. An official uses it to scan a voter's travel document to verify and redeem the suffrage, which is all stored on the blockchain.
 
 [<img src="https://user-images.githubusercontent.com/2787511/27002571-8d902bb8-4de5-11e7-94d5-da48a4209fdc.gif" width="350" />]()
 
@@ -41,5 +44,5 @@ This project is licensed under the LGPL License - see the [LICENSE.md](LICENSE.m
 ## Acknowledgments
 
 * Hat tip to anyone who's code was used
-* Inspiration
-* etc
+* Johan Pouwelse ([synctext](https://github.com/synctext)) for his guidance and blockchain expertise
+* Milvum ([milvum.com](https://www.milvum.com)) for the resources they provided
