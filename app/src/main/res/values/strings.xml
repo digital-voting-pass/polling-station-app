@@ -45,11 +45,17 @@
     <string name="edit_election">Edit election</string>
 
     <string name="proceed_home">Next voter</string>
+    <string name="waiting_confirmation">Waiting for confirmation</string>
     <string name="proceed_cast_vote">Confirm vote</string>
     <string name="cancel_vote">Cancel vote</string>
 
     <string name="authorization_failed">Authorization failed, do not hand out voting ballot.</string>
-    <string name="authorization_succesful">Authorization succesful, hand out voting ballot.</string>
+    <string name="authorization_succesful">Authorization succesful, please confirm.</string>
+    <string name="authorization_confirmed"></string>
+    <plurals name="authorization_confirmed">
+        <item quantity="one">Voting pass succesfully spent, please hand out %1$d voting ballot</item>
+        <item quantity="other">Voting pass(es) succesfully spent, please hand out %1$d voting ballot</item>
+    </plurals>
     <string name="authorization_wait">Waiting for authorization.</string>
     <string name="address_not_found">This document is not registered for digital voting.</string>
 
