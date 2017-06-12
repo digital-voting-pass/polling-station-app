@@ -1,8 +1,6 @@
 package com.digitalvotingpass.ocrscanner;
 
-import com.digitalvotingpass.digitalvotingpass.MainActivity;
-
-import java.util.HashMap;
+import com.digitalvotingpass.digitalvotingpass.DocumentData;
 
 /**
  * Created by jonathan on 5/16/17.
@@ -17,6 +15,7 @@ public class Mrz {
     private static final int[] ID_DOCNO_INDICES = new int[]{5, 14};
     private static final int[] ID_DOB_INDICES = new int[]{0, 6};
     private static final int[] ID_EXP_INDICES = new int[]{8, 14};
+    private static final int[] PASSPORT_PERSONAL_NUMBER_INDICES = new int[]{28, 42};
 
     private String mrz;
 
@@ -71,19 +70,19 @@ public class Mrz {
     }
 
     /**
-     * Returns relevant data from the MRZ in a hashmap.
-     * @return hashmap
+     * Returns relevant data from the MRZ in a DocumentData object.
+     * @return DocumentData object
      */
-    public HashMap<String, String> getPrettyData() {
-        HashMap<String, String> data = new HashMap<>();
+    public DocumentData getPrettyData() {
+        DocumentData data = new DocumentData();
         if (mrz.startsWith("P")) {
-            data.put(MainActivity.DOCUMENT_NUMBER, mrz.split("\n")[1].substring(PASSPORT_DOCNO_INDICES[0], PASSPORT_DOCNO_INDICES[1]));
-            data.put(MainActivity.DATE_OF_BIRTH, mrz.split("\n")[1].substring(PASSPORT_DOB_INDICES[0], PASSPORT_DOB_INDICES[1]));
-            data.put(MainActivity.EXPIRATION_DATE, mrz.split("\n")[1].substring(PASSPORT_EXP_INDICES[0],PASSPORT_EXP_INDICES[1]));
+            data.setDocumentNumber(mrz.split("\n")[1].substring(PASSPORT_DOCNO_INDICES[0], PASSPORT_DOCNO_INDICES[1]));
+            data.setDateOfBirth(mrz.split("\n")[1].substring(PASSPORT_DOB_INDICES[0], PASSPORT_DOB_INDICES[1]));
+            data.setExpiryDate(mrz.split("\n")[1].substring(PASSPORT_EXP_INDICES[0],PASSPORT_EXP_INDICES[1]));
         } else if (mrz.startsWith("I")) {
-            data.put(MainActivity.DOCUMENT_NUMBER, mrz.split("\n")[0].substring(ID_DOCNO_INDICES[0],ID_DOCNO_INDICES[1]));
-            data.put(MainActivity.DATE_OF_BIRTH, mrz.split("\n")[1].substring(ID_DOB_INDICES[0],ID_DOB_INDICES[1]));
-            data.put(MainActivity.EXPIRATION_DATE, mrz.split("\n")[1].substring(ID_EXP_INDICES[0],ID_EXP_INDICES[1]));
+            data.setDocumentNumber(mrz.split("\n")[0].substring(ID_DOCNO_INDICES[0],ID_DOCNO_INDICES[1]));
+            data.setDateOfBirth(mrz.split("\n")[1].substring(ID_DOB_INDICES[0],ID_DOB_INDICES[1]));
+            data.setExpiryDate(mrz.split("\n")[1].substring(ID_EXP_INDICES[0],ID_EXP_INDICES[1]));
         }
         return data;
     }
@@ -117,7 +116,7 @@ public class Mrz {
         boolean firstCheck = checkSum(mrz.split("\n")[1], new int[][]{PASSPORT_DOCNO_INDICES}, 9); // Checks document number
         boolean secondCheck = checkSum(mrz.split("\n")[1], new int[][]{PASSPORT_DOB_INDICES}, 19);
         boolean thirdCheck = checkSum(mrz.split("\n")[1], new int[][]{PASSPORT_EXP_INDICES}, 27);
-        boolean fourthCheck = true;//may be <? checkSum(mrz.split("\n")[1], new int[][]{{13, 19}}, 19);
+        boolean fourthCheck = checkSum(mrz.split("\n")[1], new int[][]{PASSPORT_PERSONAL_NUMBER_INDICES}, 42);
         boolean fifthCheck = checkSum(mrz.split("\n")[1], new int[][]{{0, 10}, {13, 20}, {21, 43}}, 43);
         return firstCheck && secondCheck && thirdCheck && fourthCheck && fifthCheck;
     }

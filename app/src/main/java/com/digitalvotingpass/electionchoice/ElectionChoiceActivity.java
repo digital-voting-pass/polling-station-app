@@ -1,10 +1,12 @@
 package com.digitalvotingpass.electionchoice;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -13,8 +15,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.utilities.Util;
+import com.google.gson.Gson;
+
+import org.bitcoinj.core.Asset;
 
 import java.util.ArrayList;
 
@@ -33,30 +40,72 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
         getSupportActionBar().setTitle(getString(R.string.election_choice));
+        Util.setupAppBar(appBar, this);
 
         electionListView = (ListView) findViewById(R.id.election_list);
-
-        // create a election array with all the elections and add them to the list
-        // TODO: handle actual election choice input data
-        ArrayList<Election> electionChoices = new ArrayList<>();
-        electionChoices.add(new Election("Gemeenteraadsverkiezing", "Delft"));
-        electionChoices.add(new Election("Gemeenteraadsverkiezing", "Rotterdam"));
-        electionChoices.add(new Election("Provinciale Statenverkiezing", "Zuid-Holland"));
-
-        electionsAdapter = new ElectionsAdapter(this, electionChoices);
-        electionListView.setAdapter(electionsAdapter);
-
+        try {
+            electionsAdapter = new ElectionsAdapter(this, loadElections(BlockChain.getInstance(null).getAssets()));
+            electionListView.setAdapter(electionsAdapter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         electionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                Intent intent = new Intent(thisActivity, MainActivity.class);
-                // Get the election associated with the clicked listItem
-                Election election = (Election) parent.getItemAtPosition(position);
-                intent.putExtra("election", election);
-                startActivity(intent);
+                // Get the election associated with the clicked listItem and save it to sharedpreferences
+                saveElection((Election) parent.getItemAtPosition(position));
+
+                // If the activity was not started for result (from mainactivity) start mainActivity.
+                // Otherwise finish this activity to return to mainactivity and set flag that something changed.
+                if(getCallingActivity() == null) {
+                    Intent intent = new Intent(thisActivity, MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    thisActivity.setResult(Activity.RESULT_OK, new Intent());
+                    finish();
+                }
             }
         });
+    }
+
+    public ElectionsAdapter getAdapter() {
+        return electionsAdapter;
+    }
+
+    /**
+     * Saves an election object to the sharedpreferences so other activities can access it.
+     * @param election
+     */
+    private void saveElection(Election election) {
+        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = sharedPrefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(election);
+        prefsEditor.putString(getString(R.string.shared_preferences_key_election), json);
+        prefsEditor.commit();
+    }
+
+    /**
+     * Creates an election array by getting all the assets available on the blockchain and add them to the list.
+     * Sets the kind field of an Election object based on the prefix found in the asset name
+     * T_ = R.string.tweedekamer
+     * P_ = R.string.provinciaal
+     * G_ = R.string.gemeente
+     * W_ = R.string.waterschap
+     *
+     * Asset name must be of the format "K_Place"
+     *
+     * Sets the place field of an Election object based on the asset name
+     * @Param assetList - a list of asset from which Election objects can be created
+     * @return electionChoices - a list of current elections that can be chosen from
+     */
+    public ArrayList<Election> loadElections(ArrayList<Asset> assetList) {
+        ArrayList<Election> electionChoices = new ArrayList<>();
+        for(Asset a : assetList) {
+            electionChoices.add(Election.parseElection(a, getApplicationContext()));
+        }
+        return electionChoices;
     }
 
     /**

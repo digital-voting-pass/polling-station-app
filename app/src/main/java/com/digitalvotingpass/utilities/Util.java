@@ -1,14 +1,58 @@
 package com.digitalvotingpass.utilities;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+
+import com.digitalvotingpass.digitalvotingpass.R;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Util {
+
+
+    public static final String FOLDER_DIGITAL_VOTING_PASS = "DigitalVotingPass";
+
+
+    /**
+     * Returns the height of the status bar in pixels
+     * @param resources Resources object required to get the height attribute.
+     * @return int
+     */
+    public static int getStatusBarHeight(Resources resources) {
+        int result = 0;
+        int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = resources.getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    /**
+     * Sets up a top-padding for the given app bar equal to the height of the status bar.
+     * This increases the length of the app bar so it fits nicely below the status bar.
+     * This method also sets the status bar transparency.
+     * @param appBar Toolbar to set padding to
+     * @param activity Activity - current activity
+     */
+    public static void setupAppBar(Toolbar appBar, Activity activity) {
+        appBar.setPadding(0, getStatusBarHeight(activity.getResources()), 0, 0);
+
+        SystemBarTintManager tintManager = new SystemBarTintManager(activity);
+        tintManager.setStatusBarTintEnabled(true);
+        tintManager.setNavigationBarTintEnabled(true);
+        tintManager.setTintColor(Color.parseColor("#10000000"));
+    }
 
     /**
      * Copies an InputStream into a File.
@@ -42,8 +86,8 @@ public class Util {
             ex.printStackTrace();
         }
     }
-    
-        /**
+
+    /**
      * Method for converting a hexString to a byte array.
      * This method is used for signing transaction hashes (which are in hex).
      */
@@ -77,5 +121,15 @@ public class Util {
             return new String(hexChars);
         }
         return "";
+    }
+
+    public static Map<String, String> getKeyValueFromStringArray(Context ctx) {
+        String[] array = ctx.getResources().getStringArray(R.array.address_array);
+        Map<String, String> result = new HashMap<>();
+        for (String str : array) {
+            String[] splittedItem = str.split("\\|");
+            result.put(splittedItem[0], splittedItem[1]);
+        }
+        return result;
     }
 }

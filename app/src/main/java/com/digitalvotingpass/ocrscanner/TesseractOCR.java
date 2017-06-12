@@ -23,7 +23,12 @@ public class TesseractOCR {
     private static final long INTER_SCAN_DELAY_MILLIS = 500;
     private static final long OCR_SCAN_TIMEOUT_MILLIS = 5000;
 
-    private static final String trainedData = "eng.traineddata";
+    private static final String trainedData = "ocrb.traineddata";
+
+    private static final String FOLDER_TESSERACT_DATA = "tessdata";
+    private static final String TRAINED_DATA_EXTENSION = ".traineddata";
+
+
     private final String name;
 
     private TessBaseAPI baseApi;
@@ -34,8 +39,8 @@ public class TesseractOCR {
 
     private AssetManager assetManager;
     private Camera2BasicFragment fragment;
-    private boolean stopping = false;
-    private boolean isInitialized = false;
+    public boolean stopping = false;
+    public boolean isInitialized = false;
 
     // Filled with OCR run times for analysis
     private ArrayList<Long> times = new ArrayList<>();
@@ -131,12 +136,13 @@ public class TesseractOCR {
 
     /**
      * Initializes Tesseract library using traineddata file.
+     * Should not be called directly, is public for testing.
      */
-    private void init() {
+    public void init() {
         baseApi = new TessBaseAPI();
         baseApi.setDebug(true);
-        String path = Environment.getExternalStorageDirectory() + "/";
-        File trainedDataFile = new File(Environment.getExternalStorageDirectory(), "/tessdata/" + trainedData);
+        String path = Environment.getExternalStorageDirectory() + "/" + Util.FOLDER_DIGITAL_VOTING_PASS + "/";
+        File trainedDataFile = new File(path, TesseractOCR.FOLDER_TESSERACT_DATA + "/" + trainedData);
         try {
             mDeviceStorageAccessLock.acquire();
             if (!trainedDataFile.exists()) {
@@ -146,7 +152,7 @@ public class TesseractOCR {
                 Log.i(TAG, "Existing trained data found");
             }
             mDeviceStorageAccessLock.release();
-            baseApi.init(path, trainedData.replace(".traineddata", "")); //extract language code from trained data file
+            baseApi.init(path, trainedData.replace(TesseractOCR.TRAINED_DATA_EXTENSION, "")); //extract language code from trained data file
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             //TODO show error to user, coping failed
@@ -155,10 +161,11 @@ public class TesseractOCR {
 
     /**
      * Performs OCR scan to bitmap provided, if tesseract is initialized and not currently stopping.
+     * Should not be called directly, is public for testing.
      * @param bitmap Bitmap image to be scanned
      * @return Mrz Object containing result data
      */
-    private Mrz ocr(Bitmap bitmap) {
+    public Mrz ocr(Bitmap bitmap) {
         if (bitmap == null) return null;
         if (isInitialized && !stopping) {
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -167,17 +174,7 @@ public class TesseractOCR {
             baseApi.setImage(bitmap);
             baseApi.setVariable("tessedit_char_whitelist",
                     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<");
-            baseApi.setVariable("max_permuter_attempts", "20");//Sets the max no. of tries TODO try some more values
-//            baseApi.setVariable("load_freq_dawg", "0");
-//            baseApi.setVariable("load_system_dawg", "0");
-//            baseApi.setVariable("load_punc_dawg", "0");
-            baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO);
-//            baseApi.setVariable(TessBaseAPI.OEM_TESSERACT_ONLY, "1");
-//            String s = baseApi.getHOCRText(0);
             String recognizedText = baseApi.getUTF8Text();
-//            recognizedText = recognizedText.replaceAll("<.*?>","");
-//            recognizedText = recognizedText.replaceAll("&lt;", "<");
-//            recognizedText = recognizedText.replaceAll("^$", "");
             Log.v(TAG, "OCR Result: " + recognizedText);
             return new Mrz(recognizedText);
         } else {

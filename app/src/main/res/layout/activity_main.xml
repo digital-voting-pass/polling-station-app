@@ -11,7 +11,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="@dimen/actionBarHeight"
         android:background="@color/govDarkBlue"
         android:elevation="4dp"
         android:theme="@style/AppBarOverlay"
@@ -28,8 +28,8 @@
             android:id="@+id/start_ocr"
             android:layout_height="@dimen/large_button"
             android:layout_width="@dimen/large_button"
-            android:layout_marginTop="30dp"
-            android:padding="24dp"
+            android:paddingTop="45dp"
+            android:paddingBottom="15dp"
             android:background="@drawable/blue_button"
             android:drawableTop="@drawable/scan_passport_icon"
             android:gravity="bottom|center"
@@ -51,20 +51,15 @@
             android:layout_height="@dimen/large_button"
             android:layout_width="@dimen/large_button"
             android:layout_gravity="center"
-            android:padding="24dp"
+            android:paddingTop="35dp"
+            android:paddingBottom="15dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
             android:background="@drawable/blue_button"
             android:drawableTop="@drawable/manual_input_icon"
             android:gravity="bottom|center"
             android:textColor="@android:color/white"
             android:text="@string/manual_input_button"/>
-
-        <Button
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:text="@string/start_con_button"
-            android:onClick="startReading" />
 
     </LinearLayout>
 </LinearLayout>

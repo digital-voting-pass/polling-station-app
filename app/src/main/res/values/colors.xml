@@ -12,6 +12,8 @@
     <color name="grey">#a0acacac</color>
     <color name="green">#00ff00</color>
     <color name="white">#ffffff</color>
+    <color name="transparent">#00000000</color>
+    <color name="statusBar">#20000000</color>
 
     <color name="govDarkBlue">#01689b</color>
     <color name="govDarkBluePressed">#01517a</color>
@@ -20,7 +22,7 @@
     <color name="govTextBlue">#01689b</color>
     <color name="govLightGray">#f3f3f3</color>
 
-    <color name="redFailed">#d52b1e</color>
+    <color name="redFailed">#ab251b</color>
     <color name="orangeWait">#b08800</color>
     <color name="greenSucces">#328a3b</color>
 </resources>
