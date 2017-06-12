@@ -8,20 +8,17 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.digitalvotingpass.blockchain.BlockChain;
-import com.digitalvotingpass.digitalvotingpass.Voter;
 import com.digitalvotingpass.digitalvotingpass.DocumentData;
 import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.ManualInputActivity;
@@ -33,11 +30,8 @@ import com.digitalvotingpass.utilities.Util;
 import com.google.gson.Gson;
 
 import org.bitcoinj.core.AssetBalance;
-import org.bitcoinj.core.Transaction;
 import org.jmrtd.PassportService;
-import org.spongycastle.jce.provider.BouncyCastleProvider;
 
-import java.security.InvalidParameterException;
 import java.security.PublicKey;
 import java.security.Security;
 import java.util.ArrayList;
@@ -181,7 +175,7 @@ public class PassportConActivity extends AppCompatActivity {
                 String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
                 Election election = gson.fromJson(json, Election.class);
 
-                BlockChain bc = BlockChain.getInstance();
+                BlockChain bc = BlockChain.getInstance(null);
                 AssetBalance balance = bc.getVotingPassBalance(pubKey, election.getAsset());
 
                 ArrayList<byte[]> signedTransactions = bc.getSpendUtxoTransactions(balance, pcon);

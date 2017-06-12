@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.androidadvance.topsnackbar.TSnackbar;
 import com.digitalvotingpass.blockchain.BlockChain;
@@ -85,7 +84,6 @@ public class ResultActivity extends AppCompatActivity {
         Gson gson = new Gson();
         String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
         mcAsset = gson.fromJson(json, Election.class).getAsset();
-
         pubKey = (PublicKey) extras.get("pubKey");
         signedTransactions = (ArrayList<byte[]>) extras.get("signedTransactions");
 
@@ -93,7 +91,6 @@ public class ResultActivity extends AppCompatActivity {
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
         Util.setupAppBar(appBar, this);
-
         textVoterName = (TextView) findViewById(R.id.voter_name);
         textVotingPassAmount = (TextView) findViewById(R.id.voting_pass_amount);
         textVotingPasses = (TextView) findViewById(R.id.voting_passes);
@@ -104,6 +101,7 @@ public class ResultActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(thisActivity, TransactionHistoryActivity.class);
+                intent.putExtra("pubKey", pubKey);
                 startActivity(intent);
             }
         });
@@ -189,25 +187,29 @@ public class ResultActivity extends AppCompatActivity {
     public void handleData(Bundle extras) {
         Voter voter = (Voter) extras.get("voter");
         String preamble = createPreamble(voter);
+        try {
         if(pubKey != null && mcAsset != null) {
-            votingPasses = BlockChain.getInstance().getVotingPassAmount(pubKey, mcAsset);
+            votingPasses = BlockChain.getInstance(null).getVotingPassAmount(pubKey, mcAsset);
         } else {
             votingPasses = 0;
         }
-        if(votingPasses == 0) {
-            setAuthorizationStatus(FAILED);
-        } else {
-            setAuthorizationStatus(SUCCES);
-        }
+            if(votingPasses == 0) {
+                setAuthorizationStatus(FAILED);
+            } else {
+                setAuthorizationStatus(SUCCES);
+            }
 
-        textVoterName.setText(getString(R.string.has_right, preamble));
-        // display singular or plural form of voting passes based on amount
-        if(votingPasses == 1) {
-            textVotingPasses.setText(R.string.voting_pass);
-        } else {
-            textVotingPasses.setText(R.string.voting_passes);
+            textVoterName.setText(getString(R.string.has_right, preamble));
+            // display singular or plural form of voting passes based on amount
+            if(votingPasses == 1) {
+                textVotingPasses.setText(R.string.voting_pass);
+            } else {
+                textVotingPasses.setText(R.string.voting_passes);
+            }
+            textVotingPassAmount.setText(Integer.toString(votingPasses));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        textVotingPassAmount.setText(Integer.toString(votingPasses));
     }
 
     /**
@@ -328,10 +330,14 @@ public class ResultActivity extends AppCompatActivity {
      * TODO: implement this method
      */
     public void confirmVote() {
-        this.pendingTransactions = BlockChain.getInstance().broadcastTransactions(signedTransactions);
-        setAuthorizationStatus(this.WAITING);
-        butProceed.setText(R.string.waiting_confirmation);
-        attachTransactionListeners();
+        try {
+            this.pendingTransactions = BlockChain.getInstance(null).broadcastTransactions(signedTransactions);
+            setAuthorizationStatus(this.WAITING);
+            butProceed.setText(R.string.waiting_confirmation);
+            attachTransactionListeners();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
