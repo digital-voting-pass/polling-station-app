@@ -2,17 +2,25 @@ package com.digitalvotingpass.blockchain;
 
 import android.os.Environment;
 
+import com.digitalvotingpass.passportconnection.PassportConnection;
+import com.digitalvotingpass.passportconnection.PassportTransactionFormatter;
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.digitalvotingpass.utilities.Util;
 import com.google.common.util.concurrent.Service;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Asset;
+import org.bitcoinj.core.AssetBalance;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerAddress;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionConfidence;
+import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MultiChainParams;
 import org.bitcoinj.utils.BriefLogFormatter;
+import org.bitcoinj.wallet.Wallet;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -27,6 +35,7 @@ public class BlockChain {
     private WalletAppKit kit;
     private BlockchainCallBackListener listener;
     private boolean initialized = false;
+    private ProgressTracker progressTracker;
 
     private InetAddress peeraddr;
     private long addressChecksum = 0xcc350cafL;
@@ -39,10 +48,12 @@ public class BlockChain {
             addressChecksum,
             0xf5dec1feL
     );
+    private Address masterAddress = Address.fromBase58(params, "1GoqgbPZUV2yuPZXohtAvB2NZbjcew8Rk93mMn");
 
     private BlockChain() {
         try {
             peeraddr = InetAddress.getByName(PEER_IP);
+            progressTracker = new ProgressTracker();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -55,10 +66,20 @@ public class BlockChain {
         return instance;
     }
 
-    public void setCallBackListener(BlockchainCallBackListener listener) {
-        this.listener = listener;
-        if (kit != null && listener != null)
-            kit = kit.setDownloadListener(new ProgressTracker(listener));
+    /**
+     * Add a listener.
+     * @param listener The listener.
+     */
+    public void addListener(BlockchainCallBackListener listener) {
+        progressTracker.addListener(listener);
+    }
+
+    /**
+     * Remove a listener.
+     * @param listener a listener.
+     */
+    public void removeListener(BlockchainCallBackListener listener) {
+        progressTracker.removeListener(listener);
     }
 
     public void startDownload() {
@@ -71,8 +92,9 @@ public class BlockChain {
             }
             kit = new WalletAppKit(params, walletFile, filePrefix);
 
-            if (listener != null)
-                kit = kit.setDownloadListener(new ProgressTracker(listener));
+            //set the observer
+            kit.setDownloadListener(progressTracker);
+
             kit.setBlockingStartup(false);
 
             PeerAddress peer = new PeerAddress(params, peeraddr);
@@ -120,5 +142,67 @@ public class BlockChain {
         }
         return false;
     }
+
+    /**
+     * Get the balance of a public key based on the information on the blockchain.
+     * @param pubKey
+     * @return
+     */
+    public AssetBalance getVotingPassBalance(PublicKey pubKey, Asset asset) {
+        Address address = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
+        return kit.wallet().getAssetBalance(asset, address);
+    }
+
+    /**
+     * Spends all outputs in this balance to the master address.
+     * @param balance
+     * @param pcon
+     */
+    public ArrayList<byte[]> getSpendUtxoTransactions(AssetBalance balance, PassportConnection pcon) throws Exception{
+        ArrayList<byte[]> transactions = new ArrayList<byte[]>();
+
+        for (TransactionOutput utxo : balance) {
+            transactions.add(utxoToSignedTransaction(utxo, masterAddress, pcon));
+        }
+        return transactions;
+    }
+
+    /**
+     * Create a new transaction, signes it with the travel document.
+     * @param utxo
+     * @param destination
+     * @param pcon
+     */
+    public byte[] utxoToSignedTransaction(TransactionOutput utxo, Address destination, PassportConnection pcon) throws Exception {
+        return new PassportTransactionFormatter(utxo, destination)
+                .buildAndSign(pcon);
+    }
+
+
+    /**
+     * Broadcasts the list of signed transactions.
+     * @param transactions
+     */
+    public ArrayList<Transaction> broadcastTransactions(ArrayList<byte[]> transactionsRaw) {
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        for (byte[] transactionRaw : transactionsRaw) {
+            final Wallet.SendResult result = new Wallet.SendResult();
+            result.tx = new Transaction(params, transactionRaw);
+
+            result.broadcast = kit.peerGroup().broadcastTransaction(result.tx);
+            result.broadcastComplete = result.broadcast.future();
+
+            result.broadcastComplete.addListener(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("Asset spent! txid: " + result.tx.getHashAsString());
+                }
+            }, MoreExecutors.directExecutor());
+
+            transactions.add(result.tx);
+        }
+        return transactions;
+    }
+
 
 }

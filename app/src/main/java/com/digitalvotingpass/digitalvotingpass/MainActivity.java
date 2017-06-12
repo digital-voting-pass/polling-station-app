@@ -91,27 +91,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Called when the user taps the "Start Reading ID" button
-     */
-    public void startReading(View view) {
-        if(!documentData.isValid()) {
-            Toast.makeText(this,R.string.scan_doc_details, Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(this, CameraActivity.class);
-            startActivityForResult(intent, GET_DOC_INFO);
-        } else {
-            Intent intent = new Intent(this, PassportConActivity.class);
-            intent.putExtra(DocumentData.identifier, documentData);
-            startActivity(intent);
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // Check if we got documentdata and set the documentData attribute
         if(requestCode == GET_DOC_INFO && resultCode == RESULT_OK) {
+
             documentData = (DocumentData) data.getExtras().get(DocumentData.identifier);
+            Intent intent = new Intent(this, PassportConActivity.class);
+            intent.putExtra(DocumentData.identifier, documentData);
+            startActivity(intent);
         }
         // reload the election choice from sharedpreferences
         if(requestCode == CHOOSE_ELECTION && resultCode == RESULT_OK) {

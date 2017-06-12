@@ -19,6 +19,7 @@ import com.digitalvotingpass.blockchain.BlockchainCallBackListener;
 import com.digitalvotingpass.camera.Camera2BasicFragment;
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
+import com.digitalvotingpass.utilities.ErrorDialog;
 import com.google.gson.Gson;
 
 import java.text.DecimalFormat;
@@ -46,7 +47,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
                 requestStoragePermissions();
                 return;
             }
-            blockChain.setCallBackListener((BlockchainCallBackListener) thisActivity);
+            blockChain.addListener((BlockchainCallBackListener) thisActivity);
             blockChain.startDownload();
         }
     };
@@ -100,7 +101,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
 
     private void requestStoragePermissions() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Camera2BasicFragment.ErrorDialog.newInstance(getString(R.string.ocr_storage_permission_explanation))
+            ErrorDialog.newInstance(getString(R.string.storage_permission_explanation))
                     .show(getFragmentManager(), "");
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_STORAGE);
@@ -125,6 +126,8 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
      */
     @Override
     public void onDownloadComplete() {
+        // Create an Intent that will start either the Election choice or the mainactivity
+        // based on whether or not an election was already selected.
         SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
         String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "not found");
         Intent intent;
@@ -147,8 +150,9 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
 
     @Override
     protected void onDestroy() {
+        //remove this listener
+        blockChain.removeListener(this);
         super.onDestroy();
-        blockChain.setCallBackListener(null);
     }
 
     @Override

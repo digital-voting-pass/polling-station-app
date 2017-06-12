@@ -22,6 +22,9 @@ import java.security.InvalidParameterException;
 import java.security.PublicKey;
 
 public class PassportConnection {
+
+    private PassportService ps;
+
     /**
      * Opens a connection with the ID by doing BAC
      * Uses hardcoded parameters for now
@@ -30,15 +33,14 @@ public class PassportConnection {
      * @return PassportService - passportservice that has an open connection with the ID
      */
     public PassportService openConnection(Tag tag, final DocumentData docData) throws CardServiceException {
-        PassportService ps = null;
         try {
             IsoDep nfc = IsoDep.get(tag);
             CardService cs = CardService.getInstance(nfc);
-            ps = new PassportService(cs);
-            ps.open();
+            this.ps = new PassportService(cs);
+            this.ps.open();
 
             // Get the information needed for BAC from the data provided by OCR
-            ps.sendSelectApplet(false);
+            this.ps.sendSelectApplet(false);
             BACKeySpec bacKey = new BACKeySpec() {
                 @Override
                 public String getDocumentNumber() {
@@ -51,7 +53,6 @@ public class PassportConnection {
                 @Override
                 public String getDateOfExpiry() { return docData.getExpiryDate(); }
             };
-
             ps.doBAC(bacKey);
             return ps;
         } catch (CardServiceException ex) {
@@ -87,17 +88,19 @@ public class PassportConnection {
         }
     }
 
+    public PublicKey getAAPublicKey() throws Exception{
+        return this.getAAPublicKey(this.ps);
+    }
+
     /**
      * Signs 8 bytes by the passport using the AA functionality.
      *
      * @return byte[] - signed byte array
      */
-    public byte[] signData(PassportService ps) throws Exception {
+    public byte[] signData(PassportService ps, byte[] data) throws Exception{
         InputStream is15 = null;
         try {
             is15 = ps.getInputStream(PassportService.EF_DG15);
-            // test 8 byte string for testing purposes
-            byte[] data = Util.hexStringToByteArray("0a1b3c4d5e6faabb");
             // doAA of JMRTD library only returns signed data, and does not have the AA functionality yet
             // there is no need for sending public key information with the method.
             return ps.doAA(null, null, null, data);
@@ -111,6 +114,10 @@ public class PassportConnection {
                 ex.printStackTrace();
             }
         }
+    }
+
+    public byte[] signData(byte[] data) throws Exception {
+        return this.signData(this.ps, data);
     }
 
     /**
