@@ -206,6 +206,9 @@ public class Camera2BasicFragment extends Fragment
      */
     public synchronized void scanResultFound(final Mrz mrz) {
         if (!resultFound) {
+            for (TesseractOCR thread : tesseractThreads) {
+                thread.stopping = true;
+            }
             Intent returnIntent = new Intent();
             DocumentData data = mrz.getPrettyData();
             returnIntent.putExtra("result", data);
