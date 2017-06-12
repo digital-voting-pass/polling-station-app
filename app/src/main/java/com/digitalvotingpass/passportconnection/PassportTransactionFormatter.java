@@ -3,9 +3,7 @@ package com.digitalvotingpass.passportconnection;
 import com.google.common.primitives.Bytes;
 
 import org.bitcoinj.core.Address;
-import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 
 import java.math.BigInteger;
@@ -26,8 +24,8 @@ public class PassportTransactionFormatter {
      * Class builds the bytes needed for a transaction
      */
     public PassportTransactionFormatter(TransactionOutput utxo, Address destination) {
-        this.destination = destination;
-        this.utxo = utxo;
+        setDestinationAddress(destination);
+        setUTXO(utxo);
     }
 
     /**
@@ -146,15 +144,6 @@ public class PassportTransactionFormatter {
                 parts[7], parts[8], parts[9], parts[10], parts[11], parts[12]);
 
         return step19;
-    }
-
-    /**
-     * Wraw the bytes in a real broadcastable transaction.
-     * @param params
-     * @return
-     */
-    public Transaction getTransaction(NetworkParameters params) {
-        return new Transaction(params, this.data);
     }
 
     /**
