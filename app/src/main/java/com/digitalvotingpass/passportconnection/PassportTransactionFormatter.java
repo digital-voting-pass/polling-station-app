@@ -1,5 +1,6 @@
 package com.digitalvotingpass.passportconnection;
 
+import com.digitalvotingpass.utilities.Util;
 import com.google.common.primitives.Bytes;
 
 import org.bitcoinj.core.Address;
@@ -80,13 +81,13 @@ public class PassportTransactionFormatter {
         byte[] step6 = utxo.getScriptBytes();
 
         // Unused sequence
-        byte[] step7 = hexToByte("FFFFFFFF");
+        byte[] step7 = Util.hexStringToByteArray("FFFFFFFF");
 
         // Number of outputs in transaction
-        byte[] step8 = hexToByte("01");
+        byte[] step8 = Util.hexStringToByteArray("01");
 
         // Spend amount
-        byte[] step9 = hexToByte("0000000000000000");
+        byte[] step9 = Util.hexStringToByteArray("0000000000000000");
 
         // Size of redeem script
         byte[] step10 = new byte[]{(byte) (step6.length & 0xFF)};
@@ -96,10 +97,10 @@ public class PassportTransactionFormatter {
         System.arraycopy(this.destination.getHash160(), 0, step11, 3, 20);
 
         // Lock time
-        byte[] step12 = hexToByte("00000000");
+        byte[] step12 = Util.hexStringToByteArray("00000000");
 
         // Hash code type
-        byte[] step13 = hexToByte("01000000");
+        byte[] step13 = Util.hexStringToByteArray("01000000");
 
         return new byte[][]{step1, step2, step3, step4, step5, step6, step7, step8, step9,
                 step10, step11, step12, step13};
@@ -126,14 +127,14 @@ public class PassportTransactionFormatter {
             System.arraycopy(pcon.signData(hashPart), 0, multiSignature, i * 80, 80);
         }
 
-        byte[] signatureLength = hexToByte("fd97014d4101");
-        byte[] hashCodeType = hexToByte("01");
+        byte[] signatureLength = Util.hexStringToByteArray("fd97014d4101");
+        byte[] hashCodeType = Util.hexStringToByteArray("01");
         byte[] publicKeyASN = pubkey.getEncoded();
 
         byte[] publicKey = new byte[81];
         System.arraycopy(publicKeyASN, publicKeyASN.length-81, publicKey, 0, 81);
 
-        byte[] publickeyLength = hexToByte("4c51");
+        byte[] publickeyLength = Util.hexStringToByteArray("4c51");
 
         // Set signature and pubkey in format
         byte[] step16 = Bytes.concat(signatureLength, multiSignature, hashCodeType, publickeyLength, publicKey);
@@ -145,18 +146,4 @@ public class PassportTransactionFormatter {
         return step19;
     }
 
-    /**
-     * Helper function, to fix the BigInteger leading zero issues.
-     * @param s input string
-     * @return byte array
-     */
-    private static byte[] hexToByte(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i+1), 16));
-        }
-        return data;
-    }
 }
