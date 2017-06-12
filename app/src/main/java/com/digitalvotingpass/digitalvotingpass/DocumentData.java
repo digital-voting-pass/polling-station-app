@@ -10,7 +10,7 @@ import android.os.Parcelable;
  */
 
 public class DocumentData implements Parcelable {
-    public final static String identifier = "docData";
+
     private final static int DOCUMENT_NUMBER_SIZE = 9;
 
     private String documentNumber;
@@ -81,8 +81,8 @@ public class DocumentData implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeStringArray(new String[] {getDocumentNumber(),
-                getExpiryDate(),
-                getDateOfBirth()
+                getDateOfBirth(),
+                getExpiryDate()
         });
     }
 

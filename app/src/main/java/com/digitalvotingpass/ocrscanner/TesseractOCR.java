@@ -39,7 +39,7 @@ public class TesseractOCR {
 
     private AssetManager assetManager;
     private Camera2BasicFragment fragment;
-    public boolean stopping = false;
+    private boolean stopping = false;
     public boolean isInitialized = false;
 
     // Filled with OCR run times for analysis

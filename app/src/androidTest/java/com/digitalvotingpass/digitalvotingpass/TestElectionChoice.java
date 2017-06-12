@@ -80,7 +80,11 @@ public class TestElectionChoice {
     @After
     public void destroy() {
         Intents.release();
-        BlockChain.getInstance().disconnect();
+        try {
+            BlockChain.getInstance(null).disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         electionActivity.finish();
     }
 

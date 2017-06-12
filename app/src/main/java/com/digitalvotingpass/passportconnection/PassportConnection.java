@@ -8,7 +8,6 @@ import com.digitalvotingpass.digitalvotingpass.Voter;
 import com.digitalvotingpass.utilities.Util;
 
 import net.sf.scuba.smartcards.CardService;
-import net.sf.scuba.smartcards.CardServiceException;
 
 import org.jmrtd.BACKeySpec;
 import org.jmrtd.PassportService;
@@ -18,13 +17,9 @@ import org.jmrtd.lds.LDSFileUtil;
 import org.jmrtd.lds.MRZInfo;
 
 import java.io.InputStream;
-import java.security.InvalidParameterException;
 import java.security.PublicKey;
 
 public class PassportConnection {
-
-    private PassportService ps;
-
     /**
      * Opens a connection with the ID by doing BAC
      * Uses hardcoded parameters for now
@@ -32,15 +27,16 @@ public class PassportConnection {
      * @param tag - NFC tag that started this activity (ID NFC tag)
      * @return PassportService - passportservice that has an open connection with the ID
      */
-    public PassportService openConnection(Tag tag, final DocumentData docData) throws CardServiceException {
+    public PassportService openConnection(Tag tag, final DocumentData docData) {
+        PassportService ps = null;
         try {
             IsoDep nfc = IsoDep.get(tag);
             CardService cs = CardService.getInstance(nfc);
-            this.ps = new PassportService(cs);
-            this.ps.open();
+            ps = new PassportService(cs);
+            ps.open();
 
             // Get the information needed for BAC from the data provided by OCR
-            this.ps.sendSelectApplet(false);
+            ps.sendSelectApplet(false);
             BACKeySpec bacKey = new BACKeySpec() {
                 @Override
                 public String getDocumentNumber() {
@@ -53,16 +49,14 @@ public class PassportConnection {
                 @Override
                 public String getDateOfExpiry() { return docData.getExpiryDate(); }
             };
+
             ps.doBAC(bacKey);
             return ps;
-        } catch (CardServiceException ex) {
-            try {
-                ps.close();
-            } catch (Exception ex2) {
-                ex2.printStackTrace();
-            }
-            throw ex;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            ps.close();
         }
+        return null;
     }
 
     /**
@@ -70,7 +64,7 @@ public class PassportConnection {
      *
      * @return Publickey - returns the publickey used for AA
      */
-    public PublicKey getAAPublicKey(PassportService ps) throws Exception{
+    public PublicKey getAAPublicKey(PassportService ps) {
         InputStream is15 = null;
         try {
             is15 = ps.getInputStream(PassportService.EF_DG15);
@@ -78,7 +72,6 @@ public class PassportConnection {
             return dg15.getPublicKey();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw ex;
         } finally {
             try {
                 is15.close();
@@ -86,10 +79,7 @@ public class PassportConnection {
                 ex.printStackTrace();
             }
         }
-    }
-
-    public PublicKey getAAPublicKey() throws Exception{
-        return this.getAAPublicKey(this.ps);
+        return null;
     }
 
     /**
@@ -97,16 +87,17 @@ public class PassportConnection {
      *
      * @return byte[] - signed byte array
      */
-    public byte[] signData(PassportService ps, byte[] data) throws Exception{
+    public byte[] signData(PassportService ps) {
         InputStream is15 = null;
         try {
             is15 = ps.getInputStream(PassportService.EF_DG15);
+            // test 8 byte string for testing purposes
+            byte[] data = Util.hexStringToByteArray("0a1b3c4d5e6faabb");
             // doAA of JMRTD library only returns signed data, and does not have the AA functionality yet
             // there is no need for sending public key information with the method.
             return ps.doAA(null, null, null, data);
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw ex;
         } finally {
             try {
                 is15.close();
@@ -114,17 +105,14 @@ public class PassportConnection {
                 ex.printStackTrace();
             }
         }
-    }
-
-    public byte[] signData(byte[] data) throws Exception {
-        return this.signData(this.ps, data);
+        return null;
     }
 
     /**
      * Get personal information about a voter from datagroup1.
      * @return Voter - Voter object containing personal data.
      */
-    public Voter getVoter(PassportService ps) throws Exception {
+    public Voter getVoter(PassportService ps) {
         InputStream is = null;
         try {
             is = ps.getInputStream(PassportService.EF_DG1);
@@ -136,7 +124,6 @@ public class PassportConnection {
                     mrzInfo.getGender());
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw ex;
         } finally {
             try {
                 is.close();
@@ -144,6 +131,7 @@ public class PassportConnection {
                 ex.printStackTrace();
             }
         }
+        return null;
     }
 
 }
