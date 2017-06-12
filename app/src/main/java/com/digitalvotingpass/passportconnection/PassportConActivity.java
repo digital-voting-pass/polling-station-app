@@ -19,12 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.digitalvotingpass.blockchain.BlockChain;
-import com.digitalvotingpass.digitalvotingpass.Voter;
 import com.digitalvotingpass.digitalvotingpass.DocumentData;
 import com.digitalvotingpass.digitalvotingpass.MainActivity;
 import com.digitalvotingpass.digitalvotingpass.ManualInputActivity;
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.digitalvotingpass.ResultActivity;
+import com.digitalvotingpass.digitalvotingpass.Voter;
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.utilities.Util;
 import com.google.gson.Gson;
@@ -175,7 +175,7 @@ public class PassportConActivity extends AppCompatActivity {
                 String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
                 Election election = gson.fromJson(json, Election.class);
 
-                BlockChain bc = BlockChain.getInstance();
+                BlockChain bc = BlockChain.getInstance(null);
                 AssetBalance balance = bc.getVotingPassBalance(pubKey, election.getAsset());
 
                 ArrayList<byte[]> signedTransactions = bc.getSpendUtxoTransactions(pubKey, balance, pcon);
