@@ -160,84 +160,50 @@ public class BlockChain {
      * @param assetFilter Asset for which transactions needs to be checked.
      * @return List containing interesting transactions.
      */
-    public List<TransactionHistoryItem> getMyTransactions(PublicKey pubKey, Asset assetFilter, Context context) {
+    public List<TransactionHistoryItem> getMyTransactions(PublicKey pubKey, Asset assetFilter) {
         List<TransactionHistoryItem> result = new ArrayList<>();
         Address address = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
-        String myAddress = address.toString();
-        Set<Transaction> ts = kit.wallet().getTransactions(false);
+        List<Transaction> ts = kit.wallet().getAssetTransactions(address, assetFilter);
+
         for (Transaction transaction : ts) {
-            if (!transaction.isCoinBase()){
-                for (TransactionOutput o : transaction.getOutputs()) {
-                    boolean sentToAddr = o.getScriptPubKey().isSentToAddress();
-                    boolean isReturn = o.getScriptPubKey().isOpReturn();
-                    if (sentToAddr && !isReturn) {
-                        byte[] metaData = o.getScriptPubKey().getChunks().get(5).data;
-                        if (isAssetTransaction(transaction, assetFilter, metaData)) {
-                            // Transaction is correct asset
-                            byte[] quantity = Arrays.copyOfRange(metaData, 20, 28);
-                            int amount = ByteBuffer.wrap(quantity).order(ByteOrder.LITTLE_ENDIAN).getInt();
-                            Address toAddress = o.getScriptPubKey().getToAddress(this.params);
+            for (TransactionOutput o : transaction.getOutputs()) {
+                boolean sentToAddr = o.getScriptPubKey().isSentToAddress();
+                boolean isReturn = o.getScriptPubKey().isOpReturn();
+                if (sentToAddr && !isReturn) {
+                    byte[] metaData = o.getScriptPubKey().getChunks().get(5).data;
+                    byte[] quantity = Arrays.copyOfRange(metaData, 20, 28);
+                    int amount = ByteBuffer.wrap(quantity).order(ByteOrder.LITTLE_ENDIAN).getInt();
+                    Address toAddress = o.getScriptPubKey().getToAddress(this.params);
+                    Address fromAddress = transaction.getInput(0).getFromAddress();
+                    Date date = transaction.getUpdateTime();
 
-                            TransactionHistoryItem newItem = TransactionSentByMe(transaction, myAddress, toAddress.toString(), amount, assetFilter, context);
-                            if (newItem != null) result.add(newItem);
-
-                            if (toAddress.toString().equals(myAddress)) {
-                                if(transaction.getInputs().size() != 1) Log.e("BlockChain", "More than 1 inputs in transaction!");
-
-                                // Method is deprecated because it is generally considered bad to use the from address of a transaction.
-                                // This is because a transaction can have multiple inputs and the sender may not be in control of the given address (eg. exchange).
-                                // This is not an issue for us since each transaction has 1 input only.
-                                Address fromAddress = transaction.getInput(0).getScriptSig().getFromAddress(params);
-                                Date date = transaction.getUpdateTime();
-                                TransactionHistoryItem newTransactionHistoryItem =
-                                        new TransactionHistoryItem(
-                                                String.format(context.getString(R.string.transaction_received_item_format_title),
-                                                        amount,
-                                                        Election.parseElection(assetFilter, context).getKind(),
-                                                        Election.parseElection(assetFilter, context).getPlace()),
-                                                date,
-                                                String.format(context.getString(R.string.transaction_received_item_format_detail), translateAddress(fromAddress.toString())));
-                                result.add(newTransactionHistoryItem);
-                            }
-                        }
+                    if (address.equals(fromAddress)) {
+                        TransactionHistoryItem newTransactionHistoryItem =
+                                new TransactionHistoryItem(
+                                        String.format(context.getString(R.string.transaction_sent_item_format_title),
+                                                amount,
+                                                Election.parseElection(assetFilter, context).getKind(),
+                                                Election.parseElection(assetFilter, context).getPlace()),
+                                        date,
+                                        String.format(context.getString(R.string.transaction_sent_item_format_detail), translateAddress(toAddress.toString())));
+                        result.add(newTransactionHistoryItem);
+                    } else if (address.equals(toAddress)) {
+                        TransactionHistoryItem newTransactionHistoryItem =
+                                new TransactionHistoryItem(
+                                        String.format(context.getString(R.string.transaction_received_item_format_title),
+                                                amount,
+                                                Election.parseElection(assetFilter, context).getKind(),
+                                                Election.parseElection(assetFilter, context).getPlace()),
+                                        date,
+                                        String.format(context.getString(R.string.transaction_received_item_format_detail), translateAddress(fromAddress.toString())));
+                        result.add(newTransactionHistoryItem);
+                    } else {
+                        Log.e("BlockChain", "ERROR");
                     }
                 }
             }
         }
         return result;
-    }
-
-    /**
-     * Parses given transaction and returns an TransactionHistoryItem if this transaction was sent by given address.
-     * Else returns null
-     * @param transaction Transaction
-     * @param myAddress String
-     * @param toAddress String
-     * @param amount int
-     * @return TransactionHistoryItem or null
-     */
-    private TransactionHistoryItem TransactionSentByMe(Transaction transaction, String myAddress, String toAddress, int amount, Asset assetFilter, Context context){
-        for (TransactionInput in : transaction.getInputs()) {
-            Address fromAddress = in.getScriptSig().getFromAddress(params);
-            if (myAddress.equals(fromAddress.toString())) {
-                Date date = transaction.getUpdateTime();
-                return new TransactionHistoryItem(
-                    String.format(context.getString(R.string.transaction_sent_item_format_title),
-                            amount,
-                            Election.parseElection(assetFilter, context).getKind(),
-                            Election.parseElection(assetFilter, context).getPlace()),
-                    date,
-                    String.format(context.getString(R.string.transaction_sent_item_format_detail), translateAddress(toAddress)));
-            }
-        }
-        return null;
-    }
-
-    private boolean isAssetTransaction(Transaction t, Asset assetFilter, byte[] metaData) {
-        byte[] identifier = Arrays.copyOfRange(metaData, 0, 4);
-        byte[] asset = Arrays.copyOfRange(metaData, 4, 20);
-        return Arrays.equals(identifier, (new BigInteger("73706b71", 16)).toByteArray())
-                && Arrays.equals(asset, assetFilter.getId());
     }
 
     /**
