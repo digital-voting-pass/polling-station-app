@@ -2,15 +2,17 @@ package com.digitalvotingpass.blockchain;
 
 import android.content.Context;
 import android.os.Environment;
+import android.provider.Telephony;
+import android.util.Log;
 
-import com.digitalvotingpass.digitalvotingpass.R;
-import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.passportconnection.PassportConnection;
 import com.digitalvotingpass.passportconnection.PassportTransactionFormatter;
+import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.transactionhistory.TransactionHistoryItem;
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
-import com.digitalvotingpass.utilities.Util;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.digitalvotingpass.utilities.Util;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Asset;
@@ -18,6 +20,8 @@ import org.bitcoinj.core.AssetBalance;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerAddress;
 import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionConfidence;
+import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MultiChainParams;
@@ -25,6 +29,7 @@ import org.bitcoinj.utils.BriefLogFormatter;
 import org.bitcoinj.wallet.Wallet;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -35,6 +40,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class BlockChain {
     public static final String PEER_IP = "188.226.149.56";

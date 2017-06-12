@@ -103,31 +103,7 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
     public ArrayList<Election> loadElections(ArrayList<Asset> assetList) {
         ArrayList<Election> electionChoices = new ArrayList<>();
         for(Asset a : assetList) {
-            String name = a.getName();
-            String prefix = name.substring(0,2);
-            String kind;
-            switch(prefix) {
-                case "T_":
-                        kind = getString(R.string.tweedekamer);
-                        name = name.substring(2);
-                        break;
-                case "P_":
-                        kind = getString(R.string.provinciaal);
-                        name = name.substring(2);
-                        break;
-                case "G_":
-                        kind = getString(R.string.gemeente);
-                        name = name.substring(2);
-                        break;
-                case "W_":
-                        kind = getString(R.string.waterschap);
-                        name = name.substring(2);
-                        break;
-                    default:
-                        kind = "";
-                        break;
-            }
-            electionChoices.add(new Election(kind, name, a));
+            electionChoices.add(Election.parseElection(a, getApplicationContext()));
         }
         return electionChoices;
     }
