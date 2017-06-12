@@ -2,6 +2,7 @@ package com.digitalvotingpass.blockchain;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.electionchoice.Election;
