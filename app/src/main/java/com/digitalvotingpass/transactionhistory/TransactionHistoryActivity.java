@@ -48,7 +48,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
                 setAddressClickListener(bc.getAddress(pubKey).toString());
 
                 // Load transactions
-                final List<TransactionHistoryItem> transactions = bc.getMyTransactions(pubKey, mcAsset, getApplicationContext());
+                final List<TransactionHistoryItem> transactions = bc.getMyTransactions(pubKey, mcAsset);
                 Collections.sort(transactions); //sort transactions desc on date
                 runOnUiThread(new Runnable() {
                     @Override
