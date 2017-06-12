@@ -50,15 +50,15 @@
     <string name="cancel_vote">Cancel vote</string>
 
     <string name="authorization_failed">Authorization failed, do not hand out voting ballot.</string>
-    <string name="authorization_succesful">Authorization succesful, please confirm.</string>
+    <string name="authorization_succesful">Authorization successful, please confirm.</string>
 
     <plurals name="authorization_succesful">
         <item quantity="one">Voting pass found, please redeem.</item>
         <item quantity="other">Voting passes found, please redeem.</item>
     </plurals>
     <plurals name="authorization_confirmed">
-        <item quantity="one">Voting pass succesfully spent, please hand out %1$d voting ballot</item>
-        <item quantity="other">Voting passes succesfully spent, please hand out %1$d voting ballots</item>
+        <item quantity="one">Voting pass successfully spent, please hand out %1$d voting ballot</item>
+        <item quantity="other">Voting passes successfully spent, please hand out %1$d voting ballots</item>
     </plurals>
     <string name="authorization_wait">Waiting for authorization.</string>
     <string name="address_not_found">This document is not registered for digital voting.</string>

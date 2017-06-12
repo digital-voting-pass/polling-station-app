@@ -79,6 +79,7 @@
 
     <string name="shared_preferences_key_election">com.digitalvotingpass.ELECTION_OBJECT_KEY</string>
     <string name="shared_preferences_file">com.digitalvotingpass.shared</string>
+    <string name="waiting_confirmation">Wachten op bevestiging</string>
 
     <string-array name="months_array">
         <item>januari</item>
