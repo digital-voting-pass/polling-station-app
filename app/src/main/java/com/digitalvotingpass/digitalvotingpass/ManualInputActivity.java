@@ -59,7 +59,7 @@ public class ManualInputActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(verifyInput()) {
                     Intent returnIntent = new Intent();
-                    returnIntent.putExtra(DocumentData.identifier, getData());
+                    returnIntent.putExtra("result", getData());
                     setResult(Activity.RESULT_OK, returnIntent);
                     finish();
                 }
@@ -69,7 +69,7 @@ public class ManualInputActivity extends AppCompatActivity {
         setupExpirySpinners();
 
         // When docData was previously filled in, update text fields
-        if(getIntent().hasExtra(DocumentData.identifier)) {
+        if(getIntent().hasExtra("docData")) {
             putData(getIntent().getExtras());
         }
     }
@@ -142,7 +142,7 @@ public class ManualInputActivity extends AppCompatActivity {
      * Update textFields with docData if it was previously filled in, else leave as is.
      */
     public void putData(Bundle extras) {
-        DocumentData docData = (DocumentData) extras.get(DocumentData.identifier);
+        DocumentData docData = (DocumentData) extras.get("docData");
         if(docData != null && docData.isValid()) {
             docNumber.setText(docData.getDocumentNumber());
             dobYearSpinner.setSelection(Integer.parseInt(docData.getDateOfBirth().substring(0,2)));

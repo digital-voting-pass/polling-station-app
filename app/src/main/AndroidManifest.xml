@@ -49,7 +49,7 @@
         </activity>
         <activity
             android:name="com.digitalvotingpass.passportconnection.PassportConActivity"
-            android:label="@string/passportconnection"
+            android:label="PassportConActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ManualInputActivity"

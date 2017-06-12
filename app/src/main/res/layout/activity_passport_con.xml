@@ -1,52 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/coordinator_layout"
-    android:layout_height="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.digitalvotingpass.digitalvotingpass.MainActivity"
     android:layout_width="match_parent"
-    >
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context="com.digitalvotingpass.digitalvotingpass.MainActivity"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="@dimen/actionBarHeight"
+        android:background="@color/govDarkBlue"
+        android:elevation="4dp"
+        android:theme="@style/AppBarOverlay"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="8dp" />
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/app_bar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/actionBarHeight"
-            android:background="@color/govDarkBlue"
-            android:elevation="4dp"
-            android:theme="@style/AppBarOverlay"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            tools:layout_editor_absoluteY="0dp"
-            tools:layout_editor_absoluteX="8dp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/notice"
+            android:layout_above="@+id/progress_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:padding="40dp"
+            android:textColor="@color/govTextBlue"
+            android:textSize="17sp"
+            android:text="@string/nfc_enabled"/>
 
-            <TextView
-                android:id="@+id/notice"
-                android:layout_above="@+id/progress_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:gravity="center"
-                android:padding="40dp"
-                android:textColor="@color/govTextBlue"
-                android:textSize="17sp"
-                android:text="@string/nfc_enabled"/>
-
-            <ImageView
-                android:id="@+id/progress_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_centerInParent="true"
-                android:src="@drawable/nfc_icon_empty" />
-        </RelativeLayout>
-    </LinearLayout>
-</android.support.design.widget.CoordinatorLayout>
+        <ImageView
+            android:id="@+id/progress_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_centerInParent="true"
+            android:src="@drawable/nfc_icon_empty" />
+    </RelativeLayout>
+</LinearLayout>

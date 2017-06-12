@@ -4,18 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.androidadvance.topsnackbar.TSnackbar;
 import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.transactionhistory.TransactionHistoryActivity;
@@ -25,11 +22,8 @@ import com.google.gson.Gson;
 import net.sf.scuba.data.Gender;
 
 import org.bitcoinj.core.Asset;
-import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.TransactionConfidence;
 
 import java.security.PublicKey;
-import java.util.ArrayList;
 
 public class ResultActivity extends AppCompatActivity {
     private TextView textAuthorization;
@@ -44,34 +38,9 @@ public class ResultActivity extends AppCompatActivity {
     private final int FAILED = 0;
     private final int WAITING = 1;
     private final int SUCCES = 2;
-    private final int CONFIRMED = 3;
-    private int votingPasses;
     private PublicKey pubKey;
     private Asset mcAsset;
-    private ArrayList<byte[]> signedTransactions;
-    private ArrayList<Transaction> pendingTransactions;
-    private TSnackbar snack;
 
-    /**
-     * Checks if every pending transaction is confirmed and updates some view elements.
-     */
-    private TransactionConfidence.Listener confidenceListener = new TransactionConfidence.Listener() {
-        @Override
-        public void onConfidenceChanged(TransactionConfidence transactionConfidence, TransactionConfidence.Listener.ChangeReason
-        changeReason) {
-            if (checkAllPendingConfirmed()) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        setAuthorizationStatus(CONFIRMED);
-                        ((TextView) findViewById(R.id.voting_pass_amount)).setText("0");
-                        textVotingPasses.setText(R.string.voting_passes);
-                    }
-                });
-                removeAllListeners();
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,12 +54,12 @@ public class ResultActivity extends AppCompatActivity {
         String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
         mcAsset = gson.fromJson(json, Election.class).getAsset();
         pubKey = (PublicKey) extras.get("pubKey");
-        signedTransactions = (ArrayList<byte[]>) extras.get("signedTransactions");
 
         setContentView(R.layout.activity_result);
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
         Util.setupAppBar(appBar, this);
+        textAuthorization = (TextView) findViewById(R.id.authorization);
         textVoterName = (TextView) findViewById(R.id.voter_name);
         textVotingPassAmount = (TextView) findViewById(R.id.voting_pass_amount);
         textVotingPasses = (TextView) findViewById(R.id.voting_passes);
@@ -129,40 +98,6 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     /**
-     * Updates the snack showed at the top of the result screen.
-     * @param text
-     * @param backgroundColor
-     * @param textColor
-     */
-    private void showSnack(CharSequence text, int backgroundColor, int textColor) {
-        if (snack != null) { snack.dismiss(); }
-
-        snack = TSnackbar.make(findViewById(R.id.result), "", TSnackbar.LENGTH_INDEFINITE);
-        snack.setText(text);
-
-        // Update background color
-        View snackbarView = snack.getView();
-        snackbarView.setBackgroundColor(getResources().getColor(backgroundColor));
-
-        // Update text color
-        TextView textView = (TextView) snackbarView.findViewById(com.androidadvance.topsnackbar.R.id.snackbar_text);
-        textView.setTextColor(getResources().getColor(textColor));
-        textView.setGravity(Gravity.CENTER_HORIZONTAL);
-
-        snack.show();
-
-        // Disable slide-to-dismiss feature.
-        snack.getView().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                snack.getView().getViewTreeObserver().removeOnPreDrawListener(this);
-                ((CoordinatorLayout.LayoutParams) snack.getView().getLayoutParams()).setBehavior(null);
-                return true;
-            }
-        });
-    }
-
-    /**
      * Handles the action buttons on the app bar.
      * In our case it is only one that needs to be handled, the cancel button.
      */
@@ -182,17 +117,18 @@ public class ResultActivity extends AppCompatActivity {
     /**
      * Displays all the data gotten from the blockchain and the passport. Transferred in the extras
      * field of the intent.
-     * @param extras some information about the previous activity
+     *
      */
     public void handleData(Bundle extras) {
         Voter voter = (Voter) extras.get("voter");
         String preamble = createPreamble(voter);
+        int votingPasses;
         try {
-            if(pubKey != null && mcAsset != null) {
-                votingPasses = BlockChain.getInstance(null).getVotingPassAmount(pubKey, mcAsset);
-            } else {
-                votingPasses = 0;
-            }
+        if(pubKey != null && mcAsset != null) {
+            votingPasses = BlockChain.getInstance(null).getVotingPassAmount(pubKey, mcAsset);
+        } else {
+            votingPasses = 0;
+        }
             if(votingPasses == 0) {
                 setAuthorizationStatus(FAILED);
             } else {
@@ -226,9 +162,9 @@ public class ResultActivity extends AppCompatActivity {
 
         Gender gender = voter.getGender();
         String preamble;
-        // Only show a preamble when the voter is a male or female
-        if (gender == Gender.FEMALE || gender == Gender.MALE) {
-            // Capitalize the first word since this is sometimes van or van de.
+        //Only show a preamble when the voter is a male or female
+        if(gender == Gender.FEMALE || gender == Gender.MALE) {
+            //Capitalize the first word since this is sometimes van or van de.
             String firstWord = Voter.capitalizeFirstLetter(voter.getLastName().split(" ")[0]);
             preamble = voter.genderToString() + " " + firstWord + " " + voter.getLastName().substring(firstWord.length());
         } else {
@@ -240,64 +176,45 @@ public class ResultActivity extends AppCompatActivity {
     /**
      * Sets the textview which displays the authorization status, based on the current state of the
      * process to one of the following:
-     *  - Succesful (There are )
-     *  - Confirmed (transaction was accepted on the blockchain)
+     *  - Succesful (transaction was accepted on the blockchain)
      *  - Waiting (waiting for confirmation or rejection of transaction from blockchain)
      *  - Failed (request of balance showed no voting passes left or transaction was rejected)
      *
      *  Only show cancel button when state is succesful (otherwise nothing to cancel)
      */
     public void setAuthorizationStatus(int newState) {
-        if (authorizationState == newState) { return; }
         //TODO: implement actual conditions for either one of the three states.
         authorizationState = newState;
         switch (newState) {
             case FAILED:
-                showSnack(
-                    getResources().getText(R.string.authorization_failed),
-                    R.color.redFailed,
-                    R.color.white
-                );
+                textAuthorization.setTextColor(getResources().getColor(R.color.redFailed));
+                textAuthorization.setText(R.string.authorization_failed);
+                textAuthorization.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.not_approve,0);
                 butProceed.setText(R.string.proceed_home);
                 if(cancelAction != null) {
                     cancelAction.setVisible(false);
                 }
                 break;
             case WAITING:
-                showSnack(
-                    getResources().getText(R.string.authorization_wait),
-                    R.color.orangeWait,
-                    R.color.white
-                );
+                textAuthorization.setTextColor(getResources().getColor(R.color.orangeWait));
+                textAuthorization.setText(R.string.authorization_wait);
                 butProceed.setText(R.string.proceed_home);
                 if(cancelAction != null) {
                     cancelAction.setVisible(true);
                 }
                 break;
             case SUCCES:
-                showSnack(
-                    getResources().getQuantityString(R.plurals.authorization_succesful, votingPasses),
-                    R.color.govLightBlue,
-                    R.color.govDarkBlue
-                );
+                textAuthorization.setTextColor(getResources().getColor(R.color.greenSucces));
+                textAuthorization.setText(R.string.authorization_succesful);
+                textAuthorization.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.approve,0);
                 butProceed.setText(R.string.proceed_cast_vote);
                 if(cancelAction != null) {
                     cancelAction.setVisible(true);
                 }
                 break;
-            case CONFIRMED:
-                System.out.println("confirmed");
-                showSnack(
-                    getResources().getQuantityString(R.plurals.authorization_confirmed, votingPasses, votingPasses),
-                    R.color.greenSucces,
-                    R.color.white
-                );
-                butProceed.setText(R.string.proceed_home);
-                if(cancelAction != null) {
-                    cancelAction.setVisible(true);
-                }
-                break;
             default:
+                textAuthorization.setTextColor(getResources().getColor(R.color.orangeWait));
+                textAuthorization.setText(R.string.authorization_wait);
         }
     }
 
@@ -317,6 +234,7 @@ public class ResultActivity extends AppCompatActivity {
 
     /**
      * Return to the main activity for starting the process for the next voter.
+     * TODO: implement this method
      */
     public void nextVoter() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -326,54 +244,20 @@ public class ResultActivity extends AppCompatActivity {
 
     /**
      * Send the transaction to the blockchain and wait for a confirmation.
+     * TODO: implement this method
      */
     public void confirmVote() {
-        try {
-            this.pendingTransactions = BlockChain.getInstance(null).broadcastTransactions(signedTransactions);
-            setAuthorizationStatus(this.WAITING);
-            butProceed.setText(R.string.waiting_confirmation);
-            attachTransactionListeners();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Sets listeners on the pending transactions to keep an eye on the confirmations.
-     */
-    public void attachTransactionListeners() {
-        for (final Transaction pendingTx : this.pendingTransactions) {
-            pendingTx.getConfidence().addEventListener(confidenceListener);
-        }
-    }
-
-    /**
-     * Remove all pending transaction listeners.
-     */
-    public void removeAllListeners() {
-        for (Transaction transaction : pendingTransactions) {
-            transaction.getConfidence().removeEventListener(confidenceListener);
-        }
-    }
-
-    /**
-     * Checks if every pending transaction has at least one confirmation.s
-     * @return
-     */
-    public boolean checkAllPendingConfirmed() {
-        for (Transaction tx : pendingTransactions) {
-            if (tx.getConfidence().getDepthInBlocks() < 1) {
-                return false;
-            }
-        }
-        return true;
+        Toast.makeText(this, "TransactionHistoryItem sent", Toast.LENGTH_LONG).show();
+        butProceed.setText(R.string.proceed_home);
     }
 
     /**
      * Cancel the voting process for the current voter and return to the mainactivity for starting
      * a new process for the next voter.
+     * TODO: implement this method
      */
     public void cancelVoting() {
+
         nextVoter();
     }
 
