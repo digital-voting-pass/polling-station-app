@@ -102,12 +102,11 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
      */
     public ArrayList<Election> loadElections(ArrayList<Asset> assetList) {
         ArrayList<Election> electionChoices = new ArrayList<>();
-        try {
-            for(Asset a : assetList) {
-                String name = a.getName();
-                String prefix = name.substring(0,2);
-                String kind;
-                switch(prefix) {
+        for(Asset a : assetList) {
+            String name = a.getName();
+            String prefix = name.substring(0,2);
+            String kind;
+            switch(prefix) {
                 case "T_":
                         kind = getString(R.string.tweedekamer);
                         name = name.substring(2);
@@ -127,11 +126,8 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
                     default:
                         kind = "";
                         break;
-                }
-                electionChoices.add(new Election(kind, name, a));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            electionChoices.add(new Election(kind, name, a));
         }
         return electionChoices;
     }
