@@ -31,14 +31,20 @@
     <string name="storage_permission_explanation">Please provide storage permissions in order to save the blockchain.</string>
 
     <!--NFC Scanning-->
-    <string name="nfc_not_supported_error">This device doesn\'t support NFC.</string>
-    <string name="nfc_disabled_error">NFC is disabled, please enable NFC and hold the travel document to the back of the device to start scanning.</string>
+    <string name="passportconnection">Connect to document</string>
+    <string name="nfc_not_supported_error">This device does not support NFC.</string>
+    <string name="nfc_disabled_error_snackbar">NFC is needed for the passport connection</string>
+    <string name="nfc_disabled_snackbar_action">Turn on NFC</string>
     <string name="nfc_enabled">Please hold the travel document to the back of the device.</string>
-    <string name="general_error">Oops, something went wrong, please check the terminal output.</string>
+    <string name="general_error">Could not connect, please make sure the travel document is compatible.</string>
+
     <string name="NFC_error">Could not complete NFC scan, please try again.</string>
     <string name="start_con_button">Start ID connection</string>
     <string name="scan_doc_details">Please scan the ID first</string>
     <string name="transaction_history">Transaction history</string>
+
+    <string name="wrong_document_details">Document details are not inserted correctly</string>
+    <string name="check_input">Check input</string>
 
     <string name="start_OCR">Scan travel document</string>
     <string name="title_activity_result">Voting pass</string>
