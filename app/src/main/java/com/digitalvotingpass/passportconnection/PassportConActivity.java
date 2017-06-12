@@ -165,8 +165,6 @@ public class PassportConActivity extends AppCompatActivity {
             // Get voter information from dg1
             Voter voter = pcon.getVoter(ps);
 
-            // sign 8 bytes of data
-            byte[] signedData = pcon.signData(Util.hexStringToByteArray("0a1b3c4d5e6faabb"));
             progressView.setImageResource(R.drawable.nfc_icon_3);
 
 
@@ -180,7 +178,7 @@ public class PassportConActivity extends AppCompatActivity {
             BlockChain bc = BlockChain.getInstance();
             AssetBalance balance = bc.getVotingPassBalance(pubKey, election.getAsset());
 
-            ArrayList<byte[]> signedTransactions = bc.getSpendUtxoTransactions(balance, pcon);
+            ArrayList<byte[]> signedTransactions = bc.getSpendUtxoTransactions(pubKey, balance, pcon);
 
             // when all data is loaded start ResultActivity
             startResultActivity(pubKey, signedTransactions, voter);

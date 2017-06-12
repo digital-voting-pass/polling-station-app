@@ -10,6 +10,7 @@ import org.bitcoinj.core.TransactionOutput;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.security.PublicKey;
 import java.util.Arrays;
 
 /**
@@ -49,9 +50,9 @@ public class PassportTransactionFormatter {
      * Builds the raw transaction and signes using the passport.
      * @param pcon
      */
-    public byte[] buildAndSign(PassportConnection pcon) {
+    public byte[] buildAndSign(PublicKey pubKey, PassportConnection pcon) {
         byte[][] parts = buildRawTransaction();
-        this.data = signRawTransaction(parts, pcon);
+        this.data = signRawTransaction(pubKey, parts, pcon);
         return this.data;
     }
 
@@ -111,7 +112,7 @@ public class PassportTransactionFormatter {
      * Follows the steps in this answer: https://bitcoin.stackexchange.com/a/5241
      * @return signedRawTransaction
      */
-    public byte[] signRawTransaction(byte[][] parts, PassportConnection pcon) {
+    public byte[] signRawTransaction(PublicKey pubkey, byte[][] parts, PassportConnection pcon) {
 
         byte[] rawTransaction = Bytes.concat(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5],
                 parts[6], parts[7], parts[8], parts[9], parts[10], parts[11], parts[12]);
@@ -130,7 +131,7 @@ public class PassportTransactionFormatter {
 
         byte[] signatureLength = hexToByte("fd97014d4101");
         byte[] hashCodeType = hexToByte("01");
-        byte[] publicKeyASN = pcon.getAAPublicKey().getEncoded();
+        byte[] publicKeyASN = pubkey.getEncoded();
 
         byte[] publicKey = new byte[81];
         System.arraycopy(publicKeyASN, publicKeyASN.length-81, publicKey, 0, 81);
