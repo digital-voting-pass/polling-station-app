@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(thisActivity, ManualInputActivity.class);
                 // send the docData to the manualinput in case a user wants to edit the existing docdata
-                intent.putExtra("docData", documentData);
+                intent.putExtra(DocumentData.identifier, documentData);
                 startActivityForResult(intent, GET_DOC_INFO);
             }
         });
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, GET_DOC_INFO);
         } else {
             Intent intent = new Intent(this, PassportConActivity.class);
-            intent.putExtra("docData", documentData);
+            intent.putExtra(DocumentData.identifier, documentData);
             startActivity(intent);
         }
     }
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         // Check if we got documentdata and set the documentData attribute
         if(requestCode == GET_DOC_INFO && resultCode == RESULT_OK) {
-            documentData = (DocumentData) data.getExtras().get("docData");
+            documentData = (DocumentData) data.getExtras().get(DocumentData.identifier);
         }
         // reload the election choice from sharedpreferences
         if(requestCode == CHOOSE_ELECTION && resultCode == RESULT_OK) {

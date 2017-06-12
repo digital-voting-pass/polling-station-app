@@ -211,7 +211,7 @@ public class Camera2BasicFragment extends Fragment
         if (!resultFound) {
             Intent returnIntent = new Intent();
             DocumentData data = mrz.getPrettyData();
-            returnIntent.putExtra("docData", data);
+            returnIntent.putExtra(DocumentData.identifier, data);
             getActivity().setResult(Activity.RESULT_OK, returnIntent);
             resultFound = true;
             finishActivity();

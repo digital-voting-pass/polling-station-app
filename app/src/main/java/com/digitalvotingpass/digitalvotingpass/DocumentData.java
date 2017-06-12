@@ -10,7 +10,7 @@ import android.os.Parcelable;
  */
 
 public class DocumentData implements Parcelable {
-
+    public final static String identifier = "docData";
     private final static int DOCUMENT_NUMBER_SIZE = 9;
 
     private String documentNumber;

@@ -69,7 +69,7 @@ public class PassportConnection {
      *
      * @return Publickey - returns the publickey used for AA
      */
-    public PublicKey getAAPublicKey(PassportService ps) {
+    public PublicKey getAAPublicKey(PassportService ps) throws Exception{
         InputStream is15 = null;
         try {
             is15 = ps.getInputStream(PassportService.EF_DG15);
@@ -77,6 +77,7 @@ public class PassportConnection {
             return dg15.getPublicKey();
         } catch (Exception ex) {
             ex.printStackTrace();
+            throw ex;
         } finally {
             try {
                 is15.close();
@@ -84,7 +85,6 @@ public class PassportConnection {
                 ex.printStackTrace();
             }
         }
-        return null;
     }
 
     /**
@@ -92,7 +92,7 @@ public class PassportConnection {
      *
      * @return byte[] - signed byte array
      */
-    public byte[] signData(PassportService ps) {
+    public byte[] signData(PassportService ps) throws Exception {
         InputStream is15 = null;
         try {
             is15 = ps.getInputStream(PassportService.EF_DG15);
@@ -103,6 +103,7 @@ public class PassportConnection {
             return ps.doAA(null, null, null, data);
         } catch (Exception ex) {
             ex.printStackTrace();
+            throw ex;
         } finally {
             try {
                 is15.close();
@@ -110,14 +111,13 @@ public class PassportConnection {
                 ex.printStackTrace();
             }
         }
-        return null;
     }
 
     /**
      * Get personal information about a voter from datagroup1.
      * @return Voter - Voter object containing personal data.
      */
-    public Voter getVoter(PassportService ps) {
+    public Voter getVoter(PassportService ps) throws Exception {
         InputStream is = null;
         try {
             is = ps.getInputStream(PassportService.EF_DG1);
@@ -129,6 +129,7 @@ public class PassportConnection {
                     mrzInfo.getGender());
         } catch (Exception ex) {
             ex.printStackTrace();
+            throw ex;
         } finally {
             try {
                 is.close();
@@ -136,7 +137,6 @@ public class PassportConnection {
                 ex.printStackTrace();
             }
         }
-        return null;
     }
 
 }

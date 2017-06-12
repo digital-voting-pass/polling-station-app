@@ -55,7 +55,7 @@ public class PassportConActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
-        documentData = (DocumentData) extras.get("docData");
+        documentData = (DocumentData) extras.get(DocumentData.identifier);
         thisActivity = this;
 
         setContentView(R.layout.activity_passport_con);
@@ -217,7 +217,7 @@ public class PassportConActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else {
-            Toast.makeText(this, "startResultActivity exception", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.NFC_error), Toast.LENGTH_LONG).show();
             progressView.setImageResource(R.drawable.nfc_icon_empty);
         }
     }
@@ -261,7 +261,7 @@ public class PassportConActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(thisActivity, ManualInputActivity.class);
-                intent.putExtra("docData", documentData);
+                intent.putExtra(DocumentData.identifier, documentData);
                 startActivityForResult(intent, MainActivity.GET_DOC_INFO);
             }
         };
@@ -282,7 +282,7 @@ public class PassportConActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == MainActivity.GET_DOC_INFO && resultCode == RESULT_OK) {
-            documentData = (DocumentData) data.getExtras().get("docData");
+            documentData = (DocumentData) data.getExtras().get(DocumentData.identifier);
         }
     }
 }
