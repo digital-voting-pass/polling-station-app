@@ -2,6 +2,7 @@ package com.digitalvotingpass.blockchain;
 
 import android.content.Context;
 import android.os.Environment;
+import android.provider.Telephony;
 import android.util.Log;
 
 import com.digitalvotingpass.digitalvotingpass.R;
@@ -176,34 +177,34 @@ public class BlockChain {
                     Address toAddress = o.getScriptPubKey().getToAddress(this.params);
                     Address fromAddress = transaction.getInput(0).getFromAddress();
                     Date date = transaction.getUpdateTime();
-
-                    if (address.equals(fromAddress)) {
-                        TransactionHistoryItem newTransactionHistoryItem =
-                                new TransactionHistoryItem(
-                                        String.format(context.getString(R.string.transaction_sent_item_format_title),
-                                                amount,
-                                                Election.parseElection(assetFilter, context).getKind(),
-                                                Election.parseElection(assetFilter, context).getPlace()),
-                                        date,
-                                        String.format(context.getString(R.string.transaction_sent_item_format_detail), translateAddress(toAddress.toString())));
-                        result.add(newTransactionHistoryItem);
-                    } else if (address.equals(toAddress)) {
-                        TransactionHistoryItem newTransactionHistoryItem =
-                                new TransactionHistoryItem(
-                                        String.format(context.getString(R.string.transaction_received_item_format_title),
-                                                amount,
-                                                Election.parseElection(assetFilter, context).getKind(),
-                                                Election.parseElection(assetFilter, context).getPlace()),
-                                        date,
-                                        String.format(context.getString(R.string.transaction_received_item_format_detail), translateAddress(fromAddress.toString())));
-                        result.add(newTransactionHistoryItem);
-                    } else {
-                        Log.e("BlockChain", "ERROR");
-                    }
+                    result.add(createTransactionHistoryItem(address, fromAddress, toAddress, date, assetFilter, amount));
                 }
             }
         }
         return result;
+    }
+
+    private TransactionHistoryItem createTransactionHistoryItem(Address myAddress, Address fromAddress, Address toAddress, Date date, Asset assetFilter, int amount) {
+        String titleFormat = "";
+        String detailFormat = "";
+
+        if (myAddress.equals(fromAddress)) {
+            titleFormat = context.getString(R.string.transaction_sent_item_format_title);
+            detailFormat = context.getString(R.string.transaction_sent_item_format_detail);
+        } else if (myAddress.equals(toAddress)) {
+            titleFormat = context.getString(R.string.transaction_received_item_format_title);
+            detailFormat = context.getString(R.string.transaction_received_item_format_detail);
+        }
+        if (titleFormat.equals("")) {
+            return null;
+        }
+        return new TransactionHistoryItem(
+                String.format(titleFormat,
+                        amount,
+                        Election.parseElection(assetFilter, context).getKind(),
+                        Election.parseElection(assetFilter, context).getPlace()),
+                date,
+                String.format(detailFormat, translateAddress(toAddress.toString())));
     }
 
     /**
