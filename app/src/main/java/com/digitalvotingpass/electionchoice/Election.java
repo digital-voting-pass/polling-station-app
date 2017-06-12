@@ -1,7 +1,6 @@
 package com.digitalvotingpass.electionchoice;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import com.digitalvotingpass.digitalvotingpass.R;
 

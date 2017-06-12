@@ -2,28 +2,29 @@ package com.digitalvotingpass.blockchain;
 
 import android.content.Context;
 import android.os.Environment;
-import android.provider.Telephony;
-import android.util.Log;
 
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.electionchoice.Election;
+import com.digitalvotingpass.passportconnection.PassportConnection;
+import com.digitalvotingpass.passportconnection.PassportTransactionFormatter;
 import com.digitalvotingpass.transactionhistory.TransactionHistoryItem;
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
 import com.digitalvotingpass.utilities.Util;
+import com.google.common.util.concurrent.MoreExecutors;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Asset;
+import org.bitcoinj.core.AssetBalance;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerAddress;
 import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MultiChainParams;
 import org.bitcoinj.utils.BriefLogFormatter;
+import org.bitcoinj.wallet.Wallet;
 
 import java.io.File;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -34,7 +35,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class BlockChain {
     public static final String PEER_IP = "188.226.149.56";
@@ -56,6 +56,7 @@ public class BlockChain {
             addressChecksum,
             0xf5dec1feL
     );
+    private Address masterAddress = Address.fromBase58(params, "1GoqgbPZUV2yuPZXohtAvB2NZbjcew8Rk93mMn");
 
     private BlockChain(Context ctx) {
         this.context = ctx;
@@ -145,6 +146,68 @@ public class BlockChain {
         }
         return false;
     }
+
+    /**
+     * Get the balance of a public key based on the information on the blockchain.
+     * @param pubKey
+     * @return
+     */
+    public AssetBalance getVotingPassBalance(PublicKey pubKey, Asset asset) {
+        Address address = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
+        return kit.wallet().getAssetBalance(asset, address);
+    }
+
+    /**
+     * Spends all outputs in this balance to the master address.
+     * @param balance
+     * @param pcon
+     */
+    public ArrayList<byte[]> getSpendUtxoTransactions(AssetBalance balance, PassportConnection pcon) throws Exception{
+        ArrayList<byte[]> transactions = new ArrayList<byte[]>();
+
+        for (TransactionOutput utxo : balance) {
+            transactions.add(utxoToSignedTransaction(utxo, masterAddress, pcon));
+        }
+        return transactions;
+    }
+
+    /**
+     * Create a new transaction, signes it with the travel document.
+     * @param utxo
+     * @param destination
+     * @param pcon
+     */
+    public byte[] utxoToSignedTransaction(TransactionOutput utxo, Address destination, PassportConnection pcon) throws Exception {
+        return new PassportTransactionFormatter(utxo, destination)
+                .buildAndSign(pcon);
+    }
+
+
+    /**
+     * Broadcasts the list of signed transactions.
+     * @param transactions
+     */
+    public ArrayList<Transaction> broadcastTransactions(ArrayList<byte[]> transactionsRaw) {
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        for (byte[] transactionRaw : transactionsRaw) {
+            final Wallet.SendResult result = new Wallet.SendResult();
+            result.tx = new Transaction(params, transactionRaw);
+
+            result.broadcast = kit.peerGroup().broadcastTransaction(result.tx);
+            result.broadcastComplete = result.broadcast.future();
+
+            result.broadcastComplete.addListener(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("Asset spent! txid: " + result.tx.getHashAsString());
+                }
+            }, MoreExecutors.directExecutor());
+
+            transactions.add(result.tx);
+        }
+        return transactions;
+    }
+
 
     /**
      * Returns the address corresponding to the pubkey.
