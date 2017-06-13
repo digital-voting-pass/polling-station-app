@@ -71,6 +71,7 @@
     <string name="address_not_found">This document is not registered for digital voting.</string>
 
     <string name="has_right">%s has right to:</string>
+    <string name="please_hand">Please hand %s</string>
     <string name="voting_pass">Voting pass</string>
     <string name="voting_passes">Voting passes</string>
 
