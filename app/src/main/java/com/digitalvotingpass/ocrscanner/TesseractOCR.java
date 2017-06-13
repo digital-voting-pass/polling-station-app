@@ -116,6 +116,7 @@ public class TesseractOCR {
                 cleanup();
             }
         });
+        ht.quitSafely();
     }
 
     /**
