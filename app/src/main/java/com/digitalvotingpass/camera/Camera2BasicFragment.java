@@ -24,6 +24,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -285,6 +286,8 @@ public class Camera2BasicFragment extends Fragment
      */
     private boolean mFlashSupported;
 
+    private boolean flashEnabled = false;
+
     /**
      * Orientation of the camera sensor
      */
@@ -401,6 +404,15 @@ public class Camera2BasicFragment extends Fragment
                 getActivity().startActivityForResult(intent, MainActivity.GET_DOC_INFO);
             }
         });
+
+        Button toggleFlashButton = (Button) view.findViewById(R.id.flash_toggle_button);
+        toggleFlashButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleTorch();
+            }
+        });
+
         infoText = (TextView) view.findViewById(R.id.info_text);
         Typeface typeFace= Typeface.createFromAsset(getActivity().getAssets(), "fonts/ro.ttf");
         infoText.setTypeface(typeFace);
@@ -766,8 +778,6 @@ public class Camera2BasicFragment extends Fragment
                                 // Auto focus should be continuous for camera preview.
                                 mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS,
                                         meteringRectangleArr);
-                                // Flash is automatically enabled when necessary.
-                                setAutoFlash(mPreviewRequestBuilder);
 
                                 // Finally, we start displaying the camera preview.
                                 mPreviewRequest = mPreviewRequestBuilder.build();
@@ -835,13 +845,6 @@ public class Camera2BasicFragment extends Fragment
         }
         mTextureView.setTransform(matrix);
         overlay.setRect(getScanRect());
-    }
-
-    private void setAutoFlash(CaptureRequest.Builder requestBuilder) {
-        if (mFlashSupported) {
-            requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                    CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
-        }
     }
 
     /**
@@ -924,5 +927,25 @@ public class Camera2BasicFragment extends Fragment
         int width = (int) (scanSegment.getWidth());
         int length = (int) (scanSegment.getHeight());
         return Bitmap.createBitmap(bitmap, startX, startY, width, length);
+    }
+
+    /**
+     * Turn the torch of the device on or off, when it has one.
+     */
+    private void toggleTorch() {
+        try {
+            if (!flashEnabled && mFlashSupported) {
+                mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+                mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+                Log.e(TAG, "flash enabled");
+            } else {
+                mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+                mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+                Log.e(TAG, "flash disabled");
+            }
+            flashEnabled = !flashEnabled;
+        } catch (CameraAccessException e ){
+            e.printStackTrace();
+        }
     }
 }

@@ -35,6 +35,15 @@
             android:text="@string/ocr_help_text"/>
 
         <Button
+            android:id="@+id/flash_toggle_button"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_toRightOf="@+id/info_text"
+            android:background="@drawable/blue_button"
+            android:gravity="center"
+        />
+
+        <Button
             android:id="@+id/manual_input_button"
             android:visibility="gone"
             android:background="@drawable/blue_button_bottom"
