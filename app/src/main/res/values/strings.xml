@@ -78,6 +78,9 @@
 
     <string name="please_enable_connect_message">Please enable network connection</string>
     <string name="no_connection">No Network</string>
+
+    <string name="go_network_settings">Settings</string>
+
     <string-array name="months_array">
         <item>January</item>
         <item>February</item>

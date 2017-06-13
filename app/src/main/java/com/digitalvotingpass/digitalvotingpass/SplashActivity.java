@@ -9,11 +9,13 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -100,15 +102,28 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         super.onWindowFocusChanged(hasFocus);
         if (!Util.isOnline(getApplicationContext()) && hasFocus) {
             initTextHandler.removeCallbacks(initTextUpdater);
-            Toast.makeText(getApplicationContext(), getString(R.string.please_enable_connect_message), Toast.LENGTH_LONG).show();
             currentTask.setText(getString(R.string.no_connection));
+
+            if (!Util.isNetEnabled(getApplicationContext())) {
+                View.OnClickListener inputSnackbarListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                    }
+                };
+
+                Snackbar snackbar = Snackbar.make(findViewById(R.id.splash_screen_layout), getString(R.string.please_enable_connect_message), Snackbar.LENGTH_INDEFINITE);
+                snackbar.getView().setBackgroundColor(ContextCompat.getColor(this, R.color.redFailed));
+                snackbar.setAction(R.string.go_network_settings, inputSnackbarListener);
+                snackbar.show();
+            }
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-       if (requestCode == REQUEST_CODE_STORAGE) {
+        if (requestCode == REQUEST_CODE_STORAGE) {
             if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
             } else {
                 handler.post(startBlockChain);

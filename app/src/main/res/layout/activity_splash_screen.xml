@@ -1,53 +1,58 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/splash_screen_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
     android:background="@color/govDarkBlue">
 
-    <TextView
-        android:id="@+id/text_splash_screen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <LinearLayout
+        android:orientation="vertical"
         android:gravity="center"
-        android:text="@string/app_name"
-        android:textColor="@color/govLightGray"
-        android:paddingBottom="10dp"
-        android:textSize="20sp"
-        />
-
-    <ImageView
-        android:id="@+id/splash_screen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/voting_pass_icon"
-        android:contentDescription="@string/app_name"
-        android:gravity="center"
-        />
-
-    <TextView
-        android:id="@+id/progress_current_task"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textColor="@color/govLightGray"
-        android:textSize="20sp"
-        android:text="@string/initializing_text" />
+        android:layout_height="match_parent">
 
-    <ProgressBar
-        android:id="@+id/download_progress_bar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:minHeight="30dp"
-        android:layout_width="match_parent"
-        android:gravity="center"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/text_splash_screen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="@color/govLightGray"
+            android:paddingBottom="10dp"
+            android:textSize="20sp"
+            />
 
-    <TextView
-        android:id="@+id/download_progress_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textColor="@color/govLightGray"
-        android:textSize="20sp" />
-</LinearLayout>
+        <ImageView
+            android:id="@+id/splash_screen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/app_name"
+            android:gravity="center"
+            android:src="@drawable/voting_pass_icon" />
+
+        <TextView
+            android:id="@+id/progress_current_task"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/govLightGray"
+            android:textSize="20sp"
+            android:text="@string/initializing_text" />
+
+        <ProgressBar
+            android:id="@+id/download_progress_bar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:minHeight="30dp"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/download_progress_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/govLightGray"
+            android:textSize="20sp" />
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
