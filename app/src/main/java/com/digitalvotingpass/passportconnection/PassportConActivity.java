@@ -164,7 +164,6 @@ public class PassportConActivity extends AppCompatActivity {
                 // Get public key from dg15
                 PublicKey pubKey = pcon.getAAPublicKey(ps);
 
-                progressView.setImageResource(R.drawable.nfc_icon_3);
                 // Get voter information from dg1
                 Voter voter = pcon.getVoter(ps);
 
