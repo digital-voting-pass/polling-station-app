@@ -20,6 +20,9 @@ import java.util.Map;
 
 public class Util {
 
+    public static final String STATUS_BAR_HEIGHT = "status_bar_height";
+    public static final String DEF_TYPE = "dimen";
+    public static final String DEF_PACKAGE = "android";
 
     public static final String FOLDER_DIGITAL_VOTING_PASS = "DigitalVotingPass";
 
@@ -31,7 +34,7 @@ public class Util {
      */
     public static int getStatusBarHeight(Resources resources) {
         int result = 0;
-        int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
+        int resourceId = resources.getIdentifier(STATUS_BAR_HEIGHT, DEF_TYPE, DEF_PACKAGE);
         if (resourceId > 0) {
             result = resources.getDimensionPixelSize(resourceId);
         }
