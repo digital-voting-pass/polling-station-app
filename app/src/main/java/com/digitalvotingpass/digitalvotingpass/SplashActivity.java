@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.blockchain.BlockchainCallBackListener;
-import com.digitalvotingpass.camera.Camera2BasicFragment;
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
 import com.digitalvotingpass.utilities.ErrorDialog;

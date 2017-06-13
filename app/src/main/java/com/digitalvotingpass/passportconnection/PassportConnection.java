@@ -5,7 +5,6 @@ import android.nfc.tech.IsoDep;
 
 import com.digitalvotingpass.digitalvotingpass.DocumentData;
 import com.digitalvotingpass.digitalvotingpass.Voter;
-import com.digitalvotingpass.utilities.Util;
 
 import net.sf.scuba.smartcards.CardService;
 

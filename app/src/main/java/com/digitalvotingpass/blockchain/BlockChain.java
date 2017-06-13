@@ -5,8 +5,8 @@ import android.os.Environment;
 import com.digitalvotingpass.passportconnection.PassportConnection;
 import com.digitalvotingpass.passportconnection.PassportTransactionFormatter;
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.digitalvotingpass.utilities.Util;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 
 import org.bitcoinj.core.Address;
@@ -15,7 +15,6 @@ import org.bitcoinj.core.AssetBalance;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerAddress;
 import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.TransactionConfidence;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MultiChainParams;

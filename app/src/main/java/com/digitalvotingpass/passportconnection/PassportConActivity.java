@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.digitalvotingpass.blockchain.BlockChain;
-import com.digitalvotingpass.digitalvotingpass.Voter;
 import com.digitalvotingpass.digitalvotingpass.DocumentData;
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.digitalvotingpass.ResultActivity;
@@ -26,9 +25,7 @@ import com.digitalvotingpass.utilities.Util;
 import com.google.gson.Gson;
 
 import org.bitcoinj.core.AssetBalance;
-import org.bitcoinj.core.Transaction;
 import org.jmrtd.PassportService;
-import org.spongycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.PublicKey;
 import java.security.Security;
