@@ -153,7 +153,6 @@ public class Camera2BasicFragment extends Fragment implements FragmentCompat.OnR
     private CameraHandler mCameraHandler;
 
 
-
     public static Camera2BasicFragment newInstance() {
         return new Camera2BasicFragment();
     }

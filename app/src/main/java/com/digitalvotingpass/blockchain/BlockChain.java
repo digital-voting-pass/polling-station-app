@@ -1,9 +1,13 @@
 package com.digitalvotingpass.blockchain;
 
+import android.content.Context;
 import android.os.Environment;
 
+import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.passportconnection.PassportConnection;
 import com.digitalvotingpass.passportconnection.PassportTransactionFormatter;
+import com.digitalvotingpass.transactionhistory.TransactionHistoryItem;
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
 import com.digitalvotingpass.utilities.Util;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -24,9 +28,14 @@ import org.bitcoinj.wallet.Wallet;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class BlockChain {
     public static final String PEER_IP = "188.226.149.56";
@@ -34,6 +43,7 @@ public class BlockChain {
     private WalletAppKit kit;
     private BlockchainCallBackListener listener;
     private boolean initialized = false;
+    private Context context;
     private ProgressTracker progressTracker;
 
     private InetAddress peeraddr;
@@ -49,7 +59,8 @@ public class BlockChain {
     );
     private Address masterAddress = Address.fromBase58(params, "1GoqgbPZUV2yuPZXohtAvB2NZbjcew8Rk93mMn");
 
-    private BlockChain() {
+    private BlockChain(Context ctx) {
+        this.context = ctx;
         try {
             peeraddr = InetAddress.getByName(PEER_IP);
             progressTracker = new ProgressTracker();
@@ -58,9 +69,10 @@ public class BlockChain {
         }
     }
 
-    public static synchronized BlockChain getInstance() {
+    public static synchronized BlockChain getInstance(Context ctx) throws Exception {
         if (instance == null) {
-            instance = new BlockChain();
+            if (ctx == null) throw new Exception("Context cannot be null on first call");
+            instance = new BlockChain(ctx);
         }
         return instance;
     }
@@ -100,12 +112,6 @@ public class BlockChain {
             kit.setPeerNodes(peer);
             kit.startAsync();
         }
-    }
-
-    public Service.State state() {
-        if (kit == null)
-            return null;
-        return kit.state();
     }
 
     public void disconnect() {
@@ -157,7 +163,7 @@ public class BlockChain {
      * @param balance
      * @param pcon
      */
-    public ArrayList<byte[]> getSpendUtxoTransactions(AssetBalance balance, PassportConnection pcon) {
+    public ArrayList<byte[]> getSpendUtxoTransactions(AssetBalance balance, PassportConnection pcon) throws Exception{
         ArrayList<byte[]> transactions = new ArrayList<byte[]>();
 
         for (TransactionOutput utxo : balance) {
@@ -172,7 +178,7 @@ public class BlockChain {
      * @param destination
      * @param pcon
      */
-    public byte[] utxoToSignedTransaction(TransactionOutput utxo, Address destination, PassportConnection pcon) {
+    public byte[] utxoToSignedTransaction(TransactionOutput utxo, Address destination, PassportConnection pcon) throws Exception {
         return new PassportTransactionFormatter(utxo, destination)
                 .buildAndSign(pcon);
     }
@@ -204,4 +210,79 @@ public class BlockChain {
     }
 
 
+    /**
+     * Returns the address corresponding to the pubkey.
+     * @param pubKey
+     * @return Address
+     */
+    public Address getAddress(PublicKey pubKey) {
+        return Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
+    }
+
+    /**
+     * Load transactions that involve the given public key, either incomming or outgoing.
+     * @param pubKey PublicKey comming from epassport
+     * @param assetFilter Asset for which transactions needs to be checked.
+     * @return List containing interesting transactions.
+     */
+    public List<TransactionHistoryItem> getMyTransactions(PublicKey pubKey, Asset assetFilter) {
+        List<TransactionHistoryItem> result = new ArrayList<>();
+        Address address = Address.fromBase58(params, MultiChainAddressGenerator.getPublicAddress(version, Long.toString(addressChecksum), pubKey));
+        List<Transaction> ts = kit.wallet().getAssetTransactions(address, assetFilter);
+
+        for (Transaction transaction : ts) {
+            for (TransactionOutput o : transaction.getOutputs()) {
+                boolean sentToAddr = o.getScriptPubKey().isSentToAddress();
+                boolean isReturn = o.getScriptPubKey().isOpReturn();
+                if (sentToAddr && !isReturn) {
+                    byte[] metaData = o.getScriptPubKey().getChunks().get(5).data;
+                    byte[] quantity = Arrays.copyOfRange(metaData, 20, 28);
+                    int amount = ByteBuffer.wrap(quantity).order(ByteOrder.LITTLE_ENDIAN).getInt();
+                    Address toAddress = o.getScriptPubKey().getToAddress(this.params);
+                    Address fromAddress = transaction.getInput(0).getFromAddress();
+                    Date date = transaction.getUpdateTime();
+                    if (!toAddress.equals(fromAddress)) {
+                        TransactionHistoryItem item = createTransactionHistoryItem(address, fromAddress, toAddress, date, assetFilter, amount);
+                        result.add(item);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private TransactionHistoryItem createTransactionHistoryItem(Address myAddress, Address fromAddress, Address toAddress, Date date, Asset assetFilter, int amount) {
+        String titleFormat = "";
+        String detailFormat = "";
+        String detailString = "";
+        if (myAddress.equals(fromAddress)) {
+            titleFormat = context.getString(R.string.transaction_sent_item_format_title);
+            detailFormat = context.getString(R.string.transaction_sent_item_format_detail);
+            detailString = String.format(detailFormat, translateAddress(toAddress.toString()));
+        } else if (myAddress.equals(toAddress)) {
+            titleFormat = context.getString(R.string.transaction_received_item_format_title);
+            detailFormat = context.getString(R.string.transaction_received_item_format_detail);
+            detailString  = String.format(detailFormat, translateAddress(fromAddress.toString()));
+        }
+        return new TransactionHistoryItem(
+                String.format(titleFormat,
+                        amount,
+                        Election.parseElection(assetFilter, context).getKind(),
+                        Election.parseElection(assetFilter, context).getPlace()),
+                date, detailString);
+    }
+
+    /**
+     * Translate a MultiChain address to a meaningful String value if such a value is defined for
+     * that address in strings.xml
+     * @param address String value of MultiChain address
+     * @return String containing defined mapped value or {@code address} if no mapping was found.
+     */
+    public String translateAddress(String address) {
+        Map<String, String> addresses = Util.getKeyValueFromStringArray(context);
+        if (addresses.containsKey(address))
+            return addresses.get(address);
+        else
+            return address;
+    }
 }

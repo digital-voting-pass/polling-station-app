@@ -49,7 +49,7 @@ public class PassportTransactionFormatter {
      * Builds the raw transaction and signes using the passport.
      * @param pcon
      */
-    public byte[] buildAndSign(PassportConnection pcon) {
+    public byte[] buildAndSign(PassportConnection pcon) throws Exception {
         byte[][] parts = buildRawTransaction();
         this.data = signRawTransaction(parts, pcon);
         return this.data;
@@ -111,7 +111,7 @@ public class PassportTransactionFormatter {
      * Follows the steps in this answer: https://bitcoin.stackexchange.com/a/5241
      * @return signedRawTransaction
      */
-    public byte[] signRawTransaction(byte[][] parts, PassportConnection pcon) {
+    public byte[] signRawTransaction(byte[][] parts, PassportConnection pcon) throws Exception {
 
         byte[] rawTransaction = Bytes.concat(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5],
                 parts[6], parts[7], parts[8], parts[9], parts[10], parts[11], parts[12]);

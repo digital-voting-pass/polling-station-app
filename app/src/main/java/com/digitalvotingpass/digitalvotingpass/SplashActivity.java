@@ -77,11 +77,15 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         downloadProgressBar = (ProgressBar) findViewById(R.id.download_progress_bar);
 
         if (savedInstanceState == null) {
-            blockChain = BlockChain.getInstance();
-            handler = new Handler();
-            initTextHandler = new Handler();
-            initTextHandler.post(initTextUpdater);
-            handler.post(startBlockChain);
+            try {
+                blockChain = BlockChain.getInstance(getApplicationContext());
+                handler = new Handler();
+                initTextHandler = new Handler();
+                initTextHandler.post(initTextUpdater);
+                handler.post(startBlockChain);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -137,7 +141,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         } else {
             Gson gson = new Gson();
             Election election = gson.fromJson(json, Election.class);
-            if(!BlockChain.getInstance().assetExists(election.getAsset())){
+            if(!blockChain.assetExists(election.getAsset())){
                 intent = new Intent(SplashActivity.this, ElectionChoiceActivity.class);
             } else {
                 intent = new Intent(SplashActivity.this, MainActivity.class);
