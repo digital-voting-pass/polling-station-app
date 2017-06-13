@@ -246,7 +246,10 @@ public class BlockChain {
                     Address toAddress = o.getScriptPubKey().getToAddress(this.params);
                     Address fromAddress = transaction.getInput(0).getFromAddress();
                     Date date = transaction.getUpdateTime();
-                    result.add(createTransactionHistoryItem(address, fromAddress, toAddress, date, assetFilter, amount));
+                    if (!toAddress.equals(fromAddress)) {
+                        TransactionHistoryItem item = createTransactionHistoryItem(address, fromAddress, toAddress, date, assetFilter, amount);
+                        result.add(item);
+                    }
                 }
             }
         }
@@ -256,24 +259,22 @@ public class BlockChain {
     private TransactionHistoryItem createTransactionHistoryItem(Address myAddress, Address fromAddress, Address toAddress, Date date, Asset assetFilter, int amount) {
         String titleFormat = "";
         String detailFormat = "";
-
+        String detailString = "";
         if (myAddress.equals(fromAddress)) {
             titleFormat = context.getString(R.string.transaction_sent_item_format_title);
             detailFormat = context.getString(R.string.transaction_sent_item_format_detail);
+            detailString = String.format(detailFormat, translateAddress(toAddress.toString()));
         } else if (myAddress.equals(toAddress)) {
             titleFormat = context.getString(R.string.transaction_received_item_format_title);
             detailFormat = context.getString(R.string.transaction_received_item_format_detail);
-        }
-        if (titleFormat.equals("")) {
-            return null;
+            detailString  = String.format(detailFormat, translateAddress(fromAddress.toString()));
         }
         return new TransactionHistoryItem(
                 String.format(titleFormat,
                         amount,
                         Election.parseElection(assetFilter, context).getKind(),
                         Election.parseElection(assetFilter, context).getPlace()),
-                date,
-                String.format(detailFormat, translateAddress(toAddress.toString())));
+                date, detailString);
     }
 
     /**
