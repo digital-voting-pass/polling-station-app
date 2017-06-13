@@ -3,6 +3,7 @@
 [![platform](https://img.shields.io/badge/platform-Android-green.svg)](https://www.android.com)
 [![Build Status](https://travis-ci.org/digital-voting-pass/digital-voting-pass-app.svg?branch=develop)](https://travis-ci.org/digital-voting-pass/digital-voting-pass-app)
 
+<img align="right" src="https://user-images.githubusercontent.com/2787511/27002571-8d902bb8-4de5-11e7-94d5-da48a4209fdc.gif" width="350" />
 
 Part of a [Delft Unversity of Technology](https://www.tudelft.nl) bachelor's thesis about the digitalization of the voting pass for Dutch elections using **blockchain** and **machine readable travel documents**.
 
@@ -10,7 +11,11 @@ The scope of this project is limited to the [voting pass](https://nl.wikipedia.o
 
 This app is intended for use at the polling station. An official scans a voter's travel document to verify and redeem the suffrage, which process is stored on the blockchain and can be verifed by anyone. After the suffrage is verified, a ballot is handed out and the voting process continues in a traditional way (by pencil and paper). 
 
-[<img src="https://user-images.githubusercontent.com/2787511/27002571-8d902bb8-4de5-11e7-94d5-da48a4209fdc.gif" width="350" />]()
+
+
+<a href="https://play.google.com/store/apps/details?id=com.digitalvotingpass.digitalvotingpass">
+  <img  alt="Android app on Google Play" src="https://developer.android.com/images/brand/en_app_rgb_wo_45.png" />
+</a>
 
 ## Getting Started
 
