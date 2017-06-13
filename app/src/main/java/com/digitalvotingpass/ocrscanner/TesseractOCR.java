@@ -107,13 +107,16 @@ public class TesseractOCR {
      * Starts (enqueues) a stop routine in a new thread, then returns immediately.
      */
     public void stopScanner() {
-        cleanHandler = new Handler();
+        HandlerThread ht = new HandlerThread("stopper");
+        ht.start();
+        cleanHandler = new Handler(ht.getLooper());
         cleanHandler.post(new Runnable() {
             @Override
             public void run() {
                 cleanup();
             }
         });
+        ht.quitSafely();
     }
 
     /**
