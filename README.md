@@ -12,6 +12,11 @@ This app is intended for use at the polling station. An official scans a voter's
 
 [<img src="https://user-images.githubusercontent.com/2787511/27002571-8d902bb8-4de5-11e7-94d5-da48a4209fdc.gif" width="350" />]()
 
+
+<a href="https://play.google.com/store/apps/details?id=com.digitalvotingpass.digitalvotingpass">
+  <img alt="Android app on Google Play" src="https://developer.android.com/images/brand/en_app_rgb_wo_45.png" />
+</a>
+
 ## Getting Started
 
 Import the root folder into your IDE (tested on Android Studio), then run project.
