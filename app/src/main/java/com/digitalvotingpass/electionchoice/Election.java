@@ -46,50 +46,41 @@ public class Election {
     public Asset getAsset() { return asset; }
 
     public static Election parseElection(Asset a, Context context) {
-        try {
-            String name = a.getName();
-            String prefix = name.substring(0,2);
-            String kind;
-            switch(prefix) {
-                case "T_":
-                    kind = context.getString(R.string.tweedekamer);
-                    name = name.substring(2);
-                    break;
-                case "P_":
-                    kind = context.getString(R.string.provinciaal);
-                    name = name.substring(2);
-                    break;
-                case "G_":
-                    kind = context.getString(R.string.gemeente);
-                    name = name.substring(2);
-                    break;
-                case "W_":
-                    kind = context.getString(R.string.waterschap);
-                    name = name.substring(2);
-                    break;
-                default:
-                    kind = "";
-                    break;
-            }
-            return new Election(kind, name, a);
-        } catch (Exception e) {
-            e.printStackTrace();
+        String name = a.getName();
+        String prefix = name.substring(0,2);
+        String kind;
+        switch(prefix) {
+            case "T_":
+                kind = context.getString(R.string.tweedekamer);
+                name = name.substring(2);
+                break;
+            case "P_":
+                kind = context.getString(R.string.provinciaal);
+                name = name.substring(2);
+                break;
+            case "G_":
+                kind = context.getString(R.string.gemeente);
+                name = name.substring(2);
+                break;
+            case "W_":
+                kind = context.getString(R.string.waterschap);
+                name = name.substring(2);
+                break;
+            default:
+                kind = "";
+                break;
         }
-        return null;
+        return new Election(kind, name, a);
     }
 
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof Election) {
             Election that = (Election) obj;
-            if(!this.getPlace().equals(that.getPlace()) ||
-                    !this.getKind().equals(that.getKind()) ||
-                    !this.getAsset().getName().equals(that.getAsset().getName())) {
-                return false;
-            } else {
-                return true;
-            }
-        } else{
+            return this.getPlace().equals(that.getPlace()) &&
+                    this.getKind().equals(that.getKind()) &&
+                    this.getAsset().getName().equals(that.getAsset().getName());
+        } else {
             return false;
         }
     }

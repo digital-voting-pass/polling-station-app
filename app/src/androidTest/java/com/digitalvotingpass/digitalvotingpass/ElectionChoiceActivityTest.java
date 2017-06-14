@@ -22,9 +22,6 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by wkmeijer on 7-6-17.
- */
 public class ElectionChoiceActivityTest {
     private ElectionChoiceActivity activity;
     private Sha256Hash mockHash  = new Sha256Hash("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");

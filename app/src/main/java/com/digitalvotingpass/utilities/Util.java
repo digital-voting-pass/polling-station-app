@@ -62,13 +62,12 @@ public class Util {
      * @param f File to copy data to.
      */
     public static void copyAssetsFile(InputStream is, File f) throws IOException {
-        OutputStream os = null;
         if (!f.exists()) {
             if (!f.getParentFile().mkdirs()) { //getParent because otherwise it creates a folder with that filename, we just need the dirs
                 Log.e("Util", "Cannot create path!");
             }
         }
-        os = new FileOutputStream(f, true);
+        OutputStream os = new FileOutputStream(f, true);
 
         final int buffer_size = 1024 * 1024;
         try {
