@@ -162,11 +162,11 @@ public class BlockChain {
      * @param balance
      * @param pcon
      */
-    public ArrayList<byte[]> getSpendUtxoTransactions(AssetBalance balance, PassportConnection pcon) throws Exception{
+    public ArrayList<byte[]> getSpendUtxoTransactions(PublicKey pubKey, AssetBalance balance, PassportConnection pcon) throws Exception {
         ArrayList<byte[]> transactions = new ArrayList<byte[]>();
 
         for (TransactionOutput utxo : balance) {
-            transactions.add(utxoToSignedTransaction(utxo, masterAddress, pcon));
+            transactions.add(utxoToSignedTransaction(pubKey, utxo, masterAddress, pcon));
         }
         return transactions;
     }
@@ -177,15 +177,15 @@ public class BlockChain {
      * @param destination
      * @param pcon
      */
-    public byte[] utxoToSignedTransaction(TransactionOutput utxo, Address destination, PassportConnection pcon) throws Exception {
+    public byte[] utxoToSignedTransaction(PublicKey pubKey, TransactionOutput utxo, Address destination, PassportConnection pcon) throws Exception {
         return new PassportTransactionFormatter(utxo, destination)
-                .buildAndSign(pcon);
+                .buildAndSign(pubKey, pcon);
     }
 
 
     /**
      * Broadcasts the list of signed transactions.
-     * @param transactions
+     * @param transactionsRaw
      */
     public ArrayList<Transaction> broadcastTransactions(ArrayList<byte[]> transactionsRaw) {
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
