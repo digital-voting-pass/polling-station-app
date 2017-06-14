@@ -82,14 +82,10 @@ public class Election {
     public boolean equals(Object obj) {
         if(obj instanceof Election) {
             Election that = (Election) obj;
-            if(!this.getPlace().equals(that.getPlace()) ||
-                    !this.getKind().equals(that.getKind()) ||
-                    !this.getAsset().getName().equals(that.getAsset().getName())) {
-                return false;
-            } else {
-                return true;
-            }
-        } else{
+            return this.getPlace().equals(that.getPlace()) &&
+                    this.getKind().equals(that.getKind()) &&
+                    this.getAsset().getName().equals(that.getAsset().getName());
+        } else {
             return false;
         }
     }
