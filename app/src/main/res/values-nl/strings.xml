@@ -50,7 +50,7 @@
     <string name="nfc_disabled_error_snackbar">NFC is uitgeschakeld, zet dit aan en houd het reisdocument tegen de achterzijde van dit apparaat om te scannen.</string>
     <string name="nfc_disabled_snackbar_action">Zet NFC aan</string>
     <string name="nfc_enabled">Houd het reisdocument tegen de achterzijde van dit apparaat.</string>
-    <string name="general_error">Verbinden mislukt, check a.u.b. of het document compatibel is.</string>
+    <string name="general_error">Verbinden mislukt, controleer a.u.b. of het document compatibel is.</string>
 
     <string name="NFC_error">Kan NFC-scan niet afronden, probeer opnieuw.</string>
     <string name="start_con_button">Start NFC connectie</string>
@@ -60,7 +60,7 @@
     <string name="transaction_history">Transactiegeschiedenis</string>
     <string name="no_transactions_found">No transaction history found</string>
 
-    <string name="wrong_document_details">Document details zijn onjuist ingevoerd</string>
+    <string name="wrong_document_details">Document gegevens zijn onjuist ingevoerd</string>
     <string name="check_input">Controleer invoer</string>
 
     <!--Main Activity-->
@@ -74,7 +74,7 @@
     <string name="proceed_cast_vote">Stempas verzilveren</string>
     <string name="cancel_vote">Annuleren</string>
     <string name="authorization_failed">Geen stempassen gevonden.</string>
-    <string name="authorization_succesful">Authorizatie geslaagd, gelieve bevestigen.</string>
+    <string name="authorization_succesful">Authorisatie geslaagd, gelieve bevestigen.</string>
     <plurals name="authorization_succesful">
         <item quantity="one">Stempas gevonden, kies verzilveren.</item>
         <item quantity="other">Stempassen gevonden, kies verzilveren</item>
@@ -115,7 +115,7 @@
     </string-array>
 
     <!--Transaction History-->
-    <string name="transaction_received_item_format_title">%1$d stempas ontvagen \n%2$s %3$s</string>
+    <string name="transaction_received_item_format_title">%1$d stempas ontvangen \n%2$s %3$s</string>
     <string name="transaction_received_item_format_detail">Van %s</string>
     <string name="transaction_sent_item_format_title">%1$d stempas verzonden \n%2$s %3$s</string>
     <string name="transaction_sent_item_format_detail">Naar %s</string>
