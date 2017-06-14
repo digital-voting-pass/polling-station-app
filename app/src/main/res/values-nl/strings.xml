@@ -23,18 +23,18 @@
     <string name="request_permission">Deze applicatie heeft toegang tot de camera nodig.</string>
     <string name="camera_error">Dit apparaat ondersteunt geen Camera2 API.</string>
     <string-array name="months_array">
-        <item>Januari</item>
-        <item>Februari</item>
-        <item>Maart</item>
-        <item>April</item>
-        <item>Mei</item>
-        <item>Juni</item>
-        <item>Juli</item>
-        <item>Augustus</item>
-        <item>September</item>
-        <item>Oktober</item>
-        <item>November</item>
-        <item>December</item>
+        <item>januari</item>
+        <item>februari</item>
+        <item>maart</item>
+        <item>april</item>
+        <item>mei</item>
+        <item>juni</item>
+        <item>juli</item>
+        <item>augustus</item>
+        <item>september</item>
+        <item>oktober</item>
+        <item>november</item>
+        <item>december</item>
     </string-array>
 
     <!-- OCR Scanning -->
