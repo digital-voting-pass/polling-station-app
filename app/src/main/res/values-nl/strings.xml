@@ -45,7 +45,7 @@
     <string name="storage_permission_explanation">Geef alstublieft toegang tot de opslag om blockchain te kunnen gebruiken.</string>
 
     <!--NFC Scanning-->
-    <string name="passportconnection">Verbind met Reisdocument</string>
+    <string name="passportconnection">Verbind met reisdocument</string>
     <string name="nfc_not_supported_error">Dit apparaat ondersteunt geen NFC.</string>
     <string name="nfc_disabled_error_snackbar">NFC is uitgeschakeld, zet dit aan en houd het reisdocument tegen de achterzijde van dit apparaat om te scannen.</string>
     <string name="nfc_disabled_snackbar_action">Zet NFC aan</string>
