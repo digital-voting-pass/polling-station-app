@@ -107,6 +107,9 @@
     <!--Splash Activity-->
     <string name="downloading_text">Downloaden...</string>
     <string name="initializing_text">Initialiseren...</string>
+    <string name="please_enable_connect_message">Activeer de internet verbinding</string>
+    <string name="no_connection">Geen Internet</string>
+    <string name="go_network_settings">WIFI Instellingen</string>
     <string-array name="init_array">
         <item>Initialiseren</item>
         <item>\u00A0Initialiseren.</item>
