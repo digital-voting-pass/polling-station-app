@@ -20,6 +20,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
@@ -43,6 +44,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -288,6 +290,8 @@ public class Camera2BasicFragment extends Fragment
 
     private boolean flashEnabled = false;
 
+    private FloatingActionButton toggleTorchButton;
+
     /**
      * Orientation of the camera sensor
      */
@@ -405,8 +409,8 @@ public class Camera2BasicFragment extends Fragment
             }
         });
 
-        Button toggleFlashButton = (Button) view.findViewById(R.id.flash_toggle_button);
-        toggleFlashButton.setOnClickListener(new View.OnClickListener() {
+        toggleTorchButton = (FloatingActionButton) view.findViewById(R.id.toggle_torch_button);
+        toggleTorchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toggleTorch();
@@ -937,10 +941,12 @@ public class Camera2BasicFragment extends Fragment
             if (!flashEnabled && mFlashSupported) {
                 mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
                 mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+                toggleTorchButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.govDarkBluePressed)));
                 Log.e(TAG, "flash enabled");
             } else {
                 mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
                 mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+                toggleTorchButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.govDarkBlue)));
                 Log.e(TAG, "flash disabled");
             }
             flashEnabled = !flashEnabled;
