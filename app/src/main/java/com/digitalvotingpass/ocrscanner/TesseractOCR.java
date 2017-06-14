@@ -8,7 +8,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 
-import com.digitalvotingpass.camera.Camera2BasicFragment;
+import com.digitalvotingpass.camera.CameraFragment;
 import com.digitalvotingpass.utilities.Util;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
@@ -38,7 +38,7 @@ public class TesseractOCR {
     private Handler timeoutHandler;
 
     private AssetManager assetManager;
-    private Camera2BasicFragment fragment;
+    private CameraFragment fragment;
     public boolean stopping = false;
     public boolean isInitialized = false;
 
@@ -89,7 +89,7 @@ public class TesseractOCR {
         }
     };
 
-    public TesseractOCR(String name, Camera2BasicFragment fragment, final AssetManager assetManager) {
+    public TesseractOCR(String name, CameraFragment fragment, final AssetManager assetManager) {
         this.assetManager = assetManager;
         this.fragment = fragment;
         this.name = name;

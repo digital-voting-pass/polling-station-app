@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 public class CameraHandler {
     // The fragment this camera device is associated with
-    private Camera2BasicFragment fragment;
+    private CameraFragment fragment;
 
     private String TAG = "CameraHandler";
     private final float SECONDS_TILL_SCAN_TIMEOUT = 10;
@@ -110,7 +110,7 @@ public class CameraHandler {
      * size of the devices screen.
      * @param fragment - A fragment which handles the display of the camera preview.
      */
-    public CameraHandler(Camera2BasicFragment fragment) {
+    public CameraHandler(CameraFragment fragment) {
         this.fragment = fragment;
     }
 

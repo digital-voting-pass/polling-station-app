@@ -58,9 +58,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-public class Camera2BasicFragment extends Fragment implements FragmentCompat.OnRequestPermissionsResultCallback {
+public class CameraFragment extends Fragment implements FragmentCompat.OnRequestPermissionsResultCallback {
     // tag for the log and the error dialog
-    private static final String TAG = "Camera2BasicFragment";
+    private static final String TAG = "CameraFragment";
     private static final String FRAGMENT_DIALOG = "dialog";
 
     private static final int DELAY_BETWEEN_OCR_THREADS_MILLIS = 500;
@@ -153,8 +153,8 @@ public class Camera2BasicFragment extends Fragment implements FragmentCompat.OnR
     private CameraHandler mCameraHandler;
 
 
-    public static Camera2BasicFragment newInstance() {
-        return new Camera2BasicFragment();
+    public static CameraFragment newInstance() {
+        return new CameraFragment();
     }
 
     /**
@@ -370,7 +370,7 @@ public class Camera2BasicFragment extends Fragment implements FragmentCompat.OnR
             }
             Intent returnIntent = new Intent();
             DocumentData data = mrz.getPrettyData();
-            returnIntent.putExtra("result", data);
+            returnIntent.putExtra("docData", data);
             getActivity().setResult(Activity.RESULT_OK, returnIntent);
             resultFound = true;
             getActivity().finish();
