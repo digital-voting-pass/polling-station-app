@@ -942,12 +942,10 @@ public class Camera2BasicFragment extends Fragment
                 mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
                 mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
                 toggleTorchButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.govDarkBluePressed)));
-                Log.e(TAG, "flash enabled");
             } else {
                 mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
                 mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
                 toggleTorchButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.govDarkBlue)));
-                Log.e(TAG, "flash disabled");
             }
             flashEnabled = !flashEnabled;
         } catch (CameraAccessException e ){
