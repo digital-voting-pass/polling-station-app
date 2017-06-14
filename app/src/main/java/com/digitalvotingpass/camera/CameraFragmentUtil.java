@@ -1,10 +1,13 @@
 package com.digitalvotingpass.camera;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.hardware.camera2.CameraCharacteristics;
 import android.util.Log;
 import android.util.Size;
+import android.view.Surface;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -16,8 +19,8 @@ import java.util.List;
  * Created by wkmeijer on 12-6-17.
  */
 
-public class CameraSupport {
-    public final static String TAG = "Camera support";
+public class CameraFragmentUtil {
+    public final static String TAG = "CameraFragmentUtil";
 
     /**
      * Given {@code choices} of {@code Size}s supported by a camera, choose the smallest one that
@@ -149,5 +152,35 @@ public class CameraSupport {
                     (long) rhs.getWidth() * rhs.getHeight());
         }
 
+    }
+
+    /**
+     * Find out if we need to swap dimensions to get the preview size relative to sensor coordinate.
+     * @param activity - The associated activity from which the camera is loaded.
+     * @param characteristics - CameraCharacteristics corresponding to the current started cameradevice
+     * @return swappedDimensions - A boolean value indicating if the the dimensions need to be swapped.
+     */
+    public static boolean needSwappedDimensions(Activity activity, CameraCharacteristics characteristics) {
+        int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+        //noinspection ConstantConditions
+        int mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+        boolean swappedDimensions = false;
+        switch (displayRotation) {
+            case Surface.ROTATION_0:
+            case Surface.ROTATION_90:
+                if (mSensorOrientation == 90 || mSensorOrientation == 270) {
+                    swappedDimensions = true;
+                }
+                break;
+            case Surface.ROTATION_180:
+            case Surface.ROTATION_270:
+                if (mSensorOrientation == 0 || mSensorOrientation == 180) {
+                    swappedDimensions = true;
+                }
+                break;
+            default:
+                Log.e(TAG, "Display rotation is invalid: " + displayRotation);
+        }
+        return swappedDimensions;
     }
 }

@@ -157,7 +157,8 @@ public class CameraHandler {
                     continue;
                 }
 
-                Size mPreviewSize = setFragmentPreviewSize(width, height, needSwappedDimensions(characteristics), map);
+                Size mPreviewSize = setFragmentPreviewSize(width, height,
+                        CameraFragmentUtil.needSwappedDimensions(fragment.getActivity(), characteristics), map);
 
                 int orientation = fragment.getResources().getConfiguration().orientation;
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -190,7 +191,7 @@ public class CameraHandler {
         // For still image captures, we use the largest available size.
         Size largest = Collections.max(
                 Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
-                new CameraSupport.CompareSizesByArea());
+                new CameraFragmentUtil.CompareSizesByArea());
 
         Point displaySize = new Point();
         fragment.getActivity().getWindowManager().getDefaultDisplay().getSize(displaySize);
@@ -209,50 +210,16 @@ public class CameraHandler {
         if (maxPreviewWidth > MAX_PREVIEW_WIDTH) {
             maxPreviewWidth = MAX_PREVIEW_WIDTH;
         }
-
         if (maxPreviewHeight > MAX_PREVIEW_HEIGHT) {
             maxPreviewHeight = MAX_PREVIEW_HEIGHT;
         }
-        // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
-        // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
-        // garbage capture data.
-        Size mPreviewSize = CameraSupport.chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
+        // Attempting to use too large a preview size could  exceed the camera bus' bandwidth
+        // limitation, resulting in gorgeous previews but the storage of garbage capture data.
+        Size mPreviewSize = CameraFragmentUtil.chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
                 rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
                 maxPreviewHeight, largest);
         fragment.setPreviewSize(mPreviewSize);
         return mPreviewSize;
-    }
-
-    /**
-     * Find out if we need to swap dimensions to get the preview size relative to sensor coordinate.
-     * @param activity - The associated activity from which the camera is loaded.
-     * @param characteristics - CameraCharacteristics corresponding to the current started cameradevice
-     * @return swappedDimensions - A boolean value indicating if the the dimensions need to be swapped.
-     */
-    private boolean needSwappedDimensions(CameraCharacteristics characteristics) {
-        Activity activity = fragment.getActivity();
-
-        int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-        //noinspection ConstantConditions
-        int mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
-        boolean swappedDimensions = false;
-        switch (displayRotation) {
-            case Surface.ROTATION_0:
-            case Surface.ROTATION_90:
-                if (mSensorOrientation == 90 || mSensorOrientation == 270) {
-                    swappedDimensions = true;
-                }
-                break;
-            case Surface.ROTATION_180:
-            case Surface.ROTATION_270:
-                if (mSensorOrientation == 0 || mSensorOrientation == 180) {
-                    swappedDimensions = true;
-                }
-                break;
-            default:
-                Log.e(TAG, "Display rotation is invalid: " + displayRotation);
-        }
-        return swappedDimensions;
     }
 
     /**
@@ -325,45 +292,48 @@ public class CameraHandler {
                     = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewRequestBuilder.addTarget(surface);
             // Here, we create a CameraCaptureSession for camera preview.
-            mCameraDevice.createCaptureSession(Arrays.asList(surface),
-                    new CameraCaptureSession.StateCallback() {
-
-                        @Override
-                        public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
-                            // The camera is already closed
-                            if (null == mCameraDevice) {
-                                return;
-                            }
-                            // When the session is ready, we start displaying the preview.
-                            mCaptureSession = cameraCaptureSession;
-                            try {
-                                MeteringRectangle meteringRectangle=new MeteringRectangle(CameraSupport.getScanRect(fragment.getScanSegment()),
-                                        MeteringRectangle.METERING_WEIGHT_MAX);
-                                MeteringRectangle[] meteringRectangleArr={meteringRectangle};
-
-                                // Auto focus should be continuous for camera preview.
-                                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS,
-                                        meteringRectangleArr);
-
-                                // Finally, we start displaying the camera preview.
-                                mPreviewRequest = mPreviewRequestBuilder.build();
-                                if (!fragment.isStateAlreadySaved())
-                                    mCaptureSession.setRepeatingRequest(mPreviewRequest,
-                                            null, mBackgroundHandler);
-                            } catch (CameraAccessException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onConfigureFailed(
-                                @NonNull CameraCaptureSession cameraCaptureSession) {
-                            fragment.showToast("Failed");
-                        }
-                    }, null
-            );
+            mCameraDevice.createCaptureSession(Arrays.asList(surface), createCameraCaptureSessionStateCallBack()
+                    , null );
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    private CameraCaptureSession.StateCallback createCameraCaptureSessionStateCallBack() {
+        return new CameraCaptureSession.StateCallback() {
+
+            @Override
+            public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+                // The camera is already closed
+                if (null == mCameraDevice) {
+                    return;
+                }
+                // When the session is ready, we start displaying the preview.
+                mCaptureSession = cameraCaptureSession;
+                try {
+                    MeteringRectangle meteringRectangle=new MeteringRectangle(CameraFragmentUtil.getScanRect(fragment.getScanSegment()),
+                            MeteringRectangle.METERING_WEIGHT_MAX);
+                    MeteringRectangle[] meteringRectangleArr={meteringRectangle};
+
+                    // Auto focus should be continuous for camera preview.
+                    mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS,
+                            meteringRectangleArr);
+
+                    // Finally, we start displaying the camera preview.
+                    mPreviewRequest = mPreviewRequestBuilder.build();
+                    if (!fragment.isStateAlreadySaved())
+                        mCaptureSession.setRepeatingRequest(mPreviewRequest,
+                                null, mBackgroundHandler);
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onConfigureFailed(
+                    @NonNull CameraCaptureSession cameraCaptureSession) {
+                fragment.showToast("Failed");
+            }
+        };
     }
 }

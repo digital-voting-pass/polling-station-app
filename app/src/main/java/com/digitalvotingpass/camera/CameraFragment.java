@@ -33,7 +33,6 @@ import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Size;
-import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -86,16 +85,8 @@ public class CameraFragment extends Fragment implements FragmentCompat.OnRequest
     private View controlPanel;
 
     // Conversion from screen rotation to JPEG orientation.
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final int REQUEST_WRITE_PERMISSIONS = 3;
-
-    static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
-    }
 
     boolean mIsStateAlreadySaved = false;
     boolean mPendingShowDialog = false;
@@ -370,7 +361,7 @@ public class CameraFragment extends Fragment implements FragmentCompat.OnRequest
             }
             Intent returnIntent = new Intent();
             DocumentData data = mrz.getPrettyData();
-            returnIntent.putExtra("docData", data);
+            returnIntent.putExtra(DocumentData.identifier, data);
             getActivity().setResult(Activity.RESULT_OK, returnIntent);
             resultFound = true;
             getActivity().finish();
@@ -408,7 +399,7 @@ public class CameraFragment extends Fragment implements FragmentCompat.OnRequest
             matrix.postRotate(180, centerX, centerY);
         }
         mTextureView.setTransform(matrix);
-        overlay.setRect(CameraSupport.getScanRect(scanSegment));
+        overlay.setRect(CameraFragmentUtil.getScanRect(scanSegment));
     }
 
     /**
@@ -434,11 +425,11 @@ public class CameraFragment extends Fragment implements FragmentCompat.OnRequest
                     break;
             }
             if (rotate != Surface.ROTATION_0) {
-                bitmap = CameraSupport.rotateBitmap(bitmap, rotate);
+                bitmap = CameraFragmentUtil.rotateBitmap(bitmap, rotate);
             }
-            Bitmap croppedBitmap = CameraSupport.cropBitmap(bitmap, scanSegment);
+            Bitmap croppedBitmap = CameraFragmentUtil.cropBitmap(bitmap, scanSegment);
 
-            return CameraSupport.getResizedBitmap(croppedBitmap, croppedBitmap.getWidth(), croppedBitmap.getHeight());
+            return CameraFragmentUtil.getResizedBitmap(croppedBitmap, croppedBitmap.getWidth(), croppedBitmap.getHeight());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
