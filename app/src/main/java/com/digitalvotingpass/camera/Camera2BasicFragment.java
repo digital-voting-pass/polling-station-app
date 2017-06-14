@@ -20,10 +20,12 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -42,6 +44,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -206,9 +209,12 @@ public class Camera2BasicFragment extends Fragment
      */
     public synchronized void scanResultFound(final Mrz mrz) {
         if (!resultFound) {
+            for (TesseractOCR thread : tesseractThreads) {
+                thread.stopping = true;
+            }
             Intent returnIntent = new Intent();
             DocumentData data = mrz.getPrettyData();
-            returnIntent.putExtra("result", data);
+            returnIntent.putExtra(DocumentData.identifier, data);
             getActivity().setResult(Activity.RESULT_OK, returnIntent);
             resultFound = true;
             finishActivity();
@@ -281,6 +287,10 @@ public class Camera2BasicFragment extends Fragment
      * Whether the current camera device supports Flash or not.
      */
     private boolean mFlashSupported;
+
+    private boolean flashEnabled = false;
+
+    private FloatingActionButton toggleTorchButton;
 
     /**
      * Orientation of the camera sensor
@@ -398,6 +408,15 @@ public class Camera2BasicFragment extends Fragment
                 getActivity().startActivityForResult(intent, MainActivity.GET_DOC_INFO);
             }
         });
+
+        toggleTorchButton = (FloatingActionButton) view.findViewById(R.id.toggle_torch_button);
+        toggleTorchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleTorch();
+            }
+        });
+
         infoText = (TextView) view.findViewById(R.id.info_text);
         Typeface typeFace= Typeface.createFromAsset(getActivity().getAssets(), "fonts/ro.ttf");
         infoText.setTypeface(typeFace);
@@ -763,8 +782,6 @@ public class Camera2BasicFragment extends Fragment
                                 // Auto focus should be continuous for camera preview.
                                 mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS,
                                         meteringRectangleArr);
-                                // Flash is automatically enabled when necessary.
-                                setAutoFlash(mPreviewRequestBuilder);
 
                                 // Finally, we start displaying the camera preview.
                                 mPreviewRequest = mPreviewRequestBuilder.build();
@@ -832,13 +849,6 @@ public class Camera2BasicFragment extends Fragment
         }
         mTextureView.setTransform(matrix);
         overlay.setRect(getScanRect());
-    }
-
-    private void setAutoFlash(CaptureRequest.Builder requestBuilder) {
-        if (mFlashSupported) {
-            requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                    CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
-        }
     }
 
     /**
@@ -921,5 +931,25 @@ public class Camera2BasicFragment extends Fragment
         int width = (int) (scanSegment.getWidth());
         int length = (int) (scanSegment.getHeight());
         return Bitmap.createBitmap(bitmap, startX, startY, width, length);
+    }
+
+    /**
+     * Turn the torch of the device on or off, when it has one.
+     */
+    private void toggleTorch() {
+        try {
+            if (!flashEnabled && mFlashSupported) {
+                mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+                mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+                toggleTorchButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.govDarkBluePressed)));
+            } else {
+                mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+                mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+                toggleTorchButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.govDarkBlue)));
+            }
+            flashEnabled = !flashEnabled;
+        } catch (CameraAccessException e ){
+            e.printStackTrace();
+        }
     }
 }

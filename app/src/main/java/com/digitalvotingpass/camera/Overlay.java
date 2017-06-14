@@ -16,8 +16,6 @@ import com.digitalvotingpass.digitalvotingpass.R;
  * Creates a grey overlay with a rectangular transparent field, set by setRect()
  */
 public class Overlay extends View {
-    public static final String TAG = "Overlay";
-
     /**
      * Transparency of overlaid part in hex, 0-255
      */

@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
+import com.digitalvotingpass.digitalvotingpass.R;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.File;
@@ -16,6 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Util {
 
@@ -64,13 +67,12 @@ public class Util {
      * @param f  File to copy data to.
      */
     public static void copyAssetsFile(InputStream is, File f) throws IOException {
-        OutputStream os = null;
         if (!f.exists()) {
             if (!f.getParentFile().mkdirs()) { //getParent because otherwise it creates a folder with that filename, we just need the dirs
                 Log.e("Util", "Cannot create path!");
             }
         }
-        os = new FileOutputStream(f, true);
+        OutputStream os = new FileOutputStream(f, true);
 
         final int buffer_size = 1024 * 1024;
         try {
@@ -124,6 +126,16 @@ public class Util {
         return "";
     }
 
+    public static Map<String, String> getKeyValueFromStringArray(Context ctx) {
+        String[] array = ctx.getResources().getStringArray(R.array.address_array);
+        Map<String, String> result = new HashMap<>();
+        for (String str : array) {
+            String[] splittedItem = str.split("\\|");
+            result.put(splittedItem[0], splittedItem[1]);
+        }
+        return result;
+    }
+    
     public static boolean isOnline(Context ctx) {
         ConnectivityManager cm =
                 (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);

@@ -43,10 +43,12 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
         Util.setupAppBar(appBar, this);
 
         electionListView = (ListView) findViewById(R.id.election_list);
-
-        electionsAdapter = new ElectionsAdapter(this, loadElections(BlockChain.getInstance().getAssets()));
-        electionListView.setAdapter(electionsAdapter);
-
+        try {
+            electionsAdapter = new ElectionsAdapter(this, loadElections(BlockChain.getInstance(null).getAssets()));
+            electionListView.setAdapter(electionsAdapter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         electionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -81,7 +83,7 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
         Gson gson = new Gson();
         String json = gson.toJson(election);
         prefsEditor.putString(getString(R.string.shared_preferences_key_election), json);
-        prefsEditor.commit();
+        prefsEditor.apply();
     }
 
     /**
@@ -92,7 +94,7 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
      * G_ = R.string.gemeente
      * W_ = R.string.waterschap
      *
-     * Asset name must be of the format "kXPlace"
+     * Asset name must be of the format "K_Place"
      *
      * Sets the place field of an Election object based on the asset name
      * @Param assetList - a list of asset from which Election objects can be created
@@ -101,31 +103,7 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
     public ArrayList<Election> loadElections(ArrayList<Asset> assetList) {
         ArrayList<Election> electionChoices = new ArrayList<>();
         for(Asset a : assetList) {
-            String name = a.getName();
-            String prefix = name.substring(0,2);
-            String kind;
-            switch(prefix) {
-                case "T_":
-                    kind = getString(R.string.tweedekamer);
-                    name = name.substring(2);
-                    break;
-                case "P_":
-                    kind = getString(R.string.provinciaal);
-                    name = name.substring(2);
-                    break;
-                case "G_":
-                    kind = getString(R.string.gemeente);
-                    name = name.substring(2);
-                    break;
-                case "W_":
-                    kind = getString(R.string.waterschap);
-                    name = name.substring(2);
-                    break;
-                default:
-                    kind = "";
-                    break;
-            }
-            electionChoices.add(new Election(kind, name, a));
+            electionChoices.add(Election.parseElection(a, getApplicationContext()));
         }
         return electionChoices;
     }

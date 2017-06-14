@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.digitalvotingpass.digitalvotingpass">
 
-    <uses-sdk android:minSdkVersion="21" />
-
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -49,7 +47,7 @@
         </activity>
         <activity
             android:name="com.digitalvotingpass.passportconnection.PassportConActivity"
-            android:label="PassportConActivity"
+            android:label="@string/passportconnection"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ManualInputActivity"

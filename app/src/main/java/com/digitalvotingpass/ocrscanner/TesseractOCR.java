@@ -39,7 +39,7 @@ public class TesseractOCR {
 
     private AssetManager assetManager;
     private Camera2BasicFragment fragment;
-    private boolean stopping = false;
+    public boolean stopping = false;
     public boolean isInitialized = false;
 
     // Filled with OCR run times for analysis
@@ -107,13 +107,16 @@ public class TesseractOCR {
      * Starts (enqueues) a stop routine in a new thread, then returns immediately.
      */
     public void stopScanner() {
-        cleanHandler = new Handler();
+        HandlerThread ht = new HandlerThread("stopper");
+        ht.start();
+        cleanHandler = new Handler(ht.getLooper());
         cleanHandler.post(new Runnable() {
             @Override
             public void run() {
                 cleanup();
             }
         });
+        ht.quitSafely();
     }
 
     /**

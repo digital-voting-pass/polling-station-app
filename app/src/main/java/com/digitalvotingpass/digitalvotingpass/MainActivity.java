@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.digitalvotingpass.camera.CameraActivity;
 import com.digitalvotingpass.electionchoice.Election;
@@ -50,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(thisActivity, ManualInputActivity.class);
                 // send the docData to the manualinput in case a user wants to edit the existing docdata
-                intent.putExtra("docData", documentData);
+                intent.putExtra(DocumentData.identifier, documentData);
                 startActivityForResult(intent, GET_DOC_INFO);
             }
         });
@@ -91,27 +90,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Called when the user taps the "Start Reading ID" button
-     */
-    public void startReading(View view) {
-        if(!documentData.isValid()) {
-            Toast.makeText(this,R.string.scan_doc_details, Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(this, CameraActivity.class);
-            startActivityForResult(intent, GET_DOC_INFO);
-        } else {
-            Intent intent = new Intent(this, PassportConActivity.class);
-            intent.putExtra("docData", documentData);
-            startActivity(intent);
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // Check if we got documentdata and set the documentData attribute
         if(requestCode == GET_DOC_INFO && resultCode == RESULT_OK) {
-            documentData = (DocumentData) data.getExtras().get("result");
+
+            documentData = (DocumentData) data.getExtras().get(DocumentData.identifier);
+            Intent intent = new Intent(this, PassportConActivity.class);
+            intent.putExtra(DocumentData.identifier, documentData);
+            startActivity(intent);
         }
         // reload the election choice from sharedpreferences
         if(requestCode == CHOOSE_ELECTION && resultCode == RESULT_OK) {
@@ -129,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
         election = gson.fromJson(json, Election.class);
 
-        if(election != null) {
+        if(election != null && getSupportActionBar() != null) {
             getSupportActionBar().setTitle(election.getKind());
             getSupportActionBar().setSubtitle(election.getPlace());
         }
