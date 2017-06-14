@@ -12,9 +12,6 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-/**
- * Created by daan on 6-6-17.
- */
 public class PassportTransactionFormatter {
 
     private Address destination;
@@ -67,6 +64,9 @@ public class PassportTransactionFormatter {
 
         // Number of outputs
         byte[] step2 = new byte[]{0x01};
+
+        if (utxo.getParentTransactionHash() == null)
+            return null;
 
         // Transaction hash
         byte[] step3 = utxo.getParentTransactionHash().getReversedBytes();
@@ -148,7 +148,7 @@ public class PassportTransactionFormatter {
     }
 
     /**
-     * Wraw the bytes in a real broadcastable transaction.
+     * Wrap the bytes in a real broadcastable transaction.
      * @param params
      * @return
      */

@@ -83,7 +83,7 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
         Gson gson = new Gson();
         String json = gson.toJson(election);
         prefsEditor.putString(getString(R.string.shared_preferences_key_election), json);
-        prefsEditor.commit();
+        prefsEditor.apply();
     }
 
     /**

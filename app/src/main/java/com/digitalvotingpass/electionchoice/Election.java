@@ -46,36 +46,31 @@ public class Election {
     public Asset getAsset() { return asset; }
 
     public static Election parseElection(Asset a, Context context) {
-        try {
-            String name = a.getName();
-            String prefix = name.substring(0,2);
-            String kind;
-            switch(prefix) {
-                case "T_":
-                    kind = context.getString(R.string.tweedekamer);
-                    name = name.substring(2);
-                    break;
-                case "P_":
-                    kind = context.getString(R.string.provinciaal);
-                    name = name.substring(2);
-                    break;
-                case "G_":
-                    kind = context.getString(R.string.gemeente);
-                    name = name.substring(2);
-                    break;
-                case "W_":
-                    kind = context.getString(R.string.waterschap);
-                    name = name.substring(2);
-                    break;
-                default:
-                    kind = "";
-                    break;
-            }
-            return new Election(kind, name, a);
-        } catch (Exception e) {
-            e.printStackTrace();
+        String name = a.getName();
+        String prefix = name.substring(0,2);
+        String kind;
+        switch(prefix) {
+            case "T_":
+                kind = context.getString(R.string.tweedekamer);
+                name = name.substring(2);
+                break;
+            case "P_":
+                kind = context.getString(R.string.provinciaal);
+                name = name.substring(2);
+                break;
+            case "G_":
+                kind = context.getString(R.string.gemeente);
+                name = name.substring(2);
+                break;
+            case "W_":
+                kind = context.getString(R.string.waterschap);
+                name = name.substring(2);
+                break;
+            default:
+                kind = "";
+                break;
         }
-        return null;
+        return new Election(kind, name, a);
     }
 
     @Override

@@ -19,7 +19,7 @@ public class MultiChainAddressGenerator {
      */
     public static String getPublicAddress(String[] version, String addressChecksum, byte[] pubKey) {
         //Step 3
-        MessageDigest digest=null;
+        MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
             digest.reset();

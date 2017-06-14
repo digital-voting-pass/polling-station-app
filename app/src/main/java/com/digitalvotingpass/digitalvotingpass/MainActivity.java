@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
         election = gson.fromJson(json, Election.class);
 
-        if(election != null) {
+        if(election != null && getSupportActionBar() != null) {
             getSupportActionBar().setTitle(election.getKind());
             getSupportActionBar().setSubtitle(election.getPlace());
         }
