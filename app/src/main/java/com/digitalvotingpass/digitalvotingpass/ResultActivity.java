@@ -32,7 +32,6 @@ import java.security.PublicKey;
 import java.util.ArrayList;
 
 public class ResultActivity extends AppCompatActivity {
-    private TextView textAuthorization;
     private TextView textVoterName;
     private TextView textVotingPassAmount;
     private TextView textVotingPasses;
@@ -66,7 +65,7 @@ public class ResultActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         setAuthorizationStatus(CONFIRMED);
-                        textVoterName.setText(getString(R.string.please_hand, preamble));
+                        textVoterName.setText(getResources().getQuantityString(R.plurals.voting_ballots, votingPasses));
                         textVotingPasses.setText(R.string.voting_passes);
                     }
                 });

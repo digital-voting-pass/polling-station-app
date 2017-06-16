@@ -89,7 +89,10 @@
     <string name="has_right">%s has right to:</string>
     <string name="please_hand">Please hand %s</string>
     <string name="voting_pass">Voting pass</string>
-    <string name="voting_passes">Voting passes</string>
+    <plurals name="voting_ballots">
+        <item quantity="one">voting ballot</item>
+        <item quantity="other">voting ballots</item>
+    </plurals>
 
     <string name="gender_male">Mr.</string>
     <string name="gender_female">Ms.</string>
