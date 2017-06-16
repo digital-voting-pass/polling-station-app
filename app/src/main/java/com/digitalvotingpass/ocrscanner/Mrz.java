@@ -2,10 +2,6 @@ package com.digitalvotingpass.ocrscanner;
 
 import com.digitalvotingpass.digitalvotingpass.DocumentData;
 
-/**
- * Created by jonathan on 5/16/17.
- */
-
 public class Mrz {
 
     private static final int[] PASSPORT_DOCNO_INDICES = new int[]{0, 9};
@@ -26,12 +22,13 @@ public class Mrz {
 
     /**
      * Does some basic cleaning on the MRZ string of this object
+     * Done before checksum verification so may throw errors, these are ignored
      */
     private void cleanMRZString() {
         try {
             String[] spl = mrz.replace(" ", "").replace("\n\n", "\n").split("\n"); // Delete any space characters and replace double newline with a single newline
             mrz = spl[0] + "\n" + spl[1]; // Extract only first 2 lines, sometimes random errorous data is detected beyond.
-        }catch (Exception e) {
+        }catch (Exception ignored) {
         }
     }
 
@@ -50,13 +47,13 @@ public class Mrz {
         float checkSum = 0;
         for (int[] range : ranges) {
             char[] line = string.substring(range[0], range[1]).toCharArray();
-            for (int i = 0; i < line.length; i++) {
-                int num = 0;
-                if (Character.toString(line[i]).matches("[A-Z]")) {
-                    num = ((int) line[i] - 55);
-                } else if (Character.toString(line[i]).matches("\\d")) {
-                    num = Character.getNumericValue(line[i]);
-                } else if (Character.toString(line[i]).matches("<")) {
+            for (char c : line) {
+                int num;
+                if (Character.toString(c).matches("[A-Z]")) {
+                    num = ((int) c - 55);
+                } else if (Character.toString(c).matches("\\d")) {
+                    num = Character.getNumericValue(c);
+                } else if (Character.toString(c).matches("<")) {
                     num = 0;
                 } else {
                     return false; //illegal character
@@ -98,7 +95,7 @@ public class Mrz {
             } else if (mrz.startsWith("I")){
                 return checkIDMRZ(mrz);
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             // Probably an outOfBounds indicating the format was incorrect
         }
         return false;

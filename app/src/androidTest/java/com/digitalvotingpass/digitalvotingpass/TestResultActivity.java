@@ -24,14 +24,10 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
-/**
- * Created by rico on 1-6-17.
- */
-
 @RunWith(AndroidJUnit4.class)
 public class TestResultActivity {
     private ResultActivity resultActivity;
-    private Voter voter = new Voter("Jannus Wallus", "de Vries", Gender.getInstance(Gender.MALE.toInt()));;
+    private Voter voter = new Voter("Jannus Wallus", "de Vries", Gender.getInstance(Gender.MALE.toInt()));
 
     private PublicKey pubKey = null;
 

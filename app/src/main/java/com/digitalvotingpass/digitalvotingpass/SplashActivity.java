@@ -159,11 +159,6 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
     public void onDownloadProgress(final double pct, int blocksSoFar, Date date) {
         runOnUiThread(new Runnable() {
             @Override

@@ -31,7 +31,6 @@ import com.google.gson.Gson;
 
 import org.bitcoinj.core.AssetBalance;
 import org.jmrtd.PassportService;
-
 import java.security.PublicKey;
 import java.security.Security;
 import java.util.ArrayList;
@@ -178,7 +177,7 @@ public class PassportConActivity extends AppCompatActivity {
                 BlockChain bc = BlockChain.getInstance(null);
                 AssetBalance balance = bc.getVotingPassBalance(pubKey, election.getAsset());
 
-                ArrayList<byte[]> signedTransactions = bc.getSpendUtxoTransactions(balance, pcon);
+                ArrayList<byte[]> signedTransactions = bc.getSpendUtxoTransactions(pubKey, balance, pcon);
                 progressView.setImageResource(R.drawable.nfc_icon_3);
 
                 // when all data is loaded start ResultActivity
