@@ -88,6 +88,7 @@ public class Camera2BasicFragment extends Fragment
     private Button manualInput;
     private TextView infoText;
     private View controlPanel;
+    private boolean regionFocusSupport = false;
 
     private List<TesseractOCR> tesseractThreads = new ArrayList<>();
     /**
@@ -561,6 +562,11 @@ public class Camera2BasicFragment extends Fragment
                     continue;
                 }
 
+                // Check if we support AutoFocus regions
+                if (characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AF) > 0) {
+                    regionFocusSupport = true;
+                }
+
                 // For still image captures, we use the largest available size.
                 Size largest = Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
@@ -757,7 +763,6 @@ public class Camera2BasicFragment extends Fragment
 
             // This is the output Surface we need to start preview.
             Surface surface = new Surface(texture);
-
             // We set up a CaptureRequest.Builder with the output Surface.
             mPreviewRequestBuilder
                     = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
@@ -775,13 +780,12 @@ public class Camera2BasicFragment extends Fragment
                             // When the session is ready, we start displaying the preview.
                             mCaptureSession = cameraCaptureSession;
                             try {
-                                MeteringRectangle meteringRectangle=new MeteringRectangle(getScanRect(),
-                                        MeteringRectangle.METERING_WEIGHT_MAX);
-                                MeteringRectangle[] meteringRectangleArr={meteringRectangle};
-
-                                // Auto focus should be continuous for camera preview.
-                                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS,
-                                        meteringRectangleArr);
+//                                // Auto focus should be continuous for camera preview.
+                                if (regionFocusSupport) {
+                                    setAFRegion();
+                                } else {
+                                    mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
+                                }
 
                                 // Finally, we start displaying the camera preview.
                                 mPreviewRequest = mPreviewRequestBuilder.build();
@@ -803,6 +807,14 @@ public class Camera2BasicFragment extends Fragment
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setAFRegion () {
+        MeteringRectangle meteringRectangle=new MeteringRectangle(getScanRect(),
+                MeteringRectangle.METERING_WEIGHT_MAX);
+        MeteringRectangle[] meteringRectangleArr={meteringRectangle};
+        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS,
+                meteringRectangleArr);
     }
 
     /**
@@ -938,6 +950,11 @@ public class Camera2BasicFragment extends Fragment
      */
     private void toggleTorch() {
         try {
+            if (regionFocusSupport) {
+                setAFRegion();
+            } else {
+                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
+            }
             if (!flashEnabled && mFlashSupported) {
                 mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
                 mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
