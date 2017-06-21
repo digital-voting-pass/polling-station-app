@@ -107,6 +107,9 @@
     <!--Splash Activity-->
     <string name="downloading_text">Downloading...</string>
     <string name="initializing_text">Initializing...</string>
+    <string name="please_enable_connect_message">Please enable network connection</string>
+    <string name="no_connection">No Network</string>
+    <string name="go_network_settings">WIFI Settings</string>
     <string-array name="init_array">
         <item>Initializing</item>
         <item>\u00A0Initializing.</item>
@@ -119,7 +122,6 @@
     <string name="transaction_received_item_format_detail">From %s</string>
     <string name="transaction_sent_item_format_title">Sent %1$d vote \n%2$s %3$s</string>
     <string name="transaction_sent_item_format_detail">To %s</string>
-
     <string-array name="address_array">
         <item>1GoqgbPZUV2yuPZXohtAvB2NZbjcew8Rk93mMn|Government</item>
     </string-array>

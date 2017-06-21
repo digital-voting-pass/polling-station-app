@@ -1,5 +1,8 @@
 package com.digitalvotingpass.blockchain;
 
+import android.util.Log;
+
+import org.bitcoinj.core.Peer;
 import org.bitcoinj.core.listeners.DownloadProgressTracker;
 
 import java.util.ArrayList;
