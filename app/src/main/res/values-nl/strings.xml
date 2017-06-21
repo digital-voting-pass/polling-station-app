@@ -74,8 +74,8 @@
     <string name="proceed_cast_vote">Stempas verzilveren</string>
     <string name="cancel_vote">Annuleren</string>
     <string name="authorization_failed">Geen stempassen gevonden.</string>
-    <string name="authorization_succesful">Authorisatie geslaagd, gelieve bevestigen.</string>
-    <plurals name="authorization_succesful">
+    <string name="authorization_successful">Authorisatie geslaagd, gelieve bevestigen.</string>
+    <plurals name="authorization_successful">
         <item quantity="one">Stempas gevonden, kies verzilveren.</item>
         <item quantity="other">Stempassen gevonden, kies verzilveren</item>
     </plurals>
@@ -88,7 +88,7 @@
 
     <string name="has_right">%s heeft recht op:</string>
     <string name="voting_pass">Stembiljet</string>
-    <plurals name="voting_ballots">
+    <plurals name="ballot_paper">
         <item quantity="one">Stembiljet</item>
         <item quantity="other">Stembiljetten</item>
     </plurals>
