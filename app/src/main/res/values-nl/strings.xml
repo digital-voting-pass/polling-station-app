@@ -88,7 +88,10 @@
 
     <string name="has_right">%s heeft recht op:</string>
     <string name="voting_pass">Stembiljet</string>
-    <string name="voting_passes">Stembiljetten</string>
+    <plurals name="voting_ballots">
+        <item quantity="one">Stembiljet</item>
+        <item quantity="other">Stembiljetten</item>
+    </plurals>
 
     <string name="gender_male">Dhr.</string>
     <string name="gender_female">Mevr.</string>
