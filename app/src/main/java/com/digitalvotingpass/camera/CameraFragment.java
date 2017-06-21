@@ -29,6 +29,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -81,6 +82,7 @@ public class CameraFragment extends Fragment implements FragmentCompat.OnRequest
     private ImageView scanSegment;
     private Overlay overlay;
     private Button manualInput;
+    private FloatingActionButton toggleTorchButton;
     private TextView infoText;
     private View controlPanel;
 
@@ -198,6 +200,15 @@ public class CameraFragment extends Fragment implements FragmentCompat.OnRequest
                 getActivity().startActivityForResult(intent, MainActivity.GET_DOC_INFO);
             }
         });
+
+        toggleTorchButton = (FloatingActionButton) view.findViewById(R.id.toggle_torch_button);
+        toggleTorchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+             public void onClick(View v) {
+                mCameraHandler.toggleTorch();
+            }
+         });
+
         infoText = (TextView) view.findViewById(R.id.info_text);
         Typeface typeFace= Typeface.createFromAsset(getActivity().getAssets(), "fonts/ro.ttf");
         infoText.setTypeface(typeFace);

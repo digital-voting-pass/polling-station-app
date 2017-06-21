@@ -72,6 +72,13 @@ public class CameraHandler {
     private CaptureRequest mPreviewRequest;
 
     /**
+     * Whether the current camera device supports Flash or not.
+     */
+    private boolean mFlashSupported;
+
+    private boolean flashEnabled = false;
+
+    /**
      * {@link CameraDevice.StateCallback} is called when {@link CameraDevice} changes its state.
      */
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
@@ -167,6 +174,10 @@ public class CameraHandler {
                     fragment.setAspectRatio(
                             mPreviewSize.getHeight(), mPreviewSize.getWidth());
                 }
+
+                // Check if the flash is supported.
+                Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+                mFlashSupported = available == null ? false : available;
 
                 mCameraId = cameraId;
                 return;
@@ -335,5 +346,25 @@ public class CameraHandler {
                 fragment.showToast("Failed");
             }
         };
+    }
+
+    /**
+     * Turn the torch of the device on or off, when it has one.
+     */
+    public void toggleTorch() {
+        try {
+            if (!flashEnabled && mFlashSupported) {
+                mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+                mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+                Log.e(TAG, "flash enabled");
+            } else {
+                mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+                mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+                Log.e(TAG, "flash disabled");
+            }
+            flashEnabled = !flashEnabled;
+        } catch (CameraAccessException e ){
+            e.printStackTrace();
+        }
     }
 }
