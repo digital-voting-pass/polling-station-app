@@ -80,8 +80,8 @@
         <item quantity="other">Voting passes found, please redeem.</item>
     </plurals>
     <plurals name="authorization_confirmed">
-        <item quantity="one">Voting pass successfully spent, please hand out %1$d voting ballot</item>
-        <item quantity="other">Voting passes successfully spent, please hand out %1$d voting ballots</item>
+        <item quantity="one">Authorization successful</item>
+        <item quantity="other">Authorization successful</item>
     </plurals>
     <string name="authorization_wait">Waiting for authorization.</string>
     <string name="address_not_found">This document is not registered for digital voting.</string>

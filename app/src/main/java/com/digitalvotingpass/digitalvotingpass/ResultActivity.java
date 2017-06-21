@@ -65,7 +65,7 @@ public class ResultActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         setAuthorizationStatus(CONFIRMED);
-                        textVoterName.setText(getResources().getQuantityString(R.plurals.voting_ballots, votingPasses));
+                        textVoterName.setText(getString(R.string.please_hand, preamble));
                         textVotingPasses.setText(getResources().getQuantityString(R.plurals.voting_ballots, votingPasses));
                     }
                 });
