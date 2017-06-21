@@ -8,16 +8,23 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.blockchain.BlockchainCallBackListener;
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
+import com.digitalvotingpass.utilities.Util;
 import com.digitalvotingpass.utilities.ErrorDialog;
 import com.google.gson.Gson;
 
@@ -89,10 +96,37 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         }
     }
 
+    /**
+     * When the view is focused, check network state and display an error when network is unavailable.
+     * @param hasFocus
+     */
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (!Util.isOnline(getApplicationContext()) && hasFocus) {
+            initTextHandler.removeCallbacks(initTextUpdater);
+            currentTask.setText(getString(R.string.no_connection));
+
+            if (!Util.isNetEnabled(getApplicationContext())) {
+                View.OnClickListener inputSnackbarListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                    }
+                };
+
+                Snackbar snackbar = Snackbar.make(findViewById(R.id.splash_screen_layout), getString(R.string.please_enable_connect_message), Snackbar.LENGTH_INDEFINITE);
+                snackbar.getView().setBackgroundColor(ContextCompat.getColor(this, R.color.redFailed));
+                snackbar.setAction(R.string.go_network_settings, inputSnackbarListener);
+                snackbar.show();
+            }
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-       if (requestCode == REQUEST_CODE_STORAGE) {
+        if (requestCode == REQUEST_CODE_STORAGE) {
             if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
             } else {
                 handler.post(startBlockChain);
@@ -136,7 +170,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         Intent intent;
 
         // Check if the election exists in sharedpreferences and in the blockchain
-        if(json.equals("not found")){
+        if(json.equals("not found")) {
             intent = new Intent(SplashActivity.this, ElectionChoiceActivity.class);
         } else {
             Gson gson = new Gson();
@@ -156,11 +190,6 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         //remove this listener
         blockChain.removeListener(this);
         super.onDestroy();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
     }
 
     @Override
