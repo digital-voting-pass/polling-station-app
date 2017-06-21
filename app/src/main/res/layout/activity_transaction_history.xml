@@ -19,12 +19,13 @@
         tools:layout_editor_absoluteY="0dp"
         tools:layout_editor_absoluteX="8dp" />
 
-    <ProgressBar
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
         android:id="@+id/loading_circle"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true" />
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        app:cpv_animAutostart="true"
+        app:cpv_indeterminate="true" />
 
     <LinearLayout
         android:id="@+id/no_transactions"
