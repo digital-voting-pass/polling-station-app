@@ -75,8 +75,8 @@ public class Voter implements Parcelable {
             int last = names.length -1;
             names[last]=  Voter.capitalizeFirstLetter(names[last]);
             lastName = "";
-            for(int i=0; i < names.length; i++) {
-                lastName += names[i] + " ";
+            for(String name : names) {
+                lastName += name + " ";
             }
             lastName = lastName.trim();
         }
@@ -85,7 +85,7 @@ public class Voter implements Parcelable {
 
     /**
      * Set the gender strings, this is necessary because we can't get
-     * the strings in the person class and passing a {@link Context} object might
+     * the strings in the person class and passing a Context object might
      * cause memory leaks.
      * @param male Male string.
      * @param female Female string.

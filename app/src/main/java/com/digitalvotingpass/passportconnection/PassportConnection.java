@@ -78,11 +78,8 @@ public class PassportConnection {
             ex.printStackTrace();
             throw ex;
         } finally {
-            try {
+            if (is15 != null)
                 is15.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
         }
     }
 
@@ -106,11 +103,8 @@ public class PassportConnection {
             ex.printStackTrace();
             throw ex;
         } finally {
-            try {
+            if (is15 != null)
                 is15.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
         }
     }
 
@@ -136,11 +130,8 @@ public class PassportConnection {
             ex.printStackTrace();
             throw ex;
         } finally {
-            try {
+            if (is != null)
                 is.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
         }
     }
 

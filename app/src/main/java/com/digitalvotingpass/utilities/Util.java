@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
@@ -26,6 +28,7 @@ public class Util {
 
     /**
      * Returns the height of the status bar in pixels
+     *
      * @param resources Resources object required to get the height attribute.
      * @return int
      */
@@ -42,7 +45,8 @@ public class Util {
      * Sets up a top-padding for the given app bar equal to the height of the status bar.
      * This increases the length of the app bar so it fits nicely below the status bar.
      * This method also sets the status bar transparency.
-     * @param appBar Toolbar to set padding to
+     *
+     * @param appBar   Toolbar to set padding to
      * @param activity Activity - current activity
      */
     public static void setupAppBar(Toolbar appBar, Activity activity) {
@@ -58,23 +62,22 @@ public class Util {
      * Copies an InputStream into a File.
      * This is used to copy an InputStream from the assets folder to a file in the FileSystem.
      * Creates nay non-existant parent folders to f.
+     *
      * @param is InputStream to be copied.
-     * @param f File to copy data to.
+     * @param f  File to copy data to.
      */
     public static void copyAssetsFile(InputStream is, File f) throws IOException {
-        OutputStream os = null;
         if (!f.exists()) {
             if (!f.getParentFile().mkdirs()) { //getParent because otherwise it creates a folder with that filename, we just need the dirs
                 Log.e("Util", "Cannot create path!");
             }
         }
-        os = new FileOutputStream(f, true);
+        OutputStream os = new FileOutputStream(f, true);
 
         final int buffer_size = 1024 * 1024;
         try {
             byte[] bytes = new byte[buffer_size];
-            for (;;)
-            {
+            for (; ; ) {
                 int count = is.read(bytes, 0, buffer_size);
                 if (count == -1)
                     break;
@@ -92,7 +95,7 @@ public class Util {
      * This method is used for signing transaction hashes (which are in hex).
      */
     public static byte[] hexStringToByteArray(String hStr) {
-        if(hStr != null) {
+        if (hStr != null) {
             int len = hStr.length();
             byte[] data = new byte[len / 2];
             for (int i = 0; i < len; i += 2) {
@@ -131,5 +134,19 @@ public class Util {
             result.put(splittedItem[0], splittedItem[1]);
         }
         return result;
+    }
+    
+    public static boolean isOnline(Context ctx) {
+        ConnectivityManager cm =
+                (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    public static boolean isNetEnabled(Context ctx) {
+        ConnectivityManager cm =
+                (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null;
     }
 }

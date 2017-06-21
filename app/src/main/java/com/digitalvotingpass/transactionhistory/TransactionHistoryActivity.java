@@ -44,7 +44,9 @@ public class TransactionHistoryActivity extends AppCompatActivity {
 
                 // Set address to app bar and click listener.
                 BlockChain bc = BlockChain.getInstance(null);
-                getSupportActionBar().setSubtitle("Address: " + bc.getAddress(pubKey).toString());
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setSubtitle("Address: " + bc.getAddress(pubKey).toString());
+                }
                 setAddressClickListener(bc.getAddress(pubKey).toString());
 
                 // Load transactions
@@ -101,7 +103,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
 
                 // Add address to clipboard
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText((CharSequence)"Address", (CharSequence)address);
+                ClipData clip = ClipData.newPlainText("Address", address);
                 clipboard.setPrimaryClip(clip);
 
                 // Show snackbar

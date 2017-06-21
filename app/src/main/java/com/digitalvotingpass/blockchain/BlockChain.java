@@ -2,17 +2,16 @@ package com.digitalvotingpass.blockchain;
 
 import android.content.Context;
 import android.os.Environment;
-import android.provider.Telephony;
-import android.util.Log;
 
-import com.digitalvotingpass.passportconnection.PassportConnection;
-import com.digitalvotingpass.passportconnection.PassportTransactionFormatter;
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.electionchoice.Election;
+import com.digitalvotingpass.passportconnection.PassportConnection;
+import com.digitalvotingpass.passportconnection.PassportTransactionFormatter;
 import com.digitalvotingpass.transactionhistory.TransactionHistoryItem;
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.digitalvotingpass.utilities.Util;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.Service;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Asset;
@@ -20,8 +19,6 @@ import org.bitcoinj.core.AssetBalance;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerAddress;
 import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.TransactionConfidence;
-import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MultiChainParams;
@@ -29,7 +26,6 @@ import org.bitcoinj.utils.BriefLogFormatter;
 import org.bitcoinj.wallet.Wallet;
 
 import java.io.File;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -40,14 +36,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class BlockChain {
     public static final String PEER_IP = "188.226.149.56";
     private static BlockChain instance;
     private WalletAppKit kit;
-    private BlockchainCallBackListener listener;
-    private boolean initialized = false;
     private Context context;
     private ProgressTracker progressTracker;
 
@@ -99,24 +92,22 @@ public class BlockChain {
     }
 
     public void startDownload() {
-        if (!initialized) {
-            BriefLogFormatter.init();
-            String filePrefix = "voting-wallet";
-            File walletFile = new File(Environment.getExternalStorageDirectory() + "/" + Util.FOLDER_DIGITAL_VOTING_PASS);
-            if (!walletFile.exists()) {
-                walletFile.mkdirs();
-            }
-            kit = new WalletAppKit(params, walletFile, filePrefix);
-
-            //set the observer
-            kit.setDownloadListener(progressTracker);
-
-            kit.setBlockingStartup(false);
-
-            PeerAddress peer = new PeerAddress(params, peeraddr);
-            kit.setPeerNodes(peer);
-            kit.startAsync();
+        BriefLogFormatter.init();
+        String filePrefix = "voting-wallet";
+        File walletFile = new File(Environment.getExternalStorageDirectory() + "/" + Util.FOLDER_DIGITAL_VOTING_PASS);
+        if (!walletFile.exists()) {
+            walletFile.mkdirs();
         }
+        kit = new WalletAppKit(params, walletFile, filePrefix);
+
+        //set the observer
+        kit.setDownloadListener(progressTracker);
+
+        kit.setBlockingStartup(false);
+
+        PeerAddress peer = new PeerAddress(params, peeraddr);
+        kit.setPeerNodes(peer);
+        kit.startAsync();
     }
 
     public void disconnect() {
@@ -168,11 +159,11 @@ public class BlockChain {
      * @param balance
      * @param pcon
      */
-    public ArrayList<byte[]> getSpendUtxoTransactions(AssetBalance balance, PassportConnection pcon) throws Exception{
-        ArrayList<byte[]> transactions = new ArrayList<byte[]>();
 
+    public ArrayList<byte[]> getSpendUtxoTransactions(PublicKey pubKey, AssetBalance balance, PassportConnection pcon) throws Exception {
+        ArrayList<byte[]> transactions = new ArrayList<>();
         for (TransactionOutput utxo : balance) {
-            transactions.add(utxoToSignedTransaction(utxo, masterAddress, pcon));
+            transactions.add(utxoToSignedTransaction(pubKey, utxo, masterAddress, pcon));
         }
         return transactions;
     }
@@ -183,18 +174,18 @@ public class BlockChain {
      * @param destination
      * @param pcon
      */
-    public byte[] utxoToSignedTransaction(TransactionOutput utxo, Address destination, PassportConnection pcon) throws Exception {
+    public byte[] utxoToSignedTransaction(PublicKey pubKey, TransactionOutput utxo, Address destination, PassportConnection pcon) throws Exception {
         return new PassportTransactionFormatter(utxo, destination)
-                .buildAndSign(pcon);
+                .buildAndSign(pubKey, pcon);
     }
 
 
     /**
      * Broadcasts the list of signed transactions.
-     * @param transactions
+     * @param transactionsRaw transactions in raw byte[] format
      */
     public ArrayList<Transaction> broadcastTransactions(ArrayList<byte[]> transactionsRaw) {
-        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        ArrayList<Transaction> transactions = new ArrayList<>();
         for (byte[] transactionRaw : transactionsRaw) {
             final Wallet.SendResult result = new Wallet.SendResult();
             result.tx = new Transaction(params, transactionRaw);
@@ -241,6 +232,7 @@ public class BlockChain {
                 boolean isReturn = o.getScriptPubKey().isOpReturn();
                 if (sentToAddr && !isReturn) {
                     byte[] metaData = o.getScriptPubKey().getChunks().get(5).data;
+                    assert metaData != null;
                     byte[] quantity = Arrays.copyOfRange(metaData, 20, 28);
                     int amount = ByteBuffer.wrap(quantity).order(ByteOrder.LITTLE_ENDIAN).getInt();
                     Address toAddress = o.getScriptPubKey().getToAddress(this.params);
@@ -258,15 +250,14 @@ public class BlockChain {
 
     private TransactionHistoryItem createTransactionHistoryItem(Address myAddress, Address fromAddress, Address toAddress, Date date, Asset assetFilter, int amount) {
         String titleFormat = "";
-        String detailFormat = "";
         String detailString = "";
         if (myAddress.equals(fromAddress)) {
             titleFormat = context.getString(R.string.transaction_sent_item_format_title);
-            detailFormat = context.getString(R.string.transaction_sent_item_format_detail);
+            String detailFormat = context.getString(R.string.transaction_sent_item_format_detail);
             detailString = String.format(detailFormat, translateAddress(toAddress.toString()));
         } else if (myAddress.equals(toAddress)) {
             titleFormat = context.getString(R.string.transaction_received_item_format_title);
-            detailFormat = context.getString(R.string.transaction_received_item_format_detail);
+            String detailFormat = context.getString(R.string.transaction_received_item_format_detail);
             detailString  = String.format(detailFormat, translateAddress(fromAddress.toString()));
         }
         return new TransactionHistoryItem(

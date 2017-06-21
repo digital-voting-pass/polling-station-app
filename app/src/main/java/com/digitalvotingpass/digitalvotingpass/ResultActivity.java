@@ -32,7 +32,6 @@ import java.security.PublicKey;
 import java.util.ArrayList;
 
 public class ResultActivity extends AppCompatActivity {
-    private TextView textAuthorization;
     private TextView textVoterName;
     private TextView textVotingPassAmount;
     private TextView textVotingPasses;
@@ -52,6 +51,8 @@ public class ResultActivity extends AppCompatActivity {
     private ArrayList<Transaction> pendingTransactions;
     private TSnackbar snack;
 
+    private String preamble = "";
+
     /**
      * Checks if every pending transaction is confirmed and updates some view elements.
      */
@@ -64,8 +65,8 @@ public class ResultActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         setAuthorizationStatus(CONFIRMED);
-                        ((TextView) findViewById(R.id.voting_pass_amount)).setText("0");
-                        textVotingPasses.setText(R.string.voting_passes);
+                        textVoterName.setText(getString(R.string.please_hand, preamble));
+                        textVotingPasses.setText(getResources().getQuantityString(R.plurals.ballot_paper, votingPasses));
                     }
                 });
                 removeAllListeners();
@@ -186,13 +187,13 @@ public class ResultActivity extends AppCompatActivity {
      */
     public void handleData(Bundle extras) {
         Voter voter = (Voter) extras.get("voter");
-        String preamble = createPreamble(voter);
+        preamble = createPreamble(voter);
         try {
-        if(pubKey != null && mcAsset != null) {
-            votingPasses = BlockChain.getInstance(null).getVotingPassAmount(pubKey, mcAsset);
-        } else {
-            votingPasses = 0;
-        }
+            if(pubKey != null && mcAsset != null) {
+                votingPasses = BlockChain.getInstance(null).getVotingPassAmount(pubKey, mcAsset);
+            } else {
+                votingPasses = 0;
+            }
             if(votingPasses == 0) {
                 setAuthorizationStatus(FAILED);
             } else {
@@ -204,7 +205,7 @@ public class ResultActivity extends AppCompatActivity {
             if(votingPasses == 1) {
                 textVotingPasses.setText(R.string.voting_pass);
             } else {
-                textVotingPasses.setText(R.string.voting_passes);
+                textVotingPasses.setText(getResources().getQuantityString(R.plurals.ballot_paper, votingPasses));
             }
             textVotingPassAmount.setText(Integer.toString(votingPasses));
         } catch (Exception e) {
@@ -249,7 +250,6 @@ public class ResultActivity extends AppCompatActivity {
      */
     public void setAuthorizationStatus(int newState) {
         if (authorizationState == newState) { return; }
-        //TODO: implement actual conditions for either one of the three states.
         authorizationState = newState;
         switch (newState) {
             case FAILED:
@@ -276,7 +276,7 @@ public class ResultActivity extends AppCompatActivity {
                 break;
             case SUCCES:
                 showSnack(
-                    getResources().getQuantityString(R.plurals.authorization_succesful, votingPasses),
+                    getResources().getQuantityString(R.plurals.authorization_successful, votingPasses),
                     R.color.govLightBlue,
                     R.color.govDarkBlue
                 );
@@ -317,7 +317,6 @@ public class ResultActivity extends AppCompatActivity {
 
     /**
      * Return to the main activity for starting the process for the next voter.
-     * TODO: implement this method
      */
     public void nextVoter() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -327,7 +326,6 @@ public class ResultActivity extends AppCompatActivity {
 
     /**
      * Send the transaction to the blockchain and wait for a confirmation.
-     * TODO: implement this method
      */
     public void confirmVote() {
         try {
@@ -374,7 +372,6 @@ public class ResultActivity extends AppCompatActivity {
     /**
      * Cancel the voting process for the current voter and return to the mainactivity for starting
      * a new process for the next voter.
-     * TODO: implement this method
      */
     public void cancelVoting() {
         nextVoter();

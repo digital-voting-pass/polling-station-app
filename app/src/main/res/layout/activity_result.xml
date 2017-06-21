@@ -32,9 +32,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="65dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
+                android:layout_marginTop="80dp"
                 card_view:cardElevation="8dp"
                 card_view:cardCornerRadius="2dp">
                 <LinearLayout
@@ -74,7 +74,7 @@
                             android:padding="16dp"
                             android:textSize="14sp"
                             android:textColor="@color/govDarkBlue"
-                            android:text="@string/voting_passes"/>
+                            android:text="@string/voting_pass"/>
                     </LinearLayout>
                     <View
                         android:id="@+id/divider"
