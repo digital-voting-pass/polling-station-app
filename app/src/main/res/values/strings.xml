@@ -73,11 +73,11 @@
     <string name="waiting_confirmation">Waiting for confirmation</string>
     <string name="proceed_cast_vote">Redeem vote</string>
     <string name="cancel_vote">Cancel vote</string>
-    <string name="authorization_failed">Authorization failed, do not hand out voting ballot.</string>
-    <string name="authorization_succesful">Authorization successful, please confirm.</string>
-    <plurals name="authorization_succesful">
-        <item quantity="one">Voting pass found, please redeem.</item>
-        <item quantity="other">Voting passes found, please redeem.</item>
+    <string name="authorization_failed">Authorization failed, do not hand out ballot paper</string>
+    <string name="authorization_successful">Authorization successful, please confirm</string>
+    <plurals name="authorization_successful">
+        <item quantity="one">Voting pass found, please redeem</item>
+        <item quantity="other">Voting passes found, please redeem</item>
     </plurals>
     <plurals name="authorization_confirmed">
         <item quantity="one">Authorization successful</item>
@@ -89,9 +89,9 @@
     <string name="has_right">%s has right to:</string>
     <string name="please_hand">Please hand %s</string>
     <string name="voting_pass">Voting pass</string>
-    <plurals name="voting_ballots">
-        <item quantity="one">voting ballot</item>
-        <item quantity="other">voting ballots</item>
+    <plurals name="ballot_paper">
+        <item quantity="one">ballot paper</item>
+        <item quantity="other">ballot papers</item>
     </plurals>
 
     <string name="gender_male">Mr.</string>
