@@ -7,7 +7,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.util.Log;
 
-import com.digitalvotingpass.camera.Camera2BasicFragment;
+import com.digitalvotingpass.camera.CameraFragment;
 import com.digitalvotingpass.digitalvotingpass.ManualInputActivity;
 
 import org.junit.Before;
@@ -36,7 +36,7 @@ public class TesseractOCRTest {
     private String imageId2Result = "I<POLZZC9000094<<<<<<<<<<<<<<<\n8101028M2501305POL810102001412";
 
     @Mock
-    Camera2BasicFragment fragmentMock;
+    CameraFragment fragmentMock;
 
     @Mock
     AssetManager assetmanagerMock;
