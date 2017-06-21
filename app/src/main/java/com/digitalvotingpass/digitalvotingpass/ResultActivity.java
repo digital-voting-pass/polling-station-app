@@ -66,7 +66,7 @@ public class ResultActivity extends AppCompatActivity {
                     public void run() {
                         setAuthorizationStatus(CONFIRMED);
                         textVoterName.setText(getResources().getQuantityString(R.plurals.voting_ballots, votingPasses));
-                        textVotingPasses.setText(R.string.voting_passes);
+                        textVotingPasses.setText(getResources().getQuantityString(R.plurals.voting_ballots, votingPasses));
                     }
                 });
                 removeAllListeners();
@@ -205,7 +205,7 @@ public class ResultActivity extends AppCompatActivity {
             if(votingPasses == 1) {
                 textVotingPasses.setText(R.string.voting_pass);
             } else {
-                textVotingPasses.setText(R.string.voting_passes);
+                textVotingPasses.setText(getResources().getQuantityString(R.plurals.voting_ballots, votingPasses));
             }
             textVotingPassAmount.setText(Integer.toString(votingPasses));
         } catch (Exception e) {
