@@ -112,19 +112,26 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
             currentTask.setText(getString(R.string.no_connection));
 
             if (!Util.isNetEnabled(getApplicationContext())) {
-                View.OnClickListener inputSnackbarListener = new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-                    }
-                };
-
-                Snackbar snackbar = Snackbar.make(findViewById(R.id.splash_screen_layout), getString(R.string.please_enable_connect_message), Snackbar.LENGTH_INDEFINITE);
-                snackbar.getView().setBackgroundColor(ContextCompat.getColor(this, R.color.redFailed));
-                snackbar.setAction(R.string.go_network_settings, inputSnackbarListener);
-                snackbar.show();
+                showSnackbar();
             }
         }
+    }
+
+    public void showSnackbar() {
+        View.OnClickListener inputSnackbarListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+            }
+        };
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.splash_screen_layout), getString(R.string.please_enable_connect_message), Snackbar.LENGTH_INDEFINITE);
+        snackbar.getView().setBackgroundColor(ContextCompat.getColor(this, R.color.redFailed));
+        TextView textView = (TextView) (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
+        TextView actionTextView = (TextView) (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_action);
+        textView.setTypeface(typeFace);
+        actionTextView.setTypeface(typeFace);
+        snackbar.setAction(R.string.go_network_settings, inputSnackbarListener);
+        snackbar.show();
     }
 
     @Override

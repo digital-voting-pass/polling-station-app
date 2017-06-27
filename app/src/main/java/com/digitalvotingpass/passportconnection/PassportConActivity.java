@@ -14,7 +14,9 @@ import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +47,7 @@ public class PassportConActivity extends AppCompatActivity {
     // Adapter for NFC connection
     private NfcAdapter mNfcAdapter;
     private DocumentData documentData;
+    private Typeface typeFace;
 
     private ImageView progressView;
     private PassportConActivity thisActivity;
@@ -70,7 +73,7 @@ public class PassportConActivity extends AppCompatActivity {
         checkNFCStatus();
         notice.setText(R.string.nfc_enabled);
 
-        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
+        typeFace = Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
         notice.setTypeface(typeFace);
     }
 
@@ -211,10 +214,10 @@ public class PassportConActivity extends AppCompatActivity {
             displayCheckInputSnackbar();
             progressView.setImageResource(R.drawable.nfc_icon_empty);
         } else if(e.toString().toLowerCase().contains("tag was lost")) {
-            Toast.makeText(this, getString(R.string.NFC_error), Toast.LENGTH_LONG).show();
+            displayToast(getString(R.string.NFC_error));
             progressView.setImageResource(R.drawable.nfc_icon_empty);
         } else {
-            Toast.makeText(this, getString(R.string.general_error), Toast.LENGTH_LONG).show();
+            displayToast(getString(R.string.general_error));
             progressView.setImageResource(R.drawable.nfc_icon_empty);
         }
     }
@@ -236,7 +239,7 @@ public class PassportConActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else {
-            Toast.makeText(this, getString(R.string.NFC_error), Toast.LENGTH_LONG).show();
+            displayToast(getString(R.string.NFC_error));
             progressView.setImageResource(R.drawable.nfc_icon_empty);
         }
     }
@@ -249,7 +252,7 @@ public class PassportConActivity extends AppCompatActivity {
     public void checkNFCStatus() {
         if (mNfcAdapter == null) {
             // Stop here, we definitely need NFC
-            Toast.makeText(this, R.string.nfc_not_supported_error, Toast.LENGTH_LONG).show();
+            displayToast(getString(R.string.nfc_not_supported_error));
             finish();
             return;
         }
@@ -287,8 +290,24 @@ public class PassportConActivity extends AppCompatActivity {
 
         Snackbar inputSnackbar = Snackbar.make(findViewById(R.id.coordinator_layout),
                 R.string.wrong_document_details, Snackbar.LENGTH_INDEFINITE);
+        TextView textView = (TextView) (inputSnackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
+        TextView actionTextView = (TextView) (inputSnackbar.getView()).findViewById(android.support.design.R.id.snackbar_action);
+        textView.setTypeface(typeFace);
+        actionTextView.setTypeface(typeFace);
         inputSnackbar.setAction(R.string.check_input, inputSnackbarListener);
         inputSnackbar.show();
+    }
+
+    public void displayToast(String text) {
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.toast_view,
+                (ViewGroup) findViewById(R.id.custom_toast_container));
+        Toast toast = new Toast(getApplicationContext());
+        toast.setView(layout);
+        TextView textView = (TextView) layout.findViewById(R.id.text);
+        textView.setTypeface(typeFace);
+        textView.setText(text);
+        toast.show();
     }
 
     /**
