@@ -6,26 +6,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.blockchain.BlockchainCallBackListener;
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
-import com.digitalvotingpass.utilities.Util;
 import com.digitalvotingpass.utilities.ErrorDialog;
+import com.digitalvotingpass.utilities.Util;
 import com.google.gson.Gson;
 
 import java.text.DecimalFormat;
@@ -42,6 +40,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
     private Handler handler;
     private Handler initTextHandler;
     private BlockChain blockChain;
+    private Typeface typeFace;
 
     DecimalFormat percentFormatter = new DecimalFormat("##0.0");
 
@@ -82,6 +81,11 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         downloadProgressText = (TextView) findViewById(R.id.download_progress_text);
         currentTask = (TextView) findViewById(R.id.progress_current_task);
         downloadProgressBar = (ProgressBar) findViewById(R.id.download_progress_bar);
+
+        typeFace = Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
+        downloadProgressText.setTypeface(typeFace);
+        currentTask.setTypeface(typeFace);
+        ((TextView) findViewById(R.id.text_splash_screen)).setTypeface(typeFace);
 
         if (savedInstanceState == null) {
             try {

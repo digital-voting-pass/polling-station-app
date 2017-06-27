@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import com.google.gson.Gson;
 
 import org.bitcoinj.core.AssetBalance;
 import org.jmrtd.PassportService;
+
 import java.security.PublicKey;
 import java.security.Security;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ public class PassportConActivity extends AppCompatActivity {
     // Adapter for NFC connection
     private NfcAdapter mNfcAdapter;
     private DocumentData documentData;
+
     private ImageView progressView;
     private PassportConActivity thisActivity;
 
@@ -60,15 +63,15 @@ public class PassportConActivity extends AppCompatActivity {
         thisActivity = this;
 
         setContentView(R.layout.activity_passport_con);
-        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(appBar);
-        Util.setupAppBar(appBar, this);
         TextView notice = (TextView) findViewById(R.id.notice);
         progressView = (ImageView) findViewById(R.id.progress_view);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         checkNFCStatus();
         notice.setText(R.string.nfc_enabled);
+
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
+        notice.setTypeface(typeFace);
     }
 
     /**
@@ -79,6 +82,9 @@ public class PassportConActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(appBar);
+        Util.setupAppBar(appBar, this);
         // It's important, that the activity is in the foreground (resumed). Otherwise an IllegalStateException is thrown.
         setupForegroundDispatch(this, mNfcAdapter);
         checkNFCStatus();
