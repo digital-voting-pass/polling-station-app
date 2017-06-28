@@ -1,6 +1,7 @@
 package com.digitalvotingpass.electionchoice;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.utilities.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +80,11 @@ public class ElectionsAdapter extends BaseAdapter implements Filterable {
         TextView kind = (TextView) convertView.findViewById(R.id.kind);
         TextView place = (TextView) convertView.findViewById(R.id.place);
         // Populate the data into the template view using the data object
+
+        Typeface typeFace = Util.getMainFont(convertView.getContext().getAssets());
+        kind.setTypeface(typeFace);
+        place.setTypeface(typeFace);
+
         kind.setText(election.kind);
         place.setText(election.place);
 

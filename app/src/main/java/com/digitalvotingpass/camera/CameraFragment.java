@@ -53,6 +53,7 @@ import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.ocrscanner.Mrz;
 import com.digitalvotingpass.ocrscanner.TesseractOCR;
 import com.digitalvotingpass.utilities.ErrorDialog;
+import com.digitalvotingpass.utilities.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -210,7 +211,7 @@ public class CameraFragment extends Fragment implements FragmentCompat.OnRequest
          });
 
         infoText = (TextView) view.findViewById(R.id.info_text);
-        Typeface typeFace= Typeface.createFromAsset(getActivity().getAssets(), "fonts/ro.ttf");
+        Typeface typeFace = Util.getMainFont(getActivity().getAssets());
         infoText.setTypeface(typeFace);
         manualInput.setTypeface(typeFace);
         controlPanel = view.findViewById(R.id.control);

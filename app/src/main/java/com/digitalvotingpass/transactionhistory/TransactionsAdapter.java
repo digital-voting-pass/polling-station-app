@@ -1,6 +1,7 @@
 package com.digitalvotingpass.transactionhistory;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.utilities.Util;
 
 import java.util.List;
 
@@ -31,9 +33,15 @@ public class TransactionsAdapter extends ArrayAdapter<TransactionHistoryItem> {
         }
         if (transactionHistoryItem != null) {
             // Lookup view for data population
+            Typeface typeFace = Util.getMainFont(getContext().getAssets());
             TextView title = (TextView) convertView.findViewById(R.id.title);
             TextView time = (TextView) convertView.findViewById(R.id.time);
             TextView details = (TextView) convertView.findViewById(R.id.details);
+
+            title.setTypeface(typeFace);
+            time.setTypeface(typeFace);
+            details.setTypeface(typeFace);
+
             // Populate the data into the template view using the data object
             title.setText(transactionHistoryItem.title);
             time.setText(transactionHistoryItem.time.toString());
