@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -14,9 +13,7 @@ import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +31,6 @@ import com.google.gson.Gson;
 
 import org.bitcoinj.core.AssetBalance;
 import org.jmrtd.PassportService;
-
 import java.security.PublicKey;
 import java.security.Security;
 import java.util.ArrayList;
@@ -47,8 +43,6 @@ public class PassportConActivity extends AppCompatActivity {
     // Adapter for NFC connection
     private NfcAdapter mNfcAdapter;
     private DocumentData documentData;
-    private Typeface typeFace;
-
     private ImageView progressView;
     private PassportConActivity thisActivity;
 
@@ -66,15 +60,15 @@ public class PassportConActivity extends AppCompatActivity {
         thisActivity = this;
 
         setContentView(R.layout.activity_passport_con);
+        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(appBar);
+        Util.setupAppBar(appBar, this);
         TextView notice = (TextView) findViewById(R.id.notice);
         progressView = (ImageView) findViewById(R.id.progress_view);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         checkNFCStatus();
         notice.setText(R.string.nfc_enabled);
-
-        typeFace = Util.getMainFont(getAssets());
-        notice.setTypeface(typeFace);
     }
 
     /**
@@ -85,9 +79,6 @@ public class PassportConActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(appBar);
-        Util.setupAppBar(appBar, this);
         // It's important, that the activity is in the foreground (resumed). Otherwise an IllegalStateException is thrown.
         setupForegroundDispatch(this, mNfcAdapter);
         checkNFCStatus();
@@ -214,10 +205,10 @@ public class PassportConActivity extends AppCompatActivity {
             displayCheckInputSnackbar();
             progressView.setImageResource(R.drawable.nfc_icon_empty);
         } else if(e.toString().toLowerCase().contains("tag was lost")) {
-            displayToast(getString(R.string.NFC_error));
+            Toast.makeText(this, getString(R.string.NFC_error), Toast.LENGTH_LONG).show();
             progressView.setImageResource(R.drawable.nfc_icon_empty);
         } else {
-            displayToast(getString(R.string.general_error));
+            Toast.makeText(this, getString(R.string.general_error), Toast.LENGTH_LONG).show();
             progressView.setImageResource(R.drawable.nfc_icon_empty);
         }
     }
@@ -239,7 +230,7 @@ public class PassportConActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else {
-            displayToast(getString(R.string.NFC_error));
+            Toast.makeText(this, getString(R.string.NFC_error), Toast.LENGTH_LONG).show();
             progressView.setImageResource(R.drawable.nfc_icon_empty);
         }
     }
@@ -252,7 +243,7 @@ public class PassportConActivity extends AppCompatActivity {
     public void checkNFCStatus() {
         if (mNfcAdapter == null) {
             // Stop here, we definitely need NFC
-            displayToast(getString(R.string.nfc_not_supported_error));
+            Toast.makeText(this, R.string.nfc_not_supported_error, Toast.LENGTH_LONG).show();
             finish();
             return;
         }
@@ -266,7 +257,10 @@ public class PassportConActivity extends AppCompatActivity {
                 }
             };
 
-            displaySnackbar(getString(R.string.nfc_disabled_error_snackbar), R.string.nfc_disabled_snackbar_action, nfcSnackbarListener);
+            Snackbar nfcDisabledSnackbar = Snackbar.make(findViewById(R.id.coordinator_layout),
+                    R.string.nfc_disabled_error_snackbar, Snackbar.LENGTH_INDEFINITE);
+            nfcDisabledSnackbar.setAction(R.string.nfc_disabled_snackbar_action, nfcSnackbarListener);
+            nfcDisabledSnackbar.show();
         }
     }
 
@@ -284,30 +278,11 @@ public class PassportConActivity extends AppCompatActivity {
                 startActivityForResult(intent, MainActivity.GET_DOC_INFO);
             }
         };
-        displaySnackbar(getString(R.string.wrong_document_details), R.string.check_input, inputSnackbarListener);
-    }
 
-    public void displaySnackbar(String text, int actionString, View.OnClickListener listener) {
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.coordinator_layout),
-                text, Snackbar.LENGTH_INDEFINITE);
-        TextView textView = (TextView) (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
-        TextView actionTextView = (TextView) (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_action);
-        textView.setTypeface(typeFace);
-        actionTextView.setTypeface(typeFace);
-        snackbar.setAction(actionString, listener);
-        snackbar.show();
-    }
-
-    public void displayToast(String text) {
-        LayoutInflater inflater = getLayoutInflater();
-        View layout = inflater.inflate(R.layout.toast_view,
-                (ViewGroup) findViewById(R.id.custom_toast_container));
-        Toast toast = new Toast(getApplicationContext());
-        toast.setView(layout);
-        TextView textView = (TextView) layout.findViewById(R.id.text);
-        textView.setTypeface(typeFace);
-        textView.setText(text);
-        toast.show();
+        Snackbar inputSnackbar = Snackbar.make(findViewById(R.id.coordinator_layout),
+                R.string.wrong_document_details, Snackbar.LENGTH_INDEFINITE);
+        inputSnackbar.setAction(R.string.check_input, inputSnackbarListener);
+        inputSnackbar.show();
     }
 
     /**

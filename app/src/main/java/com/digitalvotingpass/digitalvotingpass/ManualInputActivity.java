@@ -1,16 +1,13 @@
 package com.digitalvotingpass.digitalvotingpass;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -42,8 +39,11 @@ public class ManualInputActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manual_input);
-
+        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(appBar);
+        Util.setupAppBar(appBar, this);
         Typeface typeFace= Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
+
         docNumber = (EditText) findViewById(R.id.doc_num);
         docNumber.setTypeface(typeFace);
         TextView docNumTitle = (TextView) findViewById(R.id.doc_num_title);
@@ -54,7 +54,6 @@ public class ManualInputActivity extends AppCompatActivity {
         expDateTitle.setTypeface(typeFace);
 
         Button submitBut = (Button) findViewById(R.id.submit_button);
-        submitBut.setTypeface(typeFace);
         submitBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,14 +74,6 @@ public class ManualInputActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(appBar);
-        Util.setupAppBar(appBar, this);
-    }
-
     private void setupExpirySpinners() {
         expiryDaySpinner = (Spinner) findViewById(R.id.expiry_day_spinner);
         expiryMonthSpinner = (Spinner) findViewById(R.id.expiry_month_spinner);
@@ -94,14 +85,13 @@ public class ManualInputActivity extends AppCompatActivity {
         }
 
         // Leave the default view (android.R.layout.simple_spinner_item) but set custom view for dropdown to add extra padding
-        ArrayAdapter<String> dayAdapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, days);
-
         dayAdapter.setDropDownViewResource(R.layout.spinner_dropdown);
         expiryDaySpinner.setAdapter(dayAdapter);
 
-        final CharSequence[] strings = getApplicationContext().getResources().getTextArray(R.array.months_array);
-        ArrayAdapter<CharSequence> monthAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, strings);
+        ArrayAdapter<CharSequence> monthAdapter = ArrayAdapter.createFromResource(this,
+                R.array.months_array, android.R.layout.simple_spinner_item);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         expiryMonthSpinner.setAdapter(monthAdapter);
 
@@ -130,8 +120,8 @@ public class ManualInputActivity extends AppCompatActivity {
         dayAdapter.setDropDownViewResource(R.layout.spinner_dropdown);
         dobDaySpinner.setAdapter(dayAdapter);
 
-        final CharSequence[] strings = getApplicationContext().getResources().getTextArray(R.array.months_array);
-        ArrayAdapter<CharSequence> monthAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, strings);
+        ArrayAdapter<CharSequence> monthAdapter = ArrayAdapter.createFromResource(this,
+                R.array.months_array, android.R.layout.simple_spinner_item);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dobMonthSpinner.setAdapter(monthAdapter);
 
@@ -204,30 +194,4 @@ public class ManualInputActivity extends AppCompatActivity {
         return valid;
     }
 
-    private class ArrayAdapter<T> extends android.widget.ArrayAdapter<T> {
-
-        Typeface typeFace;
-
-        public ArrayAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull T[] objects) {
-            super(context, resource, objects);
-            typeFace = Util.getMainFont(getAssets());
-        }
-
-        public ArrayAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List objects) {
-            super(context, resource, objects);
-            typeFace = Util.getMainFont(getAssets());
-        }
-
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View v = super.getView(position, convertView, parent);
-            ((TextView) v).setTypeface(typeFace);
-            return v;
-        }
-
-        public View getDropDownView(int position,  View convertView,  ViewGroup parent) {
-            View v =super.getDropDownView(position, convertView, parent);
-            ((TextView) v).setTypeface(typeFace);
-            return v;
-        }
-    }
 }

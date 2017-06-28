@@ -3,7 +3,6 @@ package com.digitalvotingpass.digitalvotingpass;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +38,6 @@ public class ResultActivity extends AppCompatActivity {
     private Button butTransactionHistory;
     private Button butProceed;
     private MenuItem cancelAction;
-    private Typeface typeFace;
 
     private int authorizationState = 1;
     private final int FAILED = 0;
@@ -91,18 +89,14 @@ public class ResultActivity extends AppCompatActivity {
         signedTransactions = (ArrayList<byte[]>) extras.get("signedTransactions");
 
         setContentView(R.layout.activity_result);
+        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(appBar);
+        Util.setupAppBar(appBar, this);
         textVoterName = (TextView) findViewById(R.id.voter_name);
         textVotingPassAmount = (TextView) findViewById(R.id.voting_pass_amount);
         textVotingPasses = (TextView) findViewById(R.id.voting_passes);
         butTransactionHistory = (Button) findViewById(R.id.transactionHistory);
         butProceed = (Button) findViewById(R.id.proceed);
-
-        typeFace = Util.getMainFont(getAssets());
-        textVoterName.setTypeface(typeFace);
-        textVotingPassAmount.setTypeface(typeFace);
-        textVotingPasses.setTypeface(typeFace);
-        butTransactionHistory.setTypeface(typeFace);
-        butProceed.setTypeface(typeFace);
 
         butTransactionHistory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,15 +113,6 @@ public class ResultActivity extends AppCompatActivity {
                 proceed();
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(appBar);
-        Util.setupAppBar(appBar, this);
-        // set the text of the appbar to the selected election
     }
 
     /**
@@ -164,7 +149,6 @@ public class ResultActivity extends AppCompatActivity {
         TextView textView = (TextView) snackbarView.findViewById(com.androidadvance.topsnackbar.R.id.snackbar_text);
         textView.setTextColor(getResources().getColor(textColor));
         textView.setGravity(Gravity.CENTER_HORIZONTAL);
-        textView.setTypeface(typeFace);
 
         snack.show();
 

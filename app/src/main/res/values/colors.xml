@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/govDarkBlue</color>
-    <color name="colorPrimaryDark">@color/govDarkBlue</color>
+    <color name="colorPrimary">#3f51b5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#ff4081</color>
 
     <color name="ocr_control_background">#a0ffffff</color>
@@ -10,7 +10,6 @@
 
     <color name="button_after_timeout">#a0f88938</color>
     <color name="grey">#a0acacac</color>
-    <color name="dark_grey">#a0282828</color>
     <color name="green">#00ff00</color>
     <color name="white">#ffffff</color>
     <color name="transparent">#00000000</color>
