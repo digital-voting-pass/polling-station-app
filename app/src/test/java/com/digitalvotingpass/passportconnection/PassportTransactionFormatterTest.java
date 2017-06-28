@@ -7,7 +7,6 @@ import com.google.common.primitives.Bytes;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.TransactionOutput;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
