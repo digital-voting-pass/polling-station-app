@@ -4,7 +4,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -13,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.digitalvotingpass.R;
@@ -78,6 +76,9 @@ public class TransactionHistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaction_history);
 
+        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(appBar);
+        Util.setupAppBar(appBar, this);
         ListView transactionList = (ListView) findViewById(R.id.transaction_list);
 
         // create a transaction history array with all the transactions and add them to the list
@@ -85,21 +86,10 @@ public class TransactionHistoryActivity extends AppCompatActivity {
         adapter = new TransactionsAdapter(this, transactionHistory);
         transactionList.setAdapter(adapter);
 
-        Typeface typeFace = Util.getMainFont(getAssets());
-        ((TextView)findViewById(R.id.no_transactions_text)).setTypeface(typeFace);
-
         // Load transactions in separate thread since this can take a while.
         HandlerThread thread = new HandlerThread("transactions");
         thread.start();
         new Handler(thread.getLooper()).post(loadTransactions);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(appBar);
-        Util.setupAppBar(appBar, this);
     }
 
     /**

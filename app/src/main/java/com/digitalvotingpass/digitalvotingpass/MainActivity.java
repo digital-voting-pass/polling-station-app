@@ -3,23 +3,18 @@ package com.digitalvotingpass.digitalvotingpass;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.digitalvotingpass.camera.CameraActivity;
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
 import com.digitalvotingpass.passportconnection.PassportConActivity;
-import com.digitalvotingpass.utilities.CustomTypefaceSpan;
 import com.digitalvotingpass.utilities.Util;
 import com.google.gson.Gson;
 
@@ -31,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Button manualInput;
     private Button startOCR;
-    private Typeface typeFace;
 
     public static final int GET_DOC_INFO = 1;
     public static final int CHOOSE_ELECTION = 2;
@@ -42,6 +36,12 @@ public class MainActivity extends AppCompatActivity {
         final MainActivity thisActivity = this;
 
         setContentView(R.layout.activity_main);
+        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(appBar);
+        Util.setupAppBar(appBar, this);
+
+        // set the text of the appbar to the selected election
+        setElectionInAppBar();
 
         manualInput = (Button) findViewById(R.id.manual_input_button);
         manualInput.setOnClickListener(new View.OnClickListener() {
@@ -61,20 +61,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, GET_DOC_INFO);
             }
         });
-        typeFace = Util.getMainFont(getAssets());
-        manualInput.setTypeface(typeFace);
-        startOCR.setTypeface(typeFace);
-        ((TextView)findViewById(R.id.divider)).setTypeface(typeFace);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(appBar);
-        Util.setupAppBar(appBar, this);
-        // set the text of the appbar to the selected election
-        setElectionInAppBar();
     }
 
     /**
@@ -109,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         // Check if we got documentdata and set the documentData attribute
         if(requestCode == GET_DOC_INFO && resultCode == RESULT_OK) {
+
             documentData = (DocumentData) data.getExtras().get(DocumentData.identifier);
             Intent intent = new Intent(this, PassportConActivity.class);
             intent.putExtra(DocumentData.identifier, documentData);
@@ -131,13 +118,8 @@ public class MainActivity extends AppCompatActivity {
         election = gson.fromJson(json, Election.class);
 
         if(election != null && getSupportActionBar() != null) {
-            SpannableStringBuilder title = new SpannableStringBuilder(election.getKind());
-            title.setSpan (new CustomTypefaceSpan("", typeFace), 0, title.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
-            SpannableStringBuilder subtitle = new SpannableStringBuilder(election.getPlace());
-            subtitle.setSpan (new CustomTypefaceSpan("", typeFace), 0, subtitle.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
-
-            getSupportActionBar().setTitle(title);
-            getSupportActionBar().setSubtitle(subtitle);
+            getSupportActionBar().setTitle(election.getKind());
+            getSupportActionBar().setSubtitle(election.getPlace());
         }
     }
 

@@ -6,24 +6,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.digitalvotingpass.blockchain.BlockChain;
 import com.digitalvotingpass.blockchain.BlockchainCallBackListener;
 import com.digitalvotingpass.electionchoice.Election;
 import com.digitalvotingpass.electionchoice.ElectionChoiceActivity;
-import com.digitalvotingpass.utilities.ErrorDialog;
 import com.digitalvotingpass.utilities.Util;
+import com.digitalvotingpass.utilities.ErrorDialog;
 import com.google.gson.Gson;
 
 import java.text.DecimalFormat;
@@ -40,7 +42,6 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
     private Handler handler;
     private Handler initTextHandler;
     private BlockChain blockChain;
-    private Typeface typeFace;
 
     DecimalFormat percentFormatter = new DecimalFormat("##0.0");
 
@@ -82,11 +83,6 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         currentTask = (TextView) findViewById(R.id.progress_current_task);
         downloadProgressBar = (ProgressBar) findViewById(R.id.download_progress_bar);
 
-        typeFace = Util.getMainFont(getAssets());
-        downloadProgressText.setTypeface(typeFace);
-        currentTask.setTypeface(typeFace);
-        ((TextView) findViewById(R.id.text_splash_screen)).setTypeface(typeFace);
-
         if (savedInstanceState == null) {
             try {
                 blockChain = BlockChain.getInstance(getApplicationContext());
@@ -112,26 +108,19 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
             currentTask.setText(getString(R.string.no_connection));
 
             if (!Util.isNetEnabled(getApplicationContext())) {
-                showSnackbar();
+                View.OnClickListener inputSnackbarListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                    }
+                };
+
+                Snackbar snackbar = Snackbar.make(findViewById(R.id.splash_screen_layout), getString(R.string.please_enable_connect_message), Snackbar.LENGTH_INDEFINITE);
+                snackbar.getView().setBackgroundColor(ContextCompat.getColor(this, R.color.redFailed));
+                snackbar.setAction(R.string.go_network_settings, inputSnackbarListener);
+                snackbar.show();
             }
         }
-    }
-
-    public void showSnackbar() {
-        View.OnClickListener inputSnackbarListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-            }
-        };
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.splash_screen_layout), getString(R.string.please_enable_connect_message), Snackbar.LENGTH_INDEFINITE);
-        snackbar.getView().setBackgroundColor(ContextCompat.getColor(this, R.color.redFailed));
-        TextView textView = (TextView) (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
-        TextView actionTextView = (TextView) (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_action);
-        textView.setTypeface(typeFace);
-        actionTextView.setTypeface(typeFace);
-        snackbar.setAction(R.string.go_network_settings, inputSnackbarListener);
-        snackbar.show();
     }
 
     @Override
