@@ -266,10 +266,7 @@ public class PassportConActivity extends AppCompatActivity {
                 }
             };
 
-            Snackbar nfcDisabledSnackbar = Snackbar.make(findViewById(R.id.coordinator_layout),
-                    R.string.nfc_disabled_error_snackbar, Snackbar.LENGTH_INDEFINITE);
-            nfcDisabledSnackbar.setAction(R.string.nfc_disabled_snackbar_action, nfcSnackbarListener);
-            nfcDisabledSnackbar.show();
+            displaySnackbar(getString(R.string.nfc_disabled_error_snackbar), R.string.nfc_disabled_snackbar_action, nfcSnackbarListener);
         }
     }
 
@@ -287,15 +284,18 @@ public class PassportConActivity extends AppCompatActivity {
                 startActivityForResult(intent, MainActivity.GET_DOC_INFO);
             }
         };
+        displaySnackbar(getString(R.string.wrong_document_details), R.string.check_input, inputSnackbarListener);
+    }
 
-        Snackbar inputSnackbar = Snackbar.make(findViewById(R.id.coordinator_layout),
-                R.string.wrong_document_details, Snackbar.LENGTH_INDEFINITE);
-        TextView textView = (TextView) (inputSnackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
-        TextView actionTextView = (TextView) (inputSnackbar.getView()).findViewById(android.support.design.R.id.snackbar_action);
+    public void displaySnackbar(String text, int actionString, View.OnClickListener listener) {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.coordinator_layout),
+                text, Snackbar.LENGTH_INDEFINITE);
+        TextView textView = (TextView) (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
+        TextView actionTextView = (TextView) (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_action);
         textView.setTypeface(typeFace);
         actionTextView.setTypeface(typeFace);
-        inputSnackbar.setAction(R.string.check_input, inputSnackbarListener);
-        inputSnackbar.show();
+        snackbar.setAction(actionString, listener);
+        snackbar.show();
     }
 
     public void displayToast(String text) {
