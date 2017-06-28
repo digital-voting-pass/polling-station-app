@@ -74,7 +74,15 @@ public class CameraFragment extends Fragment implements FragmentCompat.OnRequest
                 @Override
                 public void run() {
                     manualInput.setVisibility(View.VISIBLE);
-                    overlay.setMargins(0,0,0,infoText.getHeight() + manualInput.getHeight());
+                    //Add layout listener to update overlay margin when the button has become visible
+                    //If we call setMargins immediately the button is not yet visible and margin will be wrong
+                    manualInput.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                        @Override
+                        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                            overlay.setMargins(0, 0, 0, controlPanel.getHeight());
+                            manualInput.removeOnLayoutChangeListener(this);
+                        }
+                    });
                 }
             });
         }
