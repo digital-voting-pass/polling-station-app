@@ -2,15 +2,21 @@ package com.digitalvotingpass.utilities;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.util.Log;
 
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+
+import org.bitcoinj.core.Asset;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,9 +28,15 @@ import java.util.Map;
 
 public class Util {
 
-
     public static final String FOLDER_DIGITAL_VOTING_PASS = "DigitalVotingPass";
+    public static final String FONT_LOCATION = "fonts/ro.ttf";
+    private static Typeface typeFace;
 
+    public static Typeface getMainFont(AssetManager assets) {
+        if (typeFace == null)
+            typeFace = Typeface.createFromAsset(assets, FONT_LOCATION);
+        return typeFace;
+    }
 
     /**
      * Returns the height of the status bar in pixels
@@ -44,13 +56,19 @@ public class Util {
     /**
      * Sets up a top-padding for the given app bar equal to the height of the status bar.
      * This increases the length of the app bar so it fits nicely below the status bar.
-     * This method also sets the status bar transparency.
+     * This method also sets the status bar transparency. (may not be needed)
+     * This method also sets the AppBar title to the activity title using the ro.ttf font.
      *
      * @param appBar   Toolbar to set padding to
      * @param activity Activity - current activity
      */
     public static void setupAppBar(Toolbar appBar, Activity activity) {
         appBar.setPadding(0, getStatusBarHeight(activity.getResources()), 0, 0);
+
+        Typeface typeFace= Util.getMainFont(activity.getAssets());
+        SpannableStringBuilder s = new SpannableStringBuilder(activity.getTitle());
+        s.setSpan (new CustomTypefaceSpan("", typeFace), 0, s.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+        appBar.setTitle(s);
 
         SystemBarTintManager tintManager = new SystemBarTintManager(activity);
         tintManager.setStatusBarTintEnabled(true);
