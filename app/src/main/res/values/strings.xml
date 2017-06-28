@@ -127,7 +127,7 @@
     <string name="transaction_sent_item_format_title">Sent %1$d vote \n%2$s %3$s</string>
     <string name="transaction_sent_item_format_detail">To %s</string>
     <string-array name="address_array">
-        <item>1GoqgbPZUV2yuPZXohtAvB2NZbjcew8Rk93mMn|Government</item>
+        <item>1PgYKBGnDp3UHBcojWwzSTu7PLyAWgvpKpqjM7|Government</item>
     </string-array>
 
     <string name="shared_preferences_key_election">com.digitalvotingpass.ELECTION_OBJECT_KEY</string>
