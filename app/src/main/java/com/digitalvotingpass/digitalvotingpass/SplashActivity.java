@@ -82,7 +82,7 @@ public class SplashActivity extends Activity implements BlockchainCallBackListen
         currentTask = (TextView) findViewById(R.id.progress_current_task);
         downloadProgressBar = (ProgressBar) findViewById(R.id.download_progress_bar);
 
-        typeFace = Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
+        typeFace = Util.getMainFont(getAssets());
         downloadProgressText.setTypeface(typeFace);
         currentTask.setTypeface(typeFace);
         ((TextView) findViewById(R.id.text_splash_screen)).setTypeface(typeFace);

@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, GET_DOC_INFO);
             }
         });
-        typeFace = Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
+        typeFace = Util.getMainFont(getAssets());
         manualInput.setTypeface(typeFace);
         startOCR.setTypeface(typeFace);
         ((TextView)findViewById(R.id.divider)).setTypeface(typeFace);

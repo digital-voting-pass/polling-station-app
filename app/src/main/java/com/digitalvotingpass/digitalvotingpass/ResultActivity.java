@@ -97,7 +97,7 @@ public class ResultActivity extends AppCompatActivity {
         butTransactionHistory = (Button) findViewById(R.id.transactionHistory);
         butProceed = (Button) findViewById(R.id.proceed);
 
-        typeFace = Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
+        typeFace = Util.getMainFont(getAssets());
         textVoterName.setTypeface(typeFace);
         textVotingPassAmount.setTypeface(typeFace);
         textVotingPasses.setTypeface(typeFace);

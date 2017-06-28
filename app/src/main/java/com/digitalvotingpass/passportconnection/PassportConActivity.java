@@ -73,7 +73,7 @@ public class PassportConActivity extends AppCompatActivity {
         checkNFCStatus();
         notice.setText(R.string.nfc_enabled);
 
-        typeFace = Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
+        typeFace = Util.getMainFont(getAssets());
         notice.setTypeface(typeFace);
     }
 

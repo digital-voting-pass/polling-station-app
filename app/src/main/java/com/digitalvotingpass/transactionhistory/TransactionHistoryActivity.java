@@ -85,7 +85,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
         adapter = new TransactionsAdapter(this, transactionHistory);
         transactionList.setAdapter(adapter);
 
-        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
+        Typeface typeFace = Util.getMainFont(getAssets());
         ((TextView)findViewById(R.id.no_transactions_text)).setTypeface(typeFace);
 
         // Load transactions in separate thread since this can take a while.

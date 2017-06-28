@@ -11,6 +11,7 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.utilities.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +81,7 @@ public class ElectionsAdapter extends BaseAdapter implements Filterable {
         TextView place = (TextView) convertView.findViewById(R.id.place);
         // Populate the data into the template view using the data object
 
-        Typeface typeFace = Typeface.createFromAsset(convertView.getContext().getAssets(), "fonts/ro.ttf");
+        Typeface typeFace = Util.getMainFont(convertView.getContext().getAssets());
         kind.setTypeface(typeFace);
         place.setTypeface(typeFace);
 

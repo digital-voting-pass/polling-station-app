@@ -210,12 +210,12 @@ public class ManualInputActivity extends AppCompatActivity {
 
         public ArrayAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull T[] objects) {
             super(context, resource, objects);
-            typeFace = Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
+            typeFace = Util.getMainFont(getAssets());
         }
 
         public ArrayAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List objects) {
             super(context, resource, objects);
-            typeFace = Typeface.createFromAsset(getAssets(), "fonts/ro.ttf");
+            typeFace = Util.getMainFont(getAssets());
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {

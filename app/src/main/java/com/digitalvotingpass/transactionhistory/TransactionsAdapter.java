@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.digitalvotingpass.digitalvotingpass.R;
+import com.digitalvotingpass.utilities.Util;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class TransactionsAdapter extends ArrayAdapter<TransactionHistoryItem> {
         }
         if (transactionHistoryItem != null) {
             // Lookup view for data population
-            Typeface typeFace = Typeface.createFromAsset(getContext().getAssets(), "fonts/ro.ttf");
+            Typeface typeFace = Util.getMainFont(getContext().getAssets());
             TextView title = (TextView) convertView.findViewById(R.id.title);
             TextView time = (TextView) convertView.findViewById(R.id.time);
             TextView details = (TextView) convertView.findViewById(R.id.details);
