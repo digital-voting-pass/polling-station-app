@@ -33,7 +33,15 @@ public class MrzTest {
     private String invalid_passport_mrz = "P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<\n"+
                                             "L898902C<3UTO6918061F9406236ZE184226B<<<<<14";
 
+    private String specimen_mrz = "P<WILLEKE<<LIZELOTTE<<<<<<<<<<<<<<<<<<<<\n"+
+            "SPECI20142NLD6503101F2403096999999990<<<<<84";
 
+
+    /**
+     * MRZ should NOT be valid -> docNO starts with an 8, but is still considered valid
+     */
+    private String invalid_specimen_mrz = "P<WILLEKE<<LIZELOTTE<<<<<<<<<<<<<<<<<<<<\n"+
+            "8PECI20142NLD6503101F2403096999999990<<<<<84";
 
     @Test
     public void valid_passport_mrz() throws Exception {
@@ -51,6 +59,12 @@ public class MrzTest {
     public void invalid_passport_mrz() throws Exception {
         Mrz invalid = new Mrz(invalid_passport_mrz);
         assertFalse(invalid.valid());
+    }
+
+    @Test
+    public void valid_specimen_mrz() throws Exception {
+        Mrz speci = new Mrz(specimen_mrz);
+        assertTrue(speci.valid());
     }
 
     @Test
