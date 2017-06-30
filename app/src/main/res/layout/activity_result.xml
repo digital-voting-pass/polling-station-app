@@ -76,13 +76,12 @@
                             android:textColor="@color/govDarkBlue"
                             android:text="@string/voting_pass"/>
                     </LinearLayout>
+
                     <View
                         android:id="@+id/divider"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        android:background="@android:color/darker_gray" />
+                        android:background="@color/grey" />
                     <Button
                         android:id="@+id/transactionHistory"
                         android:layout_width="match_parent"
