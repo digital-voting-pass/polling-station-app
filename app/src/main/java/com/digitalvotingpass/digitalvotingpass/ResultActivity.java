@@ -67,6 +67,8 @@ public class ResultActivity extends AppCompatActivity {
                         setAuthorizationStatus(CONFIRMED);
                         textVoterName.setText(getString(R.string.please_hand, preamble));
                         textVotingPasses.setText(getResources().getQuantityString(R.plurals.ballot_paper, votingPasses));
+                        butProceed.setEnabled(true);
+                        getSupportActionBar().setTitle(getTitle());
                     }
                 });
                 removeAllListeners();
@@ -332,6 +334,8 @@ public class ResultActivity extends AppCompatActivity {
             this.pendingTransactions = BlockChain.getInstance(null).broadcastTransactions(signedTransactions);
             setAuthorizationStatus(this.WAITING);
             butProceed.setText(R.string.waiting_confirmation);
+            butProceed.setEnabled(false);
+            getSupportActionBar().setTitle(R.string.waiting_confirmation);
             attachTransactionListeners();
         } catch (Exception e) {
             e.printStackTrace();
