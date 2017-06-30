@@ -93,7 +93,7 @@ public class BlockChain {
 
     public void startDownload() {
         BriefLogFormatter.init();
-        String filePrefix = "ePassportChain";
+        String filePrefix = "voting-wallet";
         File walletFile = new File(Environment.getExternalStorageDirectory() + "/" + Util.FOLDER_DIGITAL_VOTING_PASS);
         if (!walletFile.exists()) {
             walletFile.mkdirs();
