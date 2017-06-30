@@ -127,6 +127,6 @@
     <string name="transaction_sent_item_format_title">%1$d stempas verzonden \n%2$s %3$s</string>
     <string name="transaction_sent_item_format_detail">Naar %s</string>
     <string-array name="address_array">
-        <item>1PgYKBGnDp3UHBcojWwzSTu7PLyAWgvpKpqjM7|Overheid</item>
+        <item>1GoqgbPZUV2yuPZXohtAvB2NZbjcew8Rk93mMn|Overheid</item>
     </string-array>
 </resources>
