@@ -10,6 +10,7 @@
 
     <color name="button_after_timeout">#a0f88938</color>
     <color name="grey">#a0acacac</color>
+    <color name="light_grey">#1e000000</color>
     <color name="green">#00ff00</color>
     <color name="white">#ffffff</color>
     <color name="transparent">#00000000</color>
