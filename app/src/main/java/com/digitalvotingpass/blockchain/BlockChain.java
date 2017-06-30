@@ -2,6 +2,7 @@ package com.digitalvotingpass.blockchain;
 
 import android.content.Context;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 
 import com.digitalvotingpass.digitalvotingpass.R;
 import com.digitalvotingpass.electionchoice.Election;
@@ -11,6 +12,7 @@ import com.digitalvotingpass.transactionhistory.TransactionHistoryItem;
 import com.digitalvotingpass.utilities.MultiChainAddressGenerator;
 import com.digitalvotingpass.utilities.Util;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.Service;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Asset;
@@ -35,6 +37,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 public class BlockChain {
     public static final String PEER_IP = "188.226.149.56";
@@ -106,7 +109,42 @@ public class BlockChain {
 
         PeerAddress peer = new PeerAddress(params, peeraddr);
         kit.setPeerNodes(peer);
-        kit.startAsync();
+        Service s = kit.startAsync();
+        s.addListener(new Service.Listener() {
+            @Override
+            public void starting() {
+                super.starting();
+                System.out.println("Starting!!");
+            }
+
+            @Override
+            public void running() {
+                super.running();
+            }
+
+            @Override
+            public void stopping(Service.State from) {
+                super.stopping(from);
+                System.out.println("Stopping!!");
+            }
+
+            @Override
+            public void terminated(Service.State from) {
+                super.terminated(from);
+                System.out.println("TErminatedg!!");
+            }
+
+            @Override
+            public void failed(Service.State from, Throwable failure) {
+                super.failed(from, failure);
+                System.out.println("FAILED!!");
+            }
+        }, new Executor() {
+            @Override
+            public void execute(@NonNull Runnable command) {
+                System.out.println("Executed");
+            }
+        });
     }
 
     public void disconnect() {
