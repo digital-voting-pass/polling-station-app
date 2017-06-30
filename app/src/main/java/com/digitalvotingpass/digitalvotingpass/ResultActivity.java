@@ -3,6 +3,8 @@ package com.digitalvotingpass.digitalvotingpass;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -68,6 +70,7 @@ public class ResultActivity extends AppCompatActivity {
                         textVoterName.setText(getString(R.string.please_hand, preamble));
                         textVotingPasses.setText(getResources().getQuantityString(R.plurals.ballot_paper, votingPasses));
                         butProceed.setEnabled(true);
+                        butProceed.getBackground().setColorFilter(null);
                         getSupportActionBar().setTitle(getTitle());
                     }
                 });
@@ -335,6 +338,7 @@ public class ResultActivity extends AppCompatActivity {
             setAuthorizationStatus(this.WAITING);
             butProceed.setText(R.string.waiting_confirmation);
             butProceed.setEnabled(false);
+            butProceed.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
             getSupportActionBar().setTitle(R.string.waiting_confirmation);
             attachTransactionListeners();
         } catch (Exception e) {
