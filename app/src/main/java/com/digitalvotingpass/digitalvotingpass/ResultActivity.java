@@ -236,7 +236,7 @@ public class ResultActivity extends AppCompatActivity {
         if (gender == Gender.FEMALE || gender == Gender.MALE) {
             // Capitalize the first word since this is sometimes van or van de.
             String firstWord = Voter.capitalizeFirstLetter(voter.getLastName().split(" ")[0]);
-            preamble = voter.genderToString() + " " + firstWord + " " + voter.getLastName().substring(firstWord.length());
+            preamble = voter.getPreAmble();
         } else {
             preamble = voter.getFirstName() + " " + voter.getLastName();
         }
@@ -269,11 +269,6 @@ public class ResultActivity extends AppCompatActivity {
                 }
                 break;
             case WAITING:
-                showSnack(
-                    getResources().getText(R.string.authorization_wait),
-                    R.color.orangeWait,
-                    R.color.white
-                );
                 butProceed.setText(R.string.proceed_home);
                 if(cancelAction != null) {
                     cancelAction.setVisible(true);
@@ -291,7 +286,6 @@ public class ResultActivity extends AppCompatActivity {
                 }
                 break;
             case CONFIRMED:
-                System.out.println("confirmed");
                 showSnack(
                     getResources().getQuantityString(R.plurals.authorization_confirmed, votingPasses, votingPasses),
                     R.color.greenSucces,

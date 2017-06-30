@@ -158,4 +158,9 @@ public class Voter implements Parcelable {
         parcel.writeStringArray(new String[] { getFirstName(), getLastName() });
         parcel.writeInt(getGender().toInt());
     }
+
+    public String getPreAmble() {
+        return genderToString() + " " + capitalizeFirstLetter(lastName);
+
+    }
 }
