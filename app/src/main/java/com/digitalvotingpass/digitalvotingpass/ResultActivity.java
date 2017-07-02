@@ -269,6 +269,11 @@ public class ResultActivity extends AppCompatActivity {
                 }
                 break;
             case WAITING:
+                showSnack(
+                    getResources().getText(R.string.authorization_wait),
+                    R.color.orangeWait,
+                    R.color.white
+                );
                 butProceed.setText(R.string.proceed_home);
                 if(cancelAction != null) {
                     cancelAction.setVisible(true);
@@ -333,7 +338,6 @@ public class ResultActivity extends AppCompatActivity {
             butProceed.setText(R.string.waiting_confirmation);
             butProceed.setEnabled(false);
             butProceed.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
-            getSupportActionBar().setTitle(R.string.waiting_confirmation);
             attachTransactionListeners();
         } catch (Exception e) {
             e.printStackTrace();

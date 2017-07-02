@@ -46,6 +46,8 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/app_name"
             android:gravity="center"
+            android:paddingBottom="15dp"
+            android:paddingTop="25dp"
             android:src="@drawable/voting_pass_icon" />
 
         <TextView
