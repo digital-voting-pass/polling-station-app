@@ -39,12 +39,14 @@ import java.util.Map;
 
 public class BlockChain {
     public static final String PEER_IP = "188.166.14.201";
+    public static final String PEER_IP2 = "207.154.243.156";
     private static BlockChain instance;
     private WalletAppKit kit;
     private Context context;
     private ProgressTracker progressTracker;
 
     private InetAddress peeraddr;
+    private InetAddress peeraddr2;
     private long addressChecksum = 0xb6b31b44L;
     private String[] version = {"00", "69", "fc", "95"};
     final NetworkParameters params = MultiChainParams.get(
@@ -61,6 +63,7 @@ public class BlockChain {
         this.context = ctx;
         try {
             peeraddr = InetAddress.getByName(PEER_IP);
+            peeraddr2 = InetAddress.getByName(PEER_IP2);
             progressTracker = new ProgressTracker();
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -106,7 +109,8 @@ public class BlockChain {
         kit.setBlockingStartup(false);
 
         PeerAddress peer = new PeerAddress(params, peeraddr);
-        kit.setPeerNodes(peer);
+        PeerAddress peer2 = new PeerAddress(params, peeraddr2);
+        kit.setPeerNodes(peer, peer2);
         kit.startAsync();
     }
 
