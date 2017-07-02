@@ -103,7 +103,10 @@ public class ElectionChoiceActivity extends AppCompatActivity implements SearchV
     public ArrayList<Election> loadElections(ArrayList<Asset> assetList) {
         ArrayList<Election> electionChoices = new ArrayList<>();
         for(Asset a : assetList) {
-            electionChoices.add(Election.parseElection(a, getApplicationContext()));
+            // Hide other assets
+            if (a.getName().indexOf("_") != -1) {
+                electionChoices.add(Election.parseElection(a, getApplicationContext()));
+            }
         }
         return electionChoices;
     }

@@ -71,18 +71,18 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:textAlignment="center"
-                            android:padding="16dp"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="30dp"
                             android:textSize="14sp"
                             android:textColor="@color/govDarkBlue"
                             android:text="@string/voting_pass"/>
                     </LinearLayout>
+
                     <View
                         android:id="@+id/divider"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        android:background="@android:color/darker_gray" />
+                        android:background="@color/light_grey" />
                     <Button
                         android:id="@+id/transactionHistory"
                         android:layout_width="match_parent"

@@ -83,7 +83,7 @@
         <item quantity="one">Authorization successful</item>
         <item quantity="other">Authorization successful</item>
     </plurals>
-    <string name="authorization_wait">Waiting for authorization.</string>
+    <string name="authorization_wait">Waiting for confirmation.</string>
     <string name="address_not_found">This document is not registered for digital voting.</string>
 
     <string name="has_right">%s has right to:</string>
