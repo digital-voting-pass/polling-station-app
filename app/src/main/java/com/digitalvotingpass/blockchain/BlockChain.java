@@ -38,24 +38,24 @@ import java.util.List;
 import java.util.Map;
 
 public class BlockChain {
-    public static final String PEER_IP = "188.226.149.56";
+    public static final String PEER_IP = "188.166.14.201";
     private static BlockChain instance;
     private WalletAppKit kit;
     private Context context;
     private ProgressTracker progressTracker;
 
     private InetAddress peeraddr;
-    private long addressChecksum = 0xcc350cafL;
-    private String[] version = {"00", "62", "8f", "ed"};
+    private long addressChecksum = 0xb6b31b44L;
+    private String[] version = {"00", "69", "fc", "95"};
     final NetworkParameters params = MultiChainParams.get(
-            "00d7fa1a62c5f1eadd434b9f7a8a657a42bd895f160511af6de2d2cd690319b8",
-            "01000000000000000000000000000000000000000000000000000000000000000000000059c075b5dd26a328e185333ce1464b7279d476fbe901c38a003e694906e01c073b633559ffff0020ae0000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff1704ffff002001040f4d756c7469436861696e20766f7465ffffffff0200000000000000002f76a91474f585ec0e5f452a80af1e059b9d5079ec501d5588ac1473706b703731000000000000ffffffff3b633559750000000000000000131073706b6e0200040101000104726f6f74756a00000000",
-            6799,
+            "007c7ae31640a81e092921211a371e039dad1999f280b570ea264bc42eb09df1",
+            "0100000000000000000000000000000000000000000000000000000000000000000000009c65dfd6ace61ebc96a4c4c5f2263a9d343d4ea412fc659f83dc6515befcb00c65615359ffff00202f0000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff1604ffff002001040e6550617373706f7274436861696effffffff0200000000000000002f76a914a7d204562402112cec85cffbad8419934b86f3a988ac1473706b703731000000000000ffffffff65615359750000000000000000131073706b6e0200040101000104726f6f74756a00000000",
+            6747,
             Integer.parseInt(Arrays.toString(version).replaceAll(", |\\[|\\]", ""), 16),
             addressChecksum,
-            0xf5dec1feL
+            0xf3e9ecf0L
     );
-    private Address masterAddress = Address.fromBase58(params, "1GoqgbPZUV2yuPZXohtAvB2NZbjcew8Rk93mMn");
+    private Address masterAddress = Address.fromBase58(params, "1PgYKBGnDp3UHBcojWwzSTu7PLyAWgvpKpqjM7");
 
     private BlockChain(Context ctx) {
         this.context = ctx;
@@ -93,7 +93,7 @@ public class BlockChain {
 
     public void startDownload() {
         BriefLogFormatter.init();
-        String filePrefix = "voting-wallet";
+        String filePrefix = "ePassportChain";
         File walletFile = new File(Environment.getExternalStorageDirectory() + "/" + Util.FOLDER_DIGITAL_VOTING_PASS);
         if (!walletFile.exists()) {
             walletFile.mkdirs();
