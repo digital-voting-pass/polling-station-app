@@ -23,9 +23,9 @@ This app is intended for use at the polling station. An official scans a voter's
 
 Import the root folder into your IDE (tested on Android Studio), then run project.
 
-Connects to 188.226.149.56, which acts as a node in the digital voting pass blockchain network. See [digital-voting-pass-multichain](https://github.com/digital-voting-pass/digital-voting-pass-multichain) on how to setup your own node.
+Connects to 188.226.149.56 (currently offline), which acts as a node in the digital voting pass blockchain network. See [digital-voting-pass-multichain](https://github.com/digital-voting-pass/digital-voting-pass-multichain) on how to setup your own node.
 
-This server also hosts a blockchain explorer, which can be accesses here: [http://188.226.149.56:2750/](http://188.226.149.56:2750/).
+This server also hosts a blockchain explorer, which can be accesses here: [http://188.226.149.56:2750/](http://188.226.149.56:2750/) (currently offline).
 
 ## Built With
 
