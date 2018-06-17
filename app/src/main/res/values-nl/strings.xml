@@ -80,13 +80,14 @@
         <item quantity="other">Stempassen gevonden, kies verzilveren</item>
     </plurals>
     <plurals name="authorization_confirmed">
-        <item quantity="one">Stempas succesvol verzilverd, %1$d stembiljet uitrijken.</item>
-        <item quantity="other">Stempassen succesvol verzilverd, %1$d stembiljetten uitrijken.</item>
+        <item quantity="one">Stempas succesvol verzilverd, overhandig %1$d stembiljet.</item>
+        <item quantity="other">Stempassen succesvol verzilverd, overhandig %1$d stembiljetten.</item>
     </plurals>
     <string name="authorization_wait">Wachten op bevestiging.</string>
     <string name="address_not_found">Dit reisdocument is niet geregistreerd als digitale stempas.</string>
 
     <string name="has_right">%s heeft recht op:</string>
+    <string name="please_hand">Overhandig %s</string>
     <string name="voting_pass">Stembiljet</string>
     <plurals name="ballot_paper">
         <item quantity="one">Stembiljet</item>
@@ -126,6 +127,6 @@
     <string name="transaction_sent_item_format_title">%1$d stempas verzonden \n%2$s %3$s</string>
     <string name="transaction_sent_item_format_detail">Naar %s</string>
     <string-array name="address_array">
-        <item>1GoqgbPZUV2yuPZXohtAvB2NZbjcew8Rk93mMn|Overheid</item>
+        <item>1PgYKBGnDp3UHBcojWwzSTu7PLyAWgvpKpqjM7|Overheid</item>
     </string-array>
 </resources>

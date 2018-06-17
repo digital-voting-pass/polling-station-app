@@ -93,7 +93,7 @@ public class TestElectionChoice {
         onView(withId(R.id.app_bar)).check(new ViewAssertion() {
             @Override
             public void check(View view, NoMatchingViewException noViewFoundException) {
-                assertEquals(((Toolbar) view).getTitle(), "Choose election");
+                assertEquals(((Toolbar) view).getTitle(), electionActivity.getString(R.string.election_choice));
             }
         });
     }
